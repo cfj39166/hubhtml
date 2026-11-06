@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#0b1030" />
+<title>我们的宇宙 · 只属于两个人的纪念日</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❤️</text></svg>" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="locked">
+
+<!-- 滚动进度条 -->
+<div id="scroll-progress"></div>
+
+<!-- 背景星云 -->
+<div class="nebula n1"></div>
+<div class="nebula n2"></div>
+<div class="nebula n3"></div>
+
+<!-- 3D 星空 + 粒子爱心背景（Three.js），加载失败时自动降级为 2D 星空 -->
+<canvas id="bg3d"></canvas>
+
+<!-- 特效层：烟花 / 爱心爆裂 / 鼠标拖尾（不挡操作） -->
+<canvas id="fx"></canvas>
+
+<!-- ========== 开场动画 ========== -->
+<div id="intro">
+  <canvas id="intro-canvas"></canvas>
+  <div class="intro-content">
+    <h1 id="intro-title"><span id="typed"></span><span class="caret"></span></h1>
+    <p id="intro-sub"></p>
+    <button id="enter-btn" class="btn">进入我们的世界</button>
+  </div>
+  <p class="intro-tip">🎧 戴上耳机，效果更佳</p>
+</div>
+
+<!-- ========== 访问密码页 ========== -->
+<div id="gate" class="hidden">
+  <div class="gate-card glass" id="gate-card">
+    <div class="lock">🔐</div>
+    <h2>这里只属于两个人</h2>
+    <p class="gate-hint" id="gate-hint"></p>
+    <div class="gate-row">
+      <input id="pwd-input" maxlength="16" placeholder="轻声说出我们的暗号" autocomplete="off" />
+      <button id="pwd-btn">进入</button>
+    </div>
+    <p id="pwd-msg"></p>
+    <p class="gate-tip">输错也没关系，爱会原谅一切 😉</p>
+  </div>
+</div>
+
+<!-- ========== 主内容 ========== -->
+<main id="main" class="hidden">
+
+  <!-- 首页主视觉 -->
+  <section id="hero" class="section hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">WELCOME TO OUR UNIVERSE</p>
+      <h1 class="hero-names">
+        <span class="n-a" id="name-a">许久</span>
+        <span id="hero-heart" title="点我试试 · 长按生成恋爱报告">❤</span>
+        <span class="n-b" id="name-b">Karry</span>
+      </h1>
+      <div class="hero-couple reveal">
+        <div class="couple-side">
+          <div class="avatar" id="avatar-a">🐻</div>
+          <b id="name-a2">许久</b>
+          <span class="sign" id="sign-a"></span>
+        </div>
+        <div class="couple-mid">
+          <span class="inf">∞</span>
+          <span class="mid-label">在 一 起</span>
+        </div>
+        <div class="couple-side">
+          <div class="avatar" id="avatar-b">🐰</div>
+          <b id="name-b2">Karry</b>
+          <span class="sign" id="sign-b"></span>
+        </div>
+      </div>
+      <div class="timer glass reveal">
+        <span class="timer-label">我们已经在一起</span>
+        <div class="timer-nums">
+          <b id="t-d">--</b><i>天</i>
+          <b id="t-h">--</b><i>时</i>
+          <b id="t-m">--</b><i>分</i>
+          <b id="t-s">--</b><i>秒</i>
+        </div>
+        <span class="timer-since" id="timer-since"></span>
+      </div>
+      <p class="hero-hint reveal">👆 点击爱心有惊喜 · 长按爱心生成恋爱报告 · 全屏输入 <b>love</b> 有彩蛋</p>
+      <div class="scroll-hint reveal"><span></span>向下滑动，开始我们的故事</div>
+    </div>
+  </section>
+
+  <!-- 恋爱数据 + 倒计时 + 每日情话 -->
+  <section id="stats" class="section">
+    <div class="container">
+      <header class="sec-head reveal">
+        <p class="sec-eyebrow">LOVE IN NUMBERS</p>
+        <h2>恋爱数据</h2>
+        <p class="sec-sub">把爱意换算成数字，每一秒都在增长</p>
+      </header>
+      <div class="stat-grid" id="stat-grid"></div>
+      <div class="countdown-grid" id="countdown-grid"></div>
+      <div class="quote-card glass reveal">
+        <span class="quote-label">✨ 今日情话</span>
+        <p id="daily-quote"></p>
+        <button id="quote-btn" class="btn-ghost">🎲 换一句</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 回忆时间轴 -->
+  <section id="timeline" class="section">
+    <div class="container">
+      <header class="sec-head reveal">
+        <p class="sec-eyebrow">OUR STORY</p>
+        <h2>回忆时间轴</h2>
+        <p class="sec-sub">一部只拍了两个人的电影，正在慢慢放映</p>
+      </header>
+      <div class="timeline" id="timeline-list"></div>
+    </div>
+  </section>
+
+  <!-- 照片墙 -->
+  <section id="gallery" class="section">
+    <div class="container">
+      <header class="sec-head reveal">
+        <p class="sec-eyebrow">MOMENTS</p>
+        <h2>照片墙</h2>
+        <p class="sec-sub">点击放大，左右滑动翻看 · 每一张都值得收藏</p>
+      </header>
+      <div class="gal-actions reveal">
+        <button id="random-btn" class="btn">🎲 随机回忆</button>
+        <span class="gal-count" id="gal-count"></span>
+      </div>
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+  </section>
+
+  <!-- 星图足迹 -->
+  <section id="map" class="section">
+    <div class="container">
+      <header class="sec-head reveal">
+        <p class="sec-eyebrow">FOOTPRINTS</p>
+        <h2>我们的星图足迹</h2>
+        <p class="sec-sub">去过的每一座城，都是连成星座的一颗星</p>
+      </header>
+      <div class="map-wrap glass reveal">
+        <canvas id="map-canvas"></canvas>
+        <div id="map-chips"></div>
+        <div id="place-popup" class="hidden">
+          <button id="pp-close">✕</button>
+          <img id="pp-img" alt="" />
+          <div class="pp-body">
+            <h4 id="pp-name"></h4>
+            <span class="tl-date" id="pp-date"></span>
+            <p id="pp-story"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 心愿清单 -->
+  <section id="wishes" class="section">
+    <div class="container container-narrow">
+      <header class="sec-head reveal">
+        <p class="sec-eyebrow">WISH LIST</p>
+        <h2>一起做的 100 件事</h2>
+        <p class="sec-sub">勾选一个心愿，就点亮一颗星星</p>
+      </header>
+      <div class="wish-head glass reveal">
+        <div class="wish-progress"><div id="wish-progress-bar"></div></div>
+        <span id="wish-progress-text">0 / 0</span>
+      </div>
+      <div id="wish-list" class="wish-grid"></div>
+      <div class="wish-add reveal">
+        <input id="wish-input" maxlength="30" placeholder="✎ 写一个想一起完成的心愿…" />
+        <button id="wish-add">加入清单</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 情书留言板 -->
+  <section id="letters" class="section">
+    <div class="container container-narrow">
+      <header class="sec-head reveal">
+        <p class="sec-eyebrow">LOVE LETTERS</p>
+        <h2>情书留言板</h2>
+        <p class="sec-sub">有些话要写下来，才算数</p>
+      </header>
+      <div class="letter-form glass reveal">
+        <div class="letter-form-row">
+          <select id="letter-from"></select>
+          <span class="letter-arrow">→ 写给 →</span>
+          <select id="letter-to"></select>
+        </div>
+        <textarea id="letter-text" maxlength="300" placeholder="亲爱的，见字如面…" rows="3"></textarea>
+        <button id="letter-send" class="btn">✉️ 寄出这封信</button>
+      </div>
+      <div id="letter-list" class="letter-grid"></div>
+    </div>
+  </section>
+
+  <!-- 默契问答 -->
+  <section id="quiz" class="section">
+    <div class="container container-narrow">
+      <header class="sec-head reveal">
+        <p class="sec-eyebrow">SOUL MATCH</p>
+        <h2>情侣默契问答</h2>
+        <p class="sec-sub">八道小题，测测你们是哪个级别的宇宙伴侣</p>
+      </header>
+      <div id="quiz-body" class="glass quiz-card reveal"></div>
+    </div>
+  </section>
+
+  <!-- 未来信箱 -->
+  <section id="mailbox" class="section">
+    <div class="container container-narrow">
+      <header class="sec-head reveal">
+        <p class="sec-eyebrow">FUTURE MAIL</p>
+        <h2>未来信箱</h2>
+        <p class="sec-sub">写一封信，寄给一年后的 TA（数据保存在这台设备上）</p>
+      </header>
+      <div class="letter-form glass reveal">
+        <div class="letter-form-row">
+          <select id="mb-from"></select>
+          <span class="letter-arrow">→ 寄给 →</span>
+          <select id="mb-to"></select>
+          <input type="date" id="mb-date" title="开启日期" />
+        </div>
+        <textarea id="mb-text" maxlength="500" placeholder="一年后的你，现在过得好吗…"></textarea>
+        <button id="mb-send" class="btn">📮 投进未来信箱</button>
+      </div>
+      <div id="mb-list" class="letter-grid"></div>
+    </div>
+  </section>
+
+  <!-- 心情打卡 -->
+  <section id="mood" class="section">
+    <div class="container container-narrow">
+      <header class="sec-head reveal">
+        <p class="sec-eyebrow">DAILY MOOD</p>
+        <h2>每日心情打卡</h2>
+        <p class="sec-sub">今天的心情，也讲给对方听</p>
+      </header>
+      <div class="mood-card glass reveal">
+        <div class="mood-btns" id="mood-btns"></div>
+        <div class="mood-strip" id="mood-strip"></div>
+        <p class="mood-count" id="mood-count"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 恋爱报告 -->
+  <section id="report" class="section">
+    <div class="container container-narrow">
+      <header class="sec-head reveal">
+        <p class="sec-eyebrow">LOVE REPORT</p>
+        <h2>恋爱报告</h2>
+        <p class="sec-sub">把我们的故事，做成一张可以发朋友圈的海报</p>
+      </header>
+      <div class="report-cta glass reveal">
+        <div class="report-icon">💌</div>
+        <button id="report-open" class="btn btn-big">生成我们的恋爱报告</button>
+        <p class="hint">小技巧：长按首页的大爱心，也能随时生成 · 支持保存为长图</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>🌍 为爱手作 · 所有内容都可以在 <b>js/data.js</b> 里修改</p>
+    <p id="footer-line">愿我们的故事，一直更新下去</p>
+    <p class="copy">© <span id="year"></span> 我们的宇宙 · 不公开索引 · 仅供两个人浏览</p>
+  </footer>
+</main>
+
+<!-- 侧边导航圆点 -->
+<nav id="dots"></nav>
+
+<!-- 悬浮工具栏 -->
+<div id="toolbar">
+  <button id="music-btn" title="背景音乐开关">🔈</button>
+  <button id="top-btn" title="回到顶部">⬆</button>
+</div>
+
+<!-- 照片灯箱 -->
+<div id="lightbox" class="hidden">
+  <button id="lb-close">✕</button>
+  <button id="lb-prev" class="lb-nav">‹</button>
+  <button id="lb-next" class="lb-nav">›</button>
+  <figure class="lb-figure">
+    <img id="lb-img" alt="" />
+    <figcaption>
+      <b id="lb-title"></b>
+      <span id="lb-date"></span>
+      <p id="lb-note"></p>
+    </figcaption>
+  </figure>
+  <span id="lb-counter"></span>
+</div>
+
+<!-- 海报弹窗 -->
+<div id="poster-modal" class="modal hidden">
+  <div class="modal-card">
+    <button class="modal-close" id="poster-close">✕</button>
+    <canvas id="poster-canvas" width="720" height="1280"></canvas>
+    <div class="modal-actions">
+      <button id="poster-download" class="btn">💾 保存长图</button>
+      <span class="hint">手机上也可以长按图片保存</span>
+    </div>
+  </div>
+</div>
+
+<!-- 彩蛋全屏告白 -->
+<div id="egg-overlay" class="hidden">
+  <div class="egg-inner" id="egg-text"></div>
+  <p class="egg-tip">轻触任意位置关闭</p>
+</div>
+
+<!-- 轻提示 -->
+<div id="toast" class="hidden"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/effects.js"></script>
+<script src="js/three-heart.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

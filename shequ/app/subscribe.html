@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>常需服务订阅 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .subrow { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line-soft); align-items: flex-start; }
+  .subrow:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">常需服务订阅</h1>
+    <p class="muted small mt-4">固定时间代取快递、固定路线接娃拼单、定期保洁可设「常用订单」。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div id="noteU13"></div>
+      <div class="card">
+        <div class="card-head"><h3>为什么先不做订阅</h3></div>
+        <p class="small" style="line-height:1.9;color:var(--ink-2)">
+          订阅解决的是<b>重复发布成本</b>，而现阶段真正要验证的是「闭环能不能跑通」。
+          如果用户连一次单都没发过，订阅功能没有意义 —— 反而会让人觉得这个平台很复杂。
+          等有人稳定用了几次、开始抱怨「每次都要重新填」时，订阅才有人用。
+        </p>
+        <div class="hr"></div>
+        <div class="small strong mb-8">三类可订阅场景</div>
+        <div class="tl">
+          <div class="tl-item done"><div class="tt">固定时间代取快递</div><div class="td">每周三 18:00 下班顺路取件。周期固定、内容稳定，最适合订阅。</div></div>
+          <div class="tl-item done"><div class="tt">定期保洁</div><div class="td">每周六上午。服务者可提前排期，对双方都是确定性收益。</div></div>
+          <div class="tl-item done"><div class="tt">固定路线接娃拼单</div><div class="td">本质是轮值协作，归到「拼单/轮值工具」更合适，见 U15。</div></div>
+        </div>
+        <div class="notice notice-info mt-12" style="font-size:12px">
+          <span class="ic">i</span>
+          <div>订阅不等于自动扣款。每次服务前仍需服务者确认接单，避免服务者临时有事造成违约。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU13').innerHTML = featureNote('U13');
+
+document.getElementById('phone').innerHTML = phoneOpen('常用订单', 'body', { back: 'index.html', tabs: TABS.user });
+
+document.getElementById('body').innerHTML = `
+  <div class="notice notice-info mb-12" style="font-size:11.5px;padding:9px 11px">
+    <span class="ic">i</span>
+    <div>把常做的事设成「常用订单」，下次一键发布，不用重新填表。</div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">我的订阅</div>
+    ${SUBSCRIPTIONS.map(s => `
+      <div class="subrow">
+        <div style="flex:1;min-width:0">
+          <div class="row wrapf" style="gap:6px">
+            <span class="small strong">${s.name}</span>
+            <span class="tag ${s.status === '生效中' ? 'tag-ok' : 'tag-gray'}" style="font-size:10px">${s.status}</span>
+          </div>
+          <div class="smaller muted mt-3">${s.cycle} · ${Data.buildingById(s.building).name} · ¥${s.price}/次</div>
+          <div class="smaller muted-2 mt-3">下次：${s.next}</div>
+        </div>
+      </div>`).join('')}
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">新建常用订单</div>
+    <div class="field" style="margin-bottom:11px">
+      <label style="font-size:12px">选择服务</label>
+      <select>
+        <option>代取快递/外卖</option><option>代扔垃圾/代买菜</option>
+        <option>简单遛狗/上门喂猫</option><option>家政保洁</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:11px">
+      <label style="font-size:12px">重复周期</label>
+      <select><option>每周三 18:00</option><option>每周六 09:00</option><option>每个工作日 07:30</option></select>
+    </div>
+    <div class="field" style="margin-bottom:11px">
+      <label style="font-size:12px">持续时长</label>
+      <select><option>1 个月</option><option>3 个月</option><option>长期</option></select>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="toast('已创建常用订单')">创建</button>
+  </div>
+
+  <div class="card" style="background:var(--brand-softer);border-color:#d9e7ff">
+    <div class="smaller" style="color:var(--ink-2);line-height:1.75">
+      <b>说明</b>：订阅不自动扣款。每次服务前仍需服务者确认，确认后按次结算。
+      服务者可提前查看排期，对双方都是确定性收益。
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>隐私与权限分级 — 公共能力</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .pm { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .pm th, .pm td { border: 1px solid var(--line); padding: 9px 11px; text-align: left; }
+  .pm th { background: var(--line-soft); font-size: 12px; font-weight: 600; color: var(--ink-3); }
+  .pm td.role { font-weight: 700; background: var(--brand-softer); white-space: nowrap; }
+  .y { color: var(--risk-a); font-weight: 700; }
+  .n { color: var(--risk-c); font-weight: 700; }
+  .c { color: var(--risk-b); font-weight: 700; }
+  .vis { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 13px; margin-bottom: 9px; }
+  .vis .lv { display: inline-block; font-size: 10.5px; padding: 2px 8px; border-radius: 4px;
+    background: var(--brand-soft); color: var(--brand-dark); font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">公共能力 · 隐私与权限分级</h1>
+    <p class="muted small mt-4">楼栋协调人只看本楼，平台按角色授权，门牌接单后可见。防止内部信息滥用。</p>
+  </div>
+
+  <div id="noteX08" class="mb-16"></div>
+
+  <div class="card mb-16">
+    <div class="card-head"><h3>权限设计的核心原则</h3></div>
+    <div class="grid grid-3">
+      <div class="notice notice-ok" style="font-size:12px;flex-direction:column">
+        <div class="strong mb-4">① 最小必要</div>
+        <div>完成当前动作所必需的信息才可见。协调人初审需求不需要知道门牌号，就看不到门牌号。</div>
+      </div>
+      <div class="notice notice-ok" style="font-size:12px;flex-direction:column">
+        <div class="strong mb-4">② 按角色授权</div>
+        <div>不是按人授权，而是按角色。角色边界写死在系统里，不靠口头约定。</div>
+      </div>
+      <div class="notice notice-ok" style="font-size:12px;flex-direction:column">
+        <div class="strong mb-4">③ 按阶段放开</div>
+        <div>门牌号在「接单后」才可见 —— 时间点本身就是权限维度。</div>
+      </div>
+    </div>
+    <div class="notice notice-danger mt-12" style="font-size:12px">
+      <span class="ic">!</span>
+      <div>最容易被忽视的内部风险：<b>楼栋协调人拿到全楼住户信息后，可能变成「收费中介」或用于推销。</b>
+      所以协调人看不到门牌号、联系方式、其他楼栋数据 —— 权限边界必须由系统保证，不能靠信任。</div>
+    </div>
+  </div>
+
+  <div class="card mb-16">
+    <div class="card-head"><h3>权限矩阵</h3><span class="sub">✓ 可见 · ⚠ 部分可见 · ✕ 不可见</span></div>
+    <div class="tbl-wrap">
+      <table class="pm">
+        <thead>
+          <tr>
+            <th>角色</th>
+            <th>楼栋 / 片区</th>
+            <th>门牌号</th>
+            <th>手机号</th>
+            <th>真实姓名</th>
+            <th>身份证 / 人脸</th>
+            <th>订单详情</th>
+            <th>过程照片</th>
+            <th>信用分</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="role">需求方（本人）</td>
+            <td><span class="y">✓</span> 全部</td>
+            <td><span class="y">✓</span></td>
+            <td><span class="y">✓</span></td>
+            <td><span class="y">✓</span></td>
+            <td><span class="y">✓</span> 自己</td>
+            <td><span class="y">✓</span> 自己单</td>
+            <td><span class="y">✓</span></td>
+            <td><span class="y">✓</span> 自己</td>
+          </tr>
+          <tr>
+            <td class="role">需求方（看服务者）</td>
+            <td><span class="y">✓</span></td>
+            <td><span class="c">⚠</span> 接单后</td>
+            <td><span class="c">⚠</span> 接单后脱敏</td>
+            <td><span class="c">⚠</span> 姓氏 + 等级</td>
+            <td><span class="n">✕</span></td>
+            <td><span class="y">✓</span></td>
+            <td><span class="y">✓</span></td>
+            <td><span class="y">✓</span></td>
+          </tr>
+          <tr>
+            <td class="role">服务者</td>
+            <td><span class="y">✓</span> 本楼 + 本片区</td>
+            <td><span class="c">⚠</span> 接单后</td>
+            <td><span class="c">⚠</span> 接单后脱敏</td>
+            <td><span class="c">⚠</span> 姓氏</td>
+            <td><span class="n">✕</span></td>
+            <td><span class="y">✓</span> 自己单</td>
+            <td><span class="y">✓</span> 自己上传</td>
+            <td><span class="y">✓</span> 自己</td>
+          </tr>
+          <tr>
+            <td class="role">楼栋协调人</td>
+            <td><span class="c">⚠</span> <b>仅本楼</b></td>
+            <td><span class="n">✕</span></td>
+            <td><span class="n">✕</span></td>
+            <td><span class="c">⚠</span> 姓氏</td>
+            <td><span class="n">✕</span></td>
+            <td><span class="c">⚠</span> 脱敏摘要</td>
+            <td><span class="c">⚠</span> 纠纷相关</td>
+            <td><span class="c">⚠</span> 本楼</td>
+          </tr>
+          <tr>
+            <td class="role">平台运营</td>
+            <td><span class="y">✓</span> 全部</td>
+            <td><span class="c">⚠</span> 按需 + 留痕</td>
+            <td><span class="c">⚠</span> 按需 + 留痕</td>
+            <td><span class="y">✓</span></td>
+            <td><span class="c">⚠</span> 审核场景</td>
+            <td><span class="y">✓</span> 全部</td>
+            <td><span class="y">✓</span></td>
+            <td><span class="y">✓</span></td>
+          </tr>
+          <tr>
+            <td class="role">机构</td>
+            <td><span class="c">⚠</span> 服务范围内</td>
+            <td><span class="n">✕</span> 由用户提供</td>
+            <td><span class="c">⚠</span> 接单后</td>
+            <td><span class="c">⚠</span> 姓氏</td>
+            <td><span class="n">✕</span></td>
+            <td><span class="y">✓</span> 自己单</td>
+            <td><span class="n">✕</span> 站外</td>
+            <td><span class="n">✕</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid grid-2 mb-16">
+    <div class="card">
+      <div class="card-head"><h3>地址可见性四阶段</h3></div>
+      <div class="vis">
+        <div class="row-between mb-4">
+          <span class="strong small">① 发布时</span>
+          <span class="lv">仅显示楼栋 / 片区</span>
+        </div>
+        <div class="small muted" style="line-height:1.65">订单大厅里只显示「12 号楼」或「东片区」，不显示单元与门牌。</div>
+      </div>
+      <div class="vis">
+        <div class="row-between mb-4">
+          <span class="strong small">② 服务者浏览时</span>
+          <span class="lv">仅楼栋 + 距离</span>
+        </div>
+        <div class="small muted" style="line-height:1.65">服务者能看到「本楼栋」，用来判断是否顺路，但看不到具体住哪户。</div>
+      </div>
+      <div class="vis">
+        <div class="row-between mb-4">
+          <span class="strong small">③ 接单后</span>
+          <span class="lv">完整门牌 + 脱敏电话</span>
+        </div>
+        <div class="small muted" style="line-height:1.65">只有确认接单的服务者能看到完整门牌号，电话为虚拟号或脱敏号。</div>
+      </div>
+      <div class="vis">
+        <div class="row-between mb-4">
+          <span class="strong small">④ 订单完成后</span>
+          <span class="lv">权限自动回收</span>
+        </div>
+        <div class="small muted" style="line-height:1.65">订单完成后，服务者对本单地址的访问权限自动失效。再次服务需重新接单授权。</div>
+      </div>
+      <div class="notice notice-info mt-12" style="font-size:12px">
+        <span class="ic">i</span>
+        <div>第 ④ 步最容易被漏掉。很多平台的权限是「一旦获得永久有效」，
+        服务者接一次单就永久掌握了这户的地址和电话 —— 这是骚扰风险的来源。</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card mb-16">
+        <div class="card-head"><h3>协调人权限的边界设计</h3></div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>信息</th><th>可见</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="small strong">本楼需求列表</td>
+                <td><span class="tag tag-ok">可见</span></td>
+                <td class="small">初审工作需要</td>
+              </tr>
+              <tr>
+                <td class="small strong">需求风险标记</td>
+                <td><span class="tag tag-ok">可见</span></td>
+                <td class="small">预警是协调人的核心职责</td>
+              </tr>
+              <tr>
+                <td class="small strong">本楼服务者列表</td>
+                <td><span class="tag tag-ok">可见</span></td>
+                <td class="small">推荐工作需要</td>
+              </tr>
+              <tr>
+                <td class="small strong">门牌号</td>
+                <td><span class="tag tag-danger">不可见</span></td>
+                <td class="small">初审不需要，防止信息滥用</td>
+              </tr>
+              <tr>
+                <td class="small strong">住户联系方式</td>
+                <td><span class="tag tag-danger">不可见</span></td>
+                <td class="small">防骚扰、防推销</td>
+              </tr>
+              <tr>
+                <td class="small strong">其他楼栋数据</td>
+                <td><span class="tag tag-danger">不可见</span></td>
+                <td class="small">权限只在本楼范围</td>
+              </tr>
+              <tr>
+                <td class="small strong">纠纷证据</td>
+                <td><span class="tag tag-warn">部分可见</span></td>
+                <td class="small">仅本楼相关纠纷</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>敏感操作留痕</h3></div>
+        <p class="small" style="color:var(--ink-2);line-height:1.75">
+          平台运营在某些场景下确实需要查看完整门牌和联系方式（比如核实地址异常）。
+          这时候必须<b>记录「谁、什么时候、看了什么、为什么」</b>。
+        </p>
+        <div class="hr"></div>
+        <div class="small" style="line-height:1.9;color:var(--ink-2)">
+          <div class="row-between" style="padding:5px 0;border-bottom:1px solid var(--line-soft)">
+            <span>张敏 查看订单 JH0611002 完整地址</span>
+            <span class="mono smaller muted">11-06 09:20</span>
+          </div>
+          <div class="smaller muted" style="padding:4px 0">理由：核实接送路线是否合理</div>
+          <div class="row-between" style="padding:5px 0;border-bottom:1px solid var(--line-soft)">
+            <span>张敏 查看住户 12-2-701 联系方式</span>
+            <span class="mono smaller muted">11-05 14:10</span>
+          </div>
+          <div class="smaller muted" style="padding:4px 0">理由：纠纷调解需联系当事人</div>
+        </div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>留痕的目的不是监视运营人员，而是<b>在出现信息泄露时能定位来源</b>，
+          同时让运营人员在查看前多想一秒 —— 这个「多想一秒」本身就是有效的约束。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>用户可自主控制的隐私项</h3></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>设置项</th><th>默认</th><th>可调整</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="small strong">对服务者显示姓名</td>
+            <td><span class="tag tag-gray">仅姓氏</span></td>
+            <td class="small">可改为全名或昵称</td>
+            <td class="small">接单前仅显示「王先生 / 女士」</td>
+          </tr>
+          <tr>
+            <td class="small strong">电话联系方式</td>
+            <td><span class="tag tag-gray">平台虚拟号</span></td>
+            <td class="small">可选择是否给真实号</td>
+            <td class="small">虚拟号在订单结束后失效</td>
+          </tr>
+          <tr>
+            <td class="small strong">是否接受服务者推荐</td>
+            <td><span class="tag tag-ok">接受</span></td>
+            <td class="small">可关闭</td>
+            <td class="small">关闭后协调人无法向你推送推荐</td>
+          </tr>
+          <tr>
+            <td class="small strong">需求对协调人可见</td>
+            <td><span class="tag tag-ok">可见</span></td>
+            <td class="small"><b>不可关闭</b></td>
+            <td class="small">初审是安全机制，不提供关闭选项</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="notice notice-info mt-12" style="font-size:12px">
+      <span class="ic">i</span>
+      <div>最后一项<b>故意不提供关闭选项</b>：如果用户可以关掉协调人初审，
+      高风险需求（未成年接送、宠物多日）就失去了第一道人工防线。安全机制的取舍要清楚说明，而不是偷偷默认开启。</div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('common/index.html', { root: '../' });
+document.getElementById('noteX08').innerHTML = featureNote('X08');
+</script>
+</body>
+</html>

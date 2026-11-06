@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>协议与保险确认 — 服务者端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .doc { background: #fcfcfd; border: 1px solid var(--line); border-radius: var(--r); padding: 12px;
+    max-height: 200px; overflow-y: auto; font-size: 11.5px; line-height: 1.85; color: var(--ink-2); }
+  .doc h4 { font-size: 12.5px; margin: 11px 0 4px; color: var(--ink); }
+  .doc h4:first-child { margin-top: 0; }
+  .em { background: #fff8e6; padding: 1px 3px; border-radius: 2px; }
+  .ins { border: 1px solid var(--line); border-radius: var(--r); padding: 12px; margin-bottom: 9px; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">协议与保险确认</h1>
+    <p class="muted small mt-4">接 B 类单前签署服务者版协议，确认平台责任险覆盖范围。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <a href="join.html" class="btn btn-sm">分层认证</a>
+        <a href="cats.html" class="btn btn-sm">品类开关</a>
+        <a href="hall.html" class="btn btn-sm">接单大厅</a>
+        <a href="certs.html" class="btn btn-sm">资质到期</a>
+        <a href="agreement.html" class="btn btn-sm btn-primary">协议保险</a>
+        <a href="track.html" class="btn btn-sm">过程留痕</a>
+        <a href="income.html" class="btn btn-sm">收入结算</a>
+        <a href="appeal.html" class="btn btn-sm">评价申诉</a>
+      </div>
+
+      <div id="noteS05"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>服务者版协议和需求方版有什么不同</h3></div>
+        <p class="small" style="line-height:1.9;color:var(--ink-2)">
+          同一份协议，双方看到的是<b>同一份文本</b>，但签字位置和重点提示不同。
+          服务者版额外强调三件事：<b>我能做什么、我不能做什么、出了事保险怎么赔</b>。
+        </p>
+        <div class="hr"></div>
+        <div class="tl">
+          <div class="tl-item done"><div class="tt">明确平台是居间方</div><div class="td">服务者最需要知道的是：我不是平台的员工，平台不给我派活，也不替我承担责任。这句话必须写进协议。</div></div>
+          <div class="tl-item done"><div class="tt">明确责任边界</div><div class="td">哪些情况我要赔、哪些情况我不赔。尤其是宠物寄养和陪诊 —— 这两个最容易出事。</div></div>
+          <div class="tl-item done"><div class="tt">明确保险覆盖范围</div><div class="td">保什么、不保什么、怎么报案、多久到账。保险条款模糊等于没有保险。</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('provider/hall.html', { root: '../' });
+document.getElementById('noteS05').innerHTML = featureNote('S05');
+
+const AG = AGREEMENTS.find(a => a.id === 'AG-PET');
+
+document.getElementById('phone').innerHTML = phoneOpen('协议与保险', 'body', { tabs: TABS.provider });
+
+document.getElementById('body').innerHTML = `
+  <div class="card">
+    <div class="row-between">
+      <div>
+        <div class="strong small">${AG.name}</div>
+        <div class="smaller muted mt-3">版本 ${AG.ver} · 适用 ${Data.catById(AG.cat).name}</div>
+      </div>
+      <span class="tag tag-warn" style="font-size:10px">待签署</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">协议正文（服务者版）</div>
+    <div class="doc">
+      <h4>一、我的身份</h4>
+      我是本小区的认证居民服务者，<span class="em">不是平台的员工或代理人</span>。平台不向我派单，
+      我只承接我自主选择接受的订单。
+      <h4>二、我需要做什么</h4>
+      服务开始前拍摄宠物状态照片不少于 3 张并上传；服务期间每日上传反馈；
+      服务结束后与需求方共同确认交接。
+      <h4>三、我不需要承担什么</h4>
+      因宠物自身疾病突发、不可抗力导致的后果，<span class="em">我不承担责任</span>，
+      但须第一时间通知需求方并提供证据。
+      <h4>四、我需要承担什么</h4>
+      因我未尽合理照护义务导致宠物走失、伤病、死亡的，我承担赔偿责任。
+      赔偿上限以订单金额的 3 倍或实际损失孰低为准。
+      <h4>五、保险覆盖范围</h4>
+      平台责任险覆盖：宠物在托管期间的意外伤病医疗费用（上限 ¥2000）、
+      第三方人身财产损失（上限 ¥5000）。
+      <span class="em">不覆盖：宠物原有疾病的治疗费用、需求方未申报的既往病症</span>。
+      <h4>六、争议处理</h4>
+      发生争议时，平台依据订单凭证、协议版本、聊天记录作出责任判定。
+      我对判定有异议的，可提交申诉。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">保险覆盖明细</div>
+    <div class="ins" style="background:var(--risk-a-bg);border-color:#c3ead2">
+      <div class="row-between mb-8">
+        <span class="small strong">✓ 承保范围</span>
+        <span class="tag tag-ok" style="font-size:10px">生效中</span>
+      </div>
+      <div class="smaller" style="line-height:1.8;color:var(--ink-2)">
+        · 宠物托管期间意外伤病医疗费（上限 ¥2000）<br>
+        · 第三方人身财产损失（上限 ¥5000）<br>
+        · 保单号：PL-2026-1106-8821
+      </div>
+    </div>
+    <div class="ins" style="background:var(--risk-c-bg);border-color:#f8cfcd">
+      <div class="strong small mb-8" style="color:#8f1d19">✕ 不承保</div>
+      <div class="smaller" style="line-height:1.8;color:#8f1d19">
+        · 宠物原有疾病的治疗费用<br>
+        · 需求方未申报的既往病症<br>
+        · 超出申报医疗费用上限的部分<br>
+        · 因服务者故意或重大过失造成的损失
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">签署确认</div>
+    <label class="check-row mb-8" style="font-size:12px">
+      <input type="checkbox" checked><span>我已阅读并理解协议全部条款</span>
+    </label>
+    <label class="check-row mb-8" style="font-size:12px">
+      <input type="checkbox" checked><span>我理解平台是居间方，不是我的雇主</span>
+    </label>
+    <label class="check-row" style="font-size:12px">
+      <input type="checkbox" checked><span>我已确认保险覆盖范围，知晓不承保项目</span>
+    </label>
+  </div>
+
+  <button class="btn btn-primary btn-block btn-lg" onclick="toast('已签署，可接宠物寄养类订单')">签署协议</button>
+  <div class="smaller muted center mt-8">签署记录随订单归档，双方各持一份</div>
+`;
+</script>
+</body>
+</html>

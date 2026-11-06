@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>智能匹配排序 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .tier { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); margin-bottom: 9px; overflow: hidden; }
+  .tier-head { padding: 8px 11px; display: flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 700; }
+  .tier.b1 .tier-head { background: var(--brand-soft); color: var(--brand-dark); }
+  .tier.b2 .tier-head { background: var(--line-soft); color: var(--ink-3); }
+  .tier.b3 .tier-head { background: var(--line-soft); color: var(--ink-4); }
+  .prow { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border-top: 1px solid var(--line-soft); }
+  .dist { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; background: var(--brand-soft); color: var(--brand-dark); }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">智能匹配排序</h1>
+    <p class="muted small mt-4">同楼栋 → 同片区 → 全小区；A 类优先同楼栋，B 类可全小区。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <button class="btn btn-sm" onclick="setCat('A1')">A1 代取快递</button>
+        <button class="btn btn-sm" onclick="setCat('B1')">B1 宠物寄养</button>
+        <button class="btn btn-sm" onclick="setCat('B3')">B3 帮接娃</button>
+        <button class="btn btn-sm" onclick="setCat('A3')">A3 工具共享</button>
+      </div>
+
+      <div id="noteU05"></div>
+
+      <div class="card" id="result"></div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU05').innerHTML = featureNote('U05');
+
+let cat = 'A1';
+function setCat(id) { cat = id; render(); }
+
+const MY_BUILDING = 'B012';
+
+function render() {
+  const c = Data.catById(cat);
+  const m = Data.matchProviders(cat, MY_BUILDING);
+  const b = Data.buildingById(MY_BUILDING);
+
+  // ---- 手机端 ----
+  let h = '';
+  if (c.risk === 'C') {
+    h = `<div class="card" style="background:var(--risk-c-bg);border-color:#f8cfcd">
+      <div class="smaller" style="color:#8f1d19;line-height:1.75">
+        C 类服务不进入居民匹配池，需求直接引导至机构入口。
+      </div>
+    </div>`;
+  } else {
+    h = `
+      <div class="card" style="padding:12px">
+        <div class="row-between">
+          <span class="strong small">${c.name}</span>
+          <span class="tag ${Data.riskClass(c.risk)}" style="font-size:10px">${c.risk} 类</span>
+        </div>
+        <div class="smaller muted mt-8">匹配范围：<b>${m.scope}</b> · 需 lv≥${m.need}</div>
+        <div class="smaller muted mt-4">需求楼栋：${b.name} · ${b.districtName}</div>
+      </div>
+
+      ${m.sameBuilding.length ? `
+      <div class="tier b1">
+        <div class="tier-head">🏠 同楼栋（${b.name}）· ${m.sameBuilding.length} 人 · 最快响应</div>
+        ${m.sameBuilding.map(p => prow(p, '同楼栋')).join('')}
+      </div>` : `<div class="tier b3"><div class="tier-head">🏠 同楼栋（${b.name}）· 暂无可接单服务者</div></div>`}
+
+      ${m.sameDistrict.length ? `
+      <div class="tier b2">
+        <div class="tier-head">📍 同片区（${b.districtName}）· ${m.sameDistrict.length} 人</div>
+        ${m.sameDistrict.map(p => prow(p, '同片区')).join('')}
+      </div>` : `<div class="tier b3"><div class="tier-head">📍 同片区 · 暂无可接单服务者</div></div>`}
+
+      ${c.risk === 'B' ? `
+      <div class="tier b3">
+        <div class="tier-head">🌐 全小区 · 仅 B 类服务可跨片区匹配</div>
+      </div>` : `
+      <div class="tier b3">
+        <div class="tier-head">🌐 全小区 · A 类不跨片区匹配（半径过大没人接）</div>
+      </div>`}
+
+      ${m.blocked ? `
+      <div class="notice notice-warn" style="font-size:11.5px;padding:9px 11px">
+        <span class="ic">🔒</span>
+        <div>本楼栋另有 <b>${m.blocked} 名</b>服务者具备该品类技能，但信任等级不足 lv≥${m.need}，无法接此单。</div>
+      </div>` : ''}
+    `;
+  }
+
+  document.getElementById('phone').innerHTML = phoneOpen('匹配结果', 'body', { back: 'index.html', tabs: TABS.user });
+  document.getElementById('body').innerHTML = h;
+
+  // ---- 右侧：匹配逻辑 ----
+  document.getElementById('result').innerHTML = `
+    <div class="card-head"><h3>匹配逻辑执行结果</h3><span class="sub">需求楼栋 ${b.name}</span></div>
+    <div class="grid grid-3" style="gap:10px">
+      <div class="stat"><div class="k">同楼栋可接</div><div class="v">${m.sameBuilding.length}<small>人</small></div><div class="f">响应最快</div></div>
+      <div class="stat"><div class="k">同片区可接</div><div class="v">${m.sameDistrict.length}<small>人</small></div><div class="f">${b.districtName}</div></div>
+      <div class="stat"><div class="k">等级不足被拦</div><div class="v">${m.blocked}<small>人</small></div><div class="f">需 lv≥${m.need}</div></div>
+    </div>
+
+    <div class="hr"></div>
+    <div class="small strong mb-8">排序规则</div>
+    <div class="tl">
+      <div class="tl-item done">
+        <div class="tt">第一优先：同楼栋</div>
+        <div class="td">物理距离最近，且存在熟人压力 —— 这是最低成本、最高效的信任来源。</div>
+      </div>
+      <div class="tl-item ${m.sameBuilding.length ? 'done' : 'now'}">
+        <div class="tt">第二优先：同片区</div>
+        <div class="td">108 栋楼划分为 6 个片区。本楼栋无合适服务者时扩大到片区服务池。</div>
+      </div>
+      <div class="tl-item ${c.risk === 'B' ? '' : 'bad'}">
+        <div class="tt">第三优先：全小区${c.risk === 'B' ? '' : '（本单不启用）'}</div>
+        <div class="td">${c.risk === 'B'
+          ? 'B 类服务（寄养、保洁、接娃）可跨片区匹配，因为这些需求本身频次低、可选范围需要更大。'
+          : 'A 类服务不跨片区 —— 让居民接「跨半个小区」的单，实际接单率极低，只会制造「发了没人接」的负面体验。'}</div>
+      </div>
+      <div class="tl-item ${c.risk === 'C' ? 'bad' : ''}">
+        <div class="tt">C 类：不进匹配池</div>
+        <div class="td">高风险需求统一走机构入口，避免个人以「互助」名义承接。</div>
+      </div>
+    </div>
+
+    <div class="notice notice-info mt-12" style="font-size:12px">
+      <span class="ic">i</span>
+      <div>把物理距离作为信任的天然补充 —— 这是 108 栋楼小区与「万能邻里互助大平台」最本质的区别。</div>
+    </div>
+  `;
+}
+
+function prow(p, tag) {
+  return `
+  <div class="prow">
+    <div class="avatar avatar-sm" style="background:${Data.avatarColor(p.name)}">${Data.initials(p.name)}</div>
+    <div style="flex:1;min-width:0">
+      <div class="row wrapf" style="gap:5px">
+        <span class="small strong">${p.name}</span>
+        ${Data.trustDots(p.lv)}
+        <span class="dist">${tag}</span>
+      </div>
+      <div class="smaller muted mt-3">${Data.buildingById(p.building).name} · 信用分 ${p.score} · 完成 ${p.orders} 单</div>
+    </div>
+    <button class="btn btn-sm btn-primary" onclick="toast('已向 ${p.name} 派单')">派单</button>
+  </div>`;
+}
+
+render();
+</script>
+</body>
+</html>

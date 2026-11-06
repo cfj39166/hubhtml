@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>楼栋开通开关 — 协调人端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .brow { display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border: 1px solid var(--line); border-radius: var(--r); background: var(--card); margin-bottom: 7px; }
+  .brow.off { background: var(--line-soft); }
+  .brow.pilot { border-color: #c3ead2; background: var(--risk-a-bg); }
+  .bcode { font-family: "SF Mono", Consolas, monospace; font-size: 11px; font-weight: 700;
+    color: var(--brand-dark); width: 42px; flex-shrink: 0; }
+  .bmeta { flex: 1; min-width: 0; }
+  .bmeta .nm { font-size: 12.5px; font-weight: 600; }
+  .bmeta .sub { font-size: 11px; color: var(--ink-3); margin-top: 1px; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">协调人端 · 楼栋开通开关</h1>
+    <p class="muted small mt-4">后台按楼栋 / 片区开启服务，未开通楼栋只能浏览不能发单。供给先行，避免「发了没人接」。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <a href="index.html" class="btn btn-sm">身份职责</a>
+        <a href="review.html" class="btn btn-sm">需求初审</a>
+        <a href="recommend.html" class="btn btn-sm">服务者推荐</a>
+        <a href="dispute.html" class="btn btn-sm">纠纷初调</a>
+        <a href="board.html" class="btn btn-sm">楼栋看板</a>
+        <a href="switch.html" class="btn btn-sm btn-primary">开通开关</a>
+      </div>
+
+      <div id="noteC06"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>为什么必须做「楼栋级开关」</h3></div>
+        <div class="tl">
+          <div class="tl-item done">
+            <div class="tt">先有供给，再开需求</div>
+            <div class="td">108 栋楼一次全开，等于每个楼都是「发了没人接」。正确顺序是：先在试点楼招到 2—3 个认证服务者，再开启这个楼的发单权限。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">未开通 ≠ 不可用</div>
+            <div class="td">未开通楼栋的居民<b>仍可注册、仍可浏览、仍可看服务者</b>，只是不能发单。这样他在等待期里已经在熟悉产品，开通当天就有转化。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">开关粒度到楼栋，不是到片区</div>
+            <div class="td">片区里 20 栋楼，可能只有 3 栋有服务者。按片区开会连带一堆空楼，按楼栋开才精准 —— 但管理成本高，所以要配合「协调人申请 + 平台审批」两级流程。</div>
+          </div>
+        </div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>协调人<b>只能申请，不能自己开关</b>。开通动作必须由平台审批 —— 否则协调人为了拉活跃会提前开楼，
+          又回到「发了没人接」的老问题。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('coord/index.html', { root: '../' });
+document.getElementById('noteC06').innerHTML = featureNote('C06');
+
+// 试点 5 栋 + 已开通楼栋（来自 BUILDINGS）
+const PILOT = BUILDINGS.filter(b => b.pilot);
+const OPENED = BUILDINGS.filter(b => b.opened && !b.pilot);
+const CLOSED = BUILDINGS.filter(b => !b.opened);
+const MY_B = 'B012';
+
+// 本片区（东片区）楼栋
+const myDistrict = Data.buildingById(MY_B).district;
+const myDistrictBuildings = BUILDINGS.filter(b => b.district === myDistrict);
+
+document.getElementById('phone').innerHTML = phoneOpen('楼栋开通管理', 'body', {
+  tabs: TABS.coord, right: '东片区'
+});
+
+document.getElementById('body').innerHTML = `
+  <div class="card" style="padding:11px;background:var(--brand-softer);border-color:#d9e7ff">
+    <div class="smaller" style="line-height:1.7;color:var(--ink-2)">
+      全小区 <b>${COMMUNITY.buildings}</b> 栋楼<br>
+      已开通 <b style="color:var(--risk-a)">${BUILDINGS.filter(b => b.opened).length}</b> 栋 ·
+      待开通 <b class="muted">${CLOSED.length}</b> 栋
+    </div>
+  </div>
+
+  <div class="sec-head" style="margin:12px 0 8px">
+    <div class="row-between">
+      <h2 style="font-size:13px">🚀 试点楼栋（已开通）</h2>
+      <span class="smaller muted">${PILOT.length} 栋</span>
+    </div>
+  </div>
+  ${PILOT.map(b => `
+    <div class="brow pilot">
+      <span class="bcode">${b.id}</span>
+      <div class="bmeta">
+        <div class="nm">${b.name} <span class="tag tag-ok" style="font-size:10px">试点</span></div>
+        <div class="sub">${b.households} 户 · 服务者 ${b.supply} 人 · 可发单</div>
+      </div>
+      <span class="tag tag-ok" style="font-size:10px">已开通</span>
+    </div>`).join('')}
+
+  <div class="sec-head" style="margin:14px 0 8px">
+    <div class="row-between">
+      <h2 style="font-size:13px">✅ 后续开通（有供给支撑）</h2>
+      <span class="smaller muted">${OPENED.length} 栋</span>
+    </div>
+  </div>
+  ${OPENED.map(b => `
+    <div class="brow">
+      <span class="bcode">${b.id}</span>
+      <div class="bmeta">
+        <div class="nm">${b.name}</div>
+        <div class="sub">${b.households} 户 · 服务者 ${b.supply} 人 · 可发单</div>
+      </div>
+      <span class="tag tag-brand" style="font-size:10px">已开通</span>
+    </div>`).join('')}
+
+  <div class="sec-head" style="margin:14px 0 8px">
+    <div class="row-between">
+      <h2 style="font-size:13px">⏳ 本片区待开通</h2>
+      <span class="smaller muted">${myDistrictBuildings.filter(b => !b.opened).length} 栋</span>
+    </div>
+  </div>
+  ${myDistrictBuildings.filter(b => !b.opened).slice(0, 5).map(b => `
+    <div class="brow off">
+      <span class="bcode">${b.id}</span>
+      <div class="bmeta">
+        <div class="nm">${b.name}</div>
+        <div class="sub">${b.households} 户 · 服务者 ${b.supply} 人 · <span style="color:var(--risk-b)">仅可浏览</span></div>
+      </div>
+      <button class="btn btn-sm" onclick="toast('已提交开通申请，等待平台审批')">申请开通</button>
+    </div>`).join('')}
+
+  <div class="card" style="background:var(--line-soft);border:1px dashed var(--line)">
+    <div class="smaller muted center" style="line-height:1.7">
+      未开通楼栋：可注册、可浏览、不可发单<br>
+      先招到 2—3 个认证服务者，再开楼
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

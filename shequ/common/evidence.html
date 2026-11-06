@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>证据链留存 — 公共能力</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .evi { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 13px; margin-bottom: 9px; }
+  .evi .t { font-size: 13px; font-weight: 700; }
+  .evi .d { font-size: 12px; color: var(--ink-2); margin-top: 5px; line-height: 1.7; }
+  .evi .why { font-size: 11.5px; color: #7c4a06; margin-top: 5px; line-height: 1.6; }
+  .evi .ic { font-size: 19px; }
+  .chain { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 12px;
+    background: var(--brand-softer); border-radius: var(--r); border: 1px solid #d9e7ff; }
+  .chain .n { padding: 5px 10px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 5px; font-size: 11.5px; font-weight: 600; }
+  .chain .a { color: var(--brand); font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">公共能力 · 证据链留存</h1>
+    <p class="muted small mt-4">照片、时间戳、确认码、协议签署记录、聊天记录统一归档。平台居间责任靠证据链自保。</p>
+  </div>
+
+  <div id="noteX07" class="mb-16"></div>
+
+  <div class="card mb-16">
+    <div class="card-head"><h3>平台的定位决定了对证据链的依赖程度</h3></div>
+    <p class="small" style="color:var(--ink-2);line-height:1.75">
+      平台是<b>居间方</b>：撮合双方、留存凭证、处理争议，但不提供服务本身。
+      这个定位意味着 —— 当纠纷发生时，平台唯一的自保方式就是：<b>拿出记录，说明「谁做了什么、什么时候做的」</b>。
+    </p>
+    <div class="chain mt-12">
+      <span class="n">协议签署</span><span class="a">→</span>
+      <span class="n">服务前拍照</span><span class="a">→</span>
+      <span class="n">确认码交接</span><span class="a">→</span>
+      <span class="n">服务中留痕</span><span class="a">→</span>
+      <span class="n">服务后拍照</span><span class="a">→</span>
+      <span class="n">双向评价</span><span class="a">→</span>
+      <span class="n">纠纷判定</span>
+    </div>
+    <div class="notice notice-warn mt-12" style="font-size:12px">
+      <span class="ic">!</span>
+      <div>证据链的价值在于<b>完整性</b>，而不是单点证据。一张「服务后照片」证明不了什么，
+      但「协议 + 服务前照片 + 服务后照片 + 时间戳」组合起来，就能还原整个过程。</div>
+    </div>
+  </div>
+
+  <div class="grid grid-2 mb-16">
+    <div>
+      <div class="sec-head" style="margin-top:0"><h2 style="font-size:16px">五类证据</h2></div>
+
+      <div class="evi">
+        <div class="row-between mb-4">
+          <div class="row" style="gap:8px"><span class="ic">📄</span><span class="t">协议签署记录</span></div>
+          <span class="tag tag-brand" style="font-size:10px">责任边界</span>
+        </div>
+        <div class="d">双方签署的协议版本、签署时间、签署设备指纹、关键条款勾选状态。</div>
+        <div class="why">↳ 纠纷判定时，第一件事是确认「当时约定的是什么」。协议版本必须保留，不能因为改协议而重写历史。</div>
+      </div>
+
+      <div class="evi">
+        <div class="row-between mb-4">
+          <div class="row" style="gap:8px"><span class="ic">📷</span><span class="t">服务前后照片</span></div>
+          <span class="tag tag-brand" style="font-size:10px">状态基线</span>
+        </div>
+        <div class="d">带自动时间戳，不可修改。宠物类需全身 + 面部 + 常用物品；家政类需服务范围照片。</div>
+        <div class="why">↳ 这是整个证据链里最关键的一环。「交付时是什么状态」是后续所有判断的基准线。</div>
+      </div>
+
+      <div class="evi">
+        <div class="row-between mb-4">
+          <div class="row" style="gap:8px"><span class="ic">🔑</span><span class="t">确认码交接记录</span></div>
+          <span class="tag tag-brand" style="font-size:10px">交接凭据</span>
+        </div>
+        <div class="d">家长确认码、取件码后四位、钥匙交接码。记录生成时间、核对时间、核对方。</div>
+        <div class="why">↳ 回答「东西 / 孩子交给了谁」这个最核心的问题。没有确认码，交接环节完全无法追溯。</div>
+      </div>
+
+      <div class="evi">
+        <div class="row-between mb-4">
+          <div class="row" style="gap:8px"><span class="ic">📍</span><span class="t">过程留痕</span></div>
+          <span class="tag tag-brand" style="font-size:10px">过程还原</span>
+        </div>
+        <div class="d">出发打卡、到达拍照、实时位置（接娃类）、异常上报、每日反馈（寄养类）。</div>
+        <div class="why">↳ 服务过程是「黑箱」时，任何异常都无法解释。有了过程记录，就能判断是意外还是失职。</div>
+      </div>
+
+      <div class="evi">
+        <div class="row-between mb-4">
+          <div class="row" style="gap:8px"><span class="ic">💬</span><span class="t">站内聊天记录</span></div>
+          <span class="tag tag-brand" style="font-size:10px">补充说明</span>
+        </div>
+        <div class="d">平台内沟通记录自动归档。站外沟通（微信等）无法作为判定依据。</div>
+        <div class="why">↳ 这也是为什么平台要提供站内沟通 —— 不是限制用户，而是让沟通内容可追溯。</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card mb-16">
+        <div class="card-head"><h3>完整证据链示例</h3><span class="sub">订单 JH0611004 · 宠物寄养</span></div>
+        <div class="tl">
+          <div class="tl-item done">
+            <div class="tt">11-05 14:20 · 订单创建</div>
+            <div class="td">健康申报已填写（健康，无既往病史）· 用药说明（否）· 医疗费用上限 ¥800</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">11-05 14:32 · 双方签署协议 AG-PET v2.1</div>
+            <div class="td">用户版 v2 · 服务者版 v1 · 关键条款已单独勾选</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">11-05 15:02 · 服务前拍照上传</div>
+            <div class="td">3 张照片（全身 / 面部 / 常用物品）· 时间戳已固化</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">11-05 ~ 11-09 · 每日反馈（4 天）</div>
+            <div class="td">每天 1 组照片或视频，共 4 组 · 均无异常记录</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">11-09 18:30 · 交接确认，双方签收</div>
+            <div class="td">交接照片 2 张 · 双方确认无异议</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">11-09 19:10 · 双向评价</div>
+            <div class="td">需求方 5 星 · 服务者 5 星</div>
+          </div>
+        </div>
+        <div class="notice notice-ok mt-12" style="font-size:12px">
+          <span class="ic">✓</span>
+          <div>这单后来出现「宠物应激」争议（TK-1101-12）。因为证据链完整，
+          平台 30 分钟内就完成判定：<b>服务流程无瑕疵</b>，双方协商和解。没有证据链，这个判定可能需要几天。</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>留存规则</h3></div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>证据类型</th><th>留存期</th><th>可修改</th></tr></thead>
+            <tbody>
+              <tr><td class="small strong">协议签署记录</td><td class="mono">永久</td><td><span class="tag tag-danger">不可改</span></td></tr>
+              <tr><td class="small strong">服务前后照片</td><td class="mono">2 年</td><td><span class="tag tag-danger">不可改</span></td></tr>
+              <tr><td class="small strong">确认码记录</td><td class="mono">2 年</td><td><span class="tag tag-danger">不可改</span></td></tr>
+              <tr><td class="small strong">过程留痕</td><td class="mono">1 年</td><td><span class="tag tag-danger">不可改</span></td></tr>
+              <tr><td class="small strong">聊天记录</td><td class="mono">1 年</td><td><span class="tag tag-danger">不可改</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="notice notice-info mt-12" style="font-size:12px">
+          <span class="ic">i</span>
+          <div>「不可修改」是证据链有效的前提。照片带服务端时间戳，上传后不可编辑、不可删除 ——
+          任何一方都无法事后篡改。同时留存期限也是<b>用户隐私保护</b>的一部分：不需要永久保存的东西就不永久保存。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>证据链在纠纷判定中的实际用法</h3></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>争议类型</th><th>关键证据</th><th>判定逻辑</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="small strong">宠物健康争议</td>
+            <td class="small">服务前照片 + 每日反馈 + 兽医诊断</td>
+            <td class="small">交付时状态正常 + 服务期间反馈正常 → 难以归责于寄养方</td>
+          </tr>
+          <tr>
+            <td class="small strong">服务质量争议</td>
+            <td class="small">服务范围确认单 + 完成照片</td>
+            <td class="small">对比约定范围与完成照片 → 判断是否达到约定效果</td>
+          </tr>
+          <tr>
+            <td class="small strong">交接争议</td>
+            <td class="small">确认码记录 + 交接照片</td>
+            <td class="small">确认码是否核对 → 判断交接是否完成</td>
+          </tr>
+          <tr>
+            <td class="small strong">物品损坏争议</td>
+            <td class="small">服务前照片 + 服务后照片</td>
+            <td class="small">对比前后照片 → 判断损坏是否发生在服务期间</td>
+          </tr>
+          <tr>
+            <td class="small strong">迟到 / 未到争议</td>
+            <td class="small">出发打卡 + 位置记录 + 聊天记录</td>
+            <td class="small">打卡时间与约定时间对比 → 判断是否超时</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="notice notice-warn mt-12" style="font-size:12px">
+      <span class="ic">!</span>
+      <div>判定逻辑必须<b>基于证据而非基于常识推测</b>。比如「宠物回家后拉肚子」，常识上可能怀疑寄养，
+      但如果没有证据表明寄养期间有异常，平台不能据此判定服务者责任 —— 否则服务者会集体拒接宠物类订单。</div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('common/index.html', { root: '../' });
+document.getElementById('noteX07').innerHTML = featureNote('X07');
+</script>
+</body>
+</html>

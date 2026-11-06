@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C 类机构入口 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .org { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 13px; margin-bottom: 9px; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">C 类机构入口</h1>
+    <p class="muted small mt-4">托育、养老、持证家政展示资质、价格、评价，跳转预约。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div id="noteU16"></div>
+      <div class="card">
+        <div class="card-head"><h3>为什么先只做入口占位</h3></div>
+        <p class="small" style="line-height:1.9;color:var(--ink-2)">
+          对 C 类目前只做一件事：<b>红线拦截 + 入口占位</b>。
+          用户点「找托育」时，看到的是「这类需求由持证机构承接，正在接入中」，而不是一个空白页或一个发布表单。
+        </p>
+        <div class="hr"></div>
+        <div class="small strong mb-8">为什么暂不做完整的机构对接</div>
+        <div class="tl">
+          <div class="tl-item done"><div class="tt">机构签约是线下工作</div><div class="td">需要实地考察资质、谈合同、录系统，不是产品能解决的。产品先留好位置。</div></div>
+          <div class="tl-item done"><div class="tt">C 类需求占比低</div><div class="td">托育、失能照护是低频长决策需求，不会成为早期活跃度来源。</div></div>
+          <div class="tl-item done"><div class="tt">但拦截必须一开始就有</div><div class="td">这是合规红线 —— 哪怕机构还没接入，也不能让个人接单。所以拦截先行，对接后补。</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU16').innerHTML = featureNote('U16');
+
+document.getElementById('phone').innerHTML = phoneOpen('机构服务', 'body', { back: 'index.html', tabs: TABS.user });
+
+document.getElementById('body').innerHTML = `
+  <div class="notice notice-danger mb-12" style="font-size:11.5px;padding:9px 11px">
+    <span class="ic">🚫</span>
+    <div>以下服务由<b>持证机构</b>承接。平台不接受居民个人接单，只做资质展示与入口。</div>
+  </div>
+
+  ${AGENCIES.map(g => `
+    <div class="org">
+      <div class="row-between mb-8">
+        <span class="tag tag-brand" style="font-size:10px">${g.type}</span>
+        <span class="tag ${g.status === '已签约' ? 'tag-ok' : 'tag-warn'}" style="font-size:10px">${g.status}</span>
+      </div>
+      <div class="strong small">${g.name}</div>
+      <div class="row wrapf mt-8" style="gap:5px">
+        ${g.certs.slice(0, 3).map(c => `<span class="tag tag-ok" style="font-size:10px">✓ ${c}</span>`).join('')}
+        ${g.certs.length > 3 ? `<span class="tag tag-gray" style="font-size:10px">+${g.certs.length - 3}</span>` : ''}
+      </div>
+      <div class="row-between mt-8">
+        <span class="smaller muted">${g.price}</span>
+        <span class="smaller" style="color:var(--risk-c)">★ ${g.rating} · ${g.reviews} 评价</span>
+      </div>
+      <div class="smaller muted-2 mt-4">合同期：${g.contract}</div>
+      <button class="btn btn-sm btn-primary btn-block mt-8" onclick="toast('跳转预约（原型演示）')">查看详情并预约</button>
+    </div>`).join('')}
+
+  <div class="card" style="background:var(--risk-c-bg);border-color:#f8cfcd">
+    <div class="smaller" style="color:#8f1d19;line-height:1.75">
+      <b>平台的角色</b>：只做「入口」和「筛选」—— 展示资质、收集评价、提供预约通道，
+      但不参与定价、不承接服务、不承担机构服务责任。
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

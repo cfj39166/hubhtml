@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>收入与结算 — 服务者端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .inc { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line-soft); }
+  .inc:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">收入与结算</h1>
+    <p class="muted small mt-4">订单收入、平台抽成明细、提现、争议冻结。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <a href="join.html" class="btn btn-sm">分层认证</a>
+        <a href="cats.html" class="btn btn-sm">品类开关</a>
+        <a href="hall.html" class="btn btn-sm">接单大厅</a>
+        <a href="certs.html" class="btn btn-sm">资质到期</a>
+        <a href="agreement.html" class="btn btn-sm">协议保险</a>
+        <a href="track.html" class="btn btn-sm">过程留痕</a>
+        <a href="income.html" class="btn btn-sm btn-primary">收入结算</a>
+        <a href="appeal.html" class="btn btn-sm">评价申诉</a>
+      </div>
+
+      <div id="noteS07"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>即时回报是最有效的激励</h3></div>
+        <p class="small" style="line-height:1.9;color:var(--ink-2)">
+          不要做「远期许诺型」的时间银行或积分商城。服务者做的是低偿小单，
+          <b>做完立刻看到钱到账，比攒够 1000 积分换一桶油有用得多</b>。
+        </p>
+        <div class="hr"></div>
+        <div class="small strong mb-8">结算设计的四个要点</div>
+        <div class="tl">
+          <div class="tl-item done"><div class="tt">完成即到账</div><div class="td">双方确认签收后即时入账，不等 T+1、不等月结。</div></div>
+          <div class="tl-item done"><div class="tt">抽成透明</div><div class="td">每一单都显示「订单金额 / 平台服务费 / 我实收」三个数字，不藏。</div></div>
+          <div class="tl-item bad"><div class="tt">争议冻结可解释</div><div class="td">冻结不是没收。冻结时必须显示：哪一单、为什么、预计何时解冻。</div></div>
+          <div class="tl-item done"><div class="tt">提现门槛低</div><div class="td">余额 ≥ ¥10 即可提现。低偿模式下单笔金额小，门槛高会让钱一直躺在平台里。</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('provider/hall.html', { root: '../' });
+document.getElementById('noteS07').innerHTML = featureNote('S07');
+
+document.getElementById('phone').innerHTML = phoneOpen('我的收入', 'body', { tabs: TABS.provider });
+
+document.getElementById('body').innerHTML = `
+  <div class="card" style="background:linear-gradient(140deg,#eaf2ff,#fff)">
+    <div class="smaller muted">可提现余额</div>
+    <div class="strong" style="font-size:30px;letter-spacing:-1px;margin-top:2px">¥286.00</div>
+    <div class="row mt-12" style="gap:7px">
+      <button class="btn btn-primary btn-sm" style="flex:1" onclick="toast('提现申请已提交')">提现</button>
+      <button class="btn btn-sm" style="flex:1" onclick="toast('查看全部明细')">全部明细</button>
+    </div>
+  </div>
+
+  <div class="grid grid-3" style="gap:8px;margin-bottom:10px">
+    <div class="card" style="padding:11px;text-align:center">
+      <div class="strong" style="font-size:16px">¥2860</div><div class="smaller muted">累计收入</div></div>
+    <div class="card" style="padding:11px;text-align:center">
+      <div class="strong" style="font-size:16px;color:var(--risk-b)">¥0</div><div class="smaller muted">冻结中</div></div>
+    <div class="card" style="padding:11px;text-align:center">
+      <div class="strong" style="font-size:16px">143</div><div class="smaller muted">完成单</div></div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">近期收入明细</div>
+    ${[
+      { t: '代取快递/外卖', d: '11-06 09:41', a: 5, f: 0.25 },
+      { t: '宠物短期寄养（4 天）', d: '11-05 18:30', a: 320, f: 16 },
+      { t: '简单遛狗/上门喂猫', d: '11-04 07:58', a: 15, f: 0.75 },
+      { t: '代取快递/外卖', d: '11-03 12:20', a: 5, f: 0.25 },
+      { t: '共享工具借用（信用免押）', d: '11-02 15:00', a: 0, f: 0 }
+    ].map(i => `
+      <div class="inc">
+        <div style="flex:1;min-width:0">
+          <div class="small strong">${i.t}</div>
+          <div class="smaller muted mt-3">${i.d} · 订单 ¥${i.a} − 服务费 ¥${i.f.toFixed(2)}</div>
+        </div>
+        <div class="strong" style="color:var(--risk-a)">+¥${(i.a - i.f).toFixed(2)}</div>
+      </div>`).join('')}
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">平台服务费说明</div>
+    <div class="row-between small" style="padding:5px 0"><span class="muted">费率</span><span class="strong">5%</span></div>
+    <div class="row-between small" style="padding:5px 0"><span class="muted">用途</span><span>支付通道 + 平台运营</span></div>
+    <div class="smaller muted mt-8" style="line-height:1.7">
+      抽成保持极低水平 —— 目的是让你切实感受到「顺手帮个忙，真的有回报」。
+    </div>
+  </div>
+
+  <div class="card" style="background:var(--risk-b-bg);border-color:#f5dcb4">
+    <div class="strong small mb-8" style="color:#7c4a06">争议冻结说明</div>
+    <div class="smaller" style="color:#7c4a06;line-height:1.8">
+      当前无冻结资金。<br>
+      若订单产生争议，对应金额将暂时冻结，<b>冻结不是没收</b>：
+      平台会显示是哪一单、冻结原因、预计解冻时间。争议解决后自动释放。
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

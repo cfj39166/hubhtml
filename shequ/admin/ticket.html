@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>纠纷工单池 — 管理后台</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .tk { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 14px; margin-bottom: 10px; }
+  .tk.urgent { border-left: 3px solid var(--risk-c); }
+  .tk.warn { border-left: 3px solid var(--risk-b); }
+  .tk.closed { border-left: 3px solid var(--risk-a); opacity: .85; }
+  .evi { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--line-soft);
+    color: var(--ink-2); display: inline-block; margin: 2px 4px 2px 0; border: 1px solid var(--line); }
+  .slabar { height: 5px; background: var(--line-soft); border-radius: 3px; overflow: hidden; margin-top: 5px; }
+  .slabar > i { display: block; height: 100%; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:22px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">纠纷工单池</h1>
+    <p class="muted small mt-4">统一受理、SLA 计时、证据查看、责任判定、闭环记录。纠纷不闭环会迅速摧毁口碑。</p>
+  </div>
+
+  <div class="admingrid">
+    <aside class="aside">
+      <div class="aside-card">
+        <div class="aside-title">运营模块</div>
+        <nav class="asidenav">
+          <a href="index.html">📊 后台总览</a>
+          <a href="audit.html">🔍 审核队列 <span class="fid">A01</span></a>
+          <a href="category.html">🧩 品类风险配置 <span class="fid">A02</span></a>
+          <a href="risk.html">🚨 风险订单预警 <span class="fid">A03</span></a>
+          <a href="agreement.html">📄 协议模板 <span class="fid">A04</span></a>
+          <a href="ticket.html" class="on">⚖️ 纠纷工单池 <span class="fid">A05</span></a>
+          <a href="credit-rule.html">⭐ 信用分规则 <span class="fid">A06</span></a>
+          <a href="heatmap.html">🔥 供需热力图 <span class="fid">A07</span></a>
+          <a href="agency.html">🏢 机构管理 <span class="fid">A08</span></a>
+          <a href="insurance.html">🛡️ 保险与抽成 <span class="fid">A09</span></a>
+          <a href="riskword.html">🚫 内容风控 <span class="fid">A10</span></a>
+          <a href="dashboard.html">📈 数据看板 <span class="fid">A11</span></a>
+        </nav>
+      </div>
+    </aside>
+
+    <div>
+      <div id="noteA05"></div>
+
+      <div class="grid grid-4 mt-16 mb-16">
+        <div class="stat"><div class="k">在办工单</div><div class="v" style="color:var(--risk-b)">2<small>单</small></div><div class="f">1 单待协调人提交</div></div>
+        <div class="stat"><div class="k">SLA 达成率</div><div class="v" style="color:var(--risk-a)">94<small>%</small></div><div class="f">目标 ≥ 90%</div></div>
+        <div class="stat"><div class="k">平均处理时长</div><div class="v">31<small>h</small></div><div class="f">SLA 上限 48h</div></div>
+        <div class="stat"><div class="k">纠纷率</div><div class="v">1.4<small>%</small></div><div class="f">143 单中 2 起</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>工单流转状态</h3><span class="sub">协调人只处理「楼内可解决」的部分</span></div>
+        <div class="grid grid-3">
+          <div class="notice notice-warn" style="font-size:12px;flex-direction:column">
+            <div class="strong mb-4">① 楼栋初调（协调人）</div>
+            <div>事实采集 + 情绪安抚。收集双方说法、过程照片、聊天记录，整理成事实说明。<b>不做金额判定。</b></div>
+          </div>
+          <div class="notice notice-danger" style="font-size:12px;flex-direction:column">
+            <div class="strong mb-4">② 平台处理（运营）</div>
+            <div>责任判定 + 退款裁决 + 信用分调整 + 保险理赔。这一步必须由平台做，协调人无裁判权。</div>
+          </div>
+          <div class="notice notice-ok" style="font-size:12px;flex-direction:column">
+            <div class="strong mb-4">③ 闭环归档</div>
+            <div>结论、依据、双方签署确认全部入库。同类纠纷的判定标准会沉淀成规则，减少后续人工。</div>
+          </div>
+        </div>
+        <div class="notice notice-info mt-12" style="font-size:12px">
+          <span class="ic">i</span>
+          <div>SLA 计时<b>从工单开启就开始，不因为「等协调人」而暂停</b>。这样能暴露协调人的响应速度，
+          也防止工单被无限期挂着。超时未响应的工单会自动升级到平台直管。</div>
+        </div>
+      </div>
+
+      <div class="sec-head">
+        <h2>工单列表</h2>
+        <p>按 SLA 剩余时间排序，最紧急的排在最前。</p>
+      </div>
+
+      <div id="tklist"></div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('admin/index.html', { root: '../' });
+document.getElementById('noteA05').innerHTML = featureNote('A05');
+
+const STAGE_TAG = {
+  coord: '<span class="tag tag-danger">① 楼栋初调中</span>',
+  platform: '<span class="tag tag-warn">② 平台处理中</span>',
+  closed: '<span class="tag tag-ok">③ 已闭环</span>'
+};
+
+const sorted = TICKETS.slice().sort((a, b) => (b.elapsed / b.sla) - (a.elapsed / a.sla));
+
+document.getElementById('tklist').innerHTML = sorted.map(t => {
+  const o = Data.orderById(t.orderId);
+  const c = o ? Data.catById(o.catId) : null;
+  const ratio = Math.round(t.elapsed / t.sla * 100);
+  const cls = t.stage === 'closed' ? 'closed' : ratio >= 90 ? 'urgent' : 'warn';
+  const barColor = ratio >= 90 ? 'var(--risk-c)' : ratio >= 60 ? 'var(--risk-b)' : 'var(--risk-a)';
+  return `
+  <div class="tk ${cls}">
+    <div class="row-between wrapf mb-8" style="gap:10px">
+      <div class="row" style="gap:8px">
+        <span class="strong" style="font-size:14px">${t.type}</span>
+        <span class="tag ${Data.riskClass(t.risk)}" style="font-size:10px">${t.risk} 类</span>
+        ${STAGE_TAG[t.stage]}
+      </div>
+      <span class="mono muted">${t.id}</span>
+    </div>
+
+    <div class="grid grid-2" style="gap:16px">
+      <div>
+        <div class="smaller muted mb-4">工单信息</div>
+        <div class="kv"><span class="k">关联订单</span><span class="v">${t.orderId}${c ? ' · ' + c.name : ''}</span></div>
+        <div class="kv"><span class="k">争议双方</span><span class="v">${t.parties}</span></div>
+        <div class="kv"><span class="k">争议金额</span><span class="v"><span class="price">¥${t.amount}</span></span></div>
+        <div class="kv"><span class="k">当前处理人</span><span class="v">${t.owner}</span></div>
+      </div>
+      <div>
+        <div class="smaller muted mb-4">SLA 计时（${t.elapsed}h / ${t.sla}h）</div>
+        <div class="row" style="gap:8px">
+          <span class="mono" style="color:${barColor};font-weight:700">${ratio}%</span>
+          <span class="smaller muted">${t.stage === 'closed' ? '已闭环' : '剩余 ' + (t.sla - t.elapsed) + 'h'}</span>
+        </div>
+        <div class="slabar"><i style="width:${Math.min(ratio, 100)}%;background:${barColor}"></i></div>
+        <div class="smaller muted mt-12 mb-4">证据链</div>
+        <div>${t.evidence.map(e => `<span class="evi">📎 ${e}</span>`).join('')}</div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+    <div class="smaller muted mb-4">争议描述</div>
+    <div class="small" style="color:var(--ink-2);line-height:1.7">${t.desc}</div>
+
+    <div class="row mt-12" style="gap:6px">
+      ${t.stage === 'closed'
+        ? `<button class="btn btn-sm" onclick="toast('已调阅闭环记录')">查看闭环记录</button>
+           <button class="btn btn-sm" onclick="toast('已沉淀为判定规则')">沉淀为规则</button>`
+        : `<button class="btn btn-sm btn-primary" onclick="toast('已进入责任判定界面')">责任判定</button>
+           <button class="btn btn-sm" onclick="toast('已通知双方补充证据')">要求补充证据</button>
+           <button class="btn btn-sm" onclick="toast('已升级为平台直管')">升级直管</button>`}
+    </div>
+  </div>`;
+}).join('');
+</script>
+</body>
+</html>

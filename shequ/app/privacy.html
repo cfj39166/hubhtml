@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>地址与隐私脱敏 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .cmp .box { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .cmp .box .h { padding: 8px 12px; font-size: 11.5px; font-weight: 700; }
+  .cmp .box.before .h { background: var(--line-soft); color: var(--ink-3); }
+  .cmp .box.after .h { background: var(--risk-a-bg); color: var(--risk-a); }
+  .cmp .box .b { padding: 12px; font-size: 12px; line-height: 1.9; color: var(--ink-2); }
+  .mask { background: #e9edf2; color: transparent; border-radius: 3px; user-select: none; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">地址与隐私脱敏</h1>
+    <p class="muted small mt-4">发布时只显示楼栋/片区，接单后才显示具体门牌；取件码脱敏。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+
+    <div>
+      <div id="noteU12"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>脱敏前后对比</h3></div>
+        <div class="cmp">
+          <div class="box before">
+            <div class="h">未接单时（其他居民可见）</div>
+            <div class="b">
+              楼栋：12 号楼<br>
+              片区：东片区<br>
+              门牌：<span class="mask">12-3-502</span><br>
+              取件码：<span class="mask">8836</span><br>
+              手机号：<span class="mask">13866216621</span>
+            </div>
+          </div>
+          <div class="box after">
+            <div class="h">接单后（仅服务者可见）</div>
+            <div class="b">
+              楼栋：12 号楼<br>
+              片区：东片区<br>
+              门牌：12-3-502 ✓<br>
+              取件码：后四位 ••••<br>
+              手机号：138****6621
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>四级可见性规则</h3></div>
+        <div class="tl">
+          <div class="tl-item done">
+            <div class="tt">陌生人（未登录 / 未核验）</div>
+            <div class="td">只能看到片区。连楼栋都不显示 —— 未核验用户不应该是平台的浏览者。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">同小区居民（已核验，未接单）</div>
+            <div class="td">可见楼栋 + 片区 + 需求内容。看不到门牌、联系方式、取件码。</div>
+          </div>
+          <div class="tl-item now">
+            <div class="tt">服务者（已接单）</div>
+            <div class="td">可见门牌与联系方式，但取件码仍只给后四位。服务完成后权限自动回收。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">楼栋协调人</div>
+            <div class="td">仅可见本楼栋。可以看本楼需求全貌用于初审，但看不到其他楼栋 —— 权限范围必须按楼栋硬隔离。</div>
+          </div>
+        </div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>防止信息滥用和骚扰 —— 尤其是<b>取件码</b>。如果服务者拿到完整取件码，
+          他可以在需求方不知情的情况下取走其他包裹。后四位足够取件，完整码没有必要给。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU12').innerHTML = featureNote('U12');
+
+document.getElementById('phone').innerHTML = phoneOpen('隐私设置', 'body', { back: 'index.html', tabs: TABS.user });
+
+document.getElementById('body').innerHTML = `
+  <div class="card">
+    <div class="strong small mb-8">我发布的需求，别人看到什么</div>
+    <div class="kv"><div class="k">未接单时</div><div class="v">12 号楼 · 东片区</div></div>
+    <div class="kv"><div class="k">接单后</div><div class="v">12 号楼 3 单元 502（仅服务者可见）</div></div>
+    <div class="kv"><div class="k">取件码</div><div class="v">始终只给后四位</div></div>
+    <div class="kv"><div class="k">手机号</div><div class="v">138****6621</div></div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">隐私开关</div>
+    <div class="row-between" style="padding:9px 0;border-bottom:1px solid var(--line-soft)">
+      <div><div class="small">接单后自动显示门牌</div><div class="smaller muted">关闭后需手动确认</div></div>
+      <label class="switch"><input type="checkbox" checked><span class="sl"></span></label>
+    </div>
+    <div class="row-between" style="padding:9px 0;border-bottom:1px solid var(--line-soft)">
+      <div><div class="small">服务完成后回收地址权限</div><div class="smaller muted">推荐开启</div></div>
+      <label class="switch"><input type="checkbox" checked><span class="sl"></span></label>
+    </div>
+    <div class="row-between" style="padding:9px 0;border-bottom:1px solid var(--line-soft)">
+      <div><div class="small">允许楼栋协调人查看我的需求</div><div class="smaller muted">仅限本楼栋</div></div>
+      <label class="switch"><input type="checkbox" checked><span class="sl"></span></label>
+    </div>
+    <div class="row-between" style="padding:9px 0">
+      <div><div class="small">在服务者列表中显示我的楼栋</div><div class="smaller muted">关闭后匹配精度下降</div></div>
+      <label class="switch"><input type="checkbox" checked><span class="sl"></span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">我的信息被谁看过</div>
+    <div class="row-between small" style="padding:6px 0;border-bottom:1px solid var(--line-soft)">
+      <div><div>王秀兰（服务者）</div><div class="smaller muted">查看门牌 · 11-06 09:14</div></div>
+      <span class="tag tag-gray" style="font-size:10px">已授权</span>
+    </div>
+    <div class="row-between small" style="padding:6px 0;border-bottom:1px solid var(--line-soft)">
+      <div><div>12 号楼协调人</div><div class="smaller muted">查看本楼需求 · 11-06 08:40</div></div>
+      <span class="tag tag-gray" style="font-size:10px">本楼栋</span>
+    </div>
+    <div class="smaller muted mt-8" style="line-height:1.7">
+      所有地址查看行为都留痕 —— 这是「隐私与权限分级」的落地方式，也是防止内部信息滥用的手段。
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>需求发布表单 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .risk-banner { padding: 11px 13px; border-radius: var(--r); font-size: 11.5px; line-height: 1.65; border: 1px solid; margin-bottom: 12px; }
+  .gate { display: flex; align-items: center; gap: 8px; padding: 9px 11px; background: var(--line-soft);
+    border-radius: var(--r-sm); font-size: 11.5px; color: var(--ink-3); line-height: 1.55; margin-bottom: 7px; }
+  .fld-req { border-color: var(--risk-b) !important; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">需求发布表单</h1>
+    <p class="muted small mt-4">极简表单 + 风险强制字段：时间、地点、价格、宠物健康/用药、接娃学校/交接方式、是否涉及钥匙证件。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <button class="btn btn-sm" onclick="setCat('A1')">A1 代取快递</button>
+        <button class="btn btn-sm" onclick="setCat('A4')">A4 喂猫</button>
+        <button class="btn btn-sm" onclick="setCat('B1')">B1 宠物寄养</button>
+        <button class="btn btn-sm" onclick="setCat('B3')">B3 帮接娃</button>
+        <button class="btn btn-sm" onclick="setCat('B5')">B5 跑腿代办</button>
+        <button class="btn btn-sm" onclick="setCat('C1')">C1 长期托育</button>
+      </div>
+
+      <div id="noteU04"></div>
+      <div class="card" id="detail"></div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU04').innerHTML = featureNote('U04');
+
+let cat = new URLSearchParams(location.search).get('cat') || 'A1';
+function setCat(id) { cat = id; render(); }
+
+function render() {
+  const c = Data.catById(cat);
+  const isC = c.risk === 'C';
+  const isB = c.risk === 'B';
+
+  // ---- 手机端 ----
+  let h = '';
+  if (isC) {
+    h = `
+      <div class="risk-banner" style="background:var(--risk-c-bg);border-color:#f8cfcd;color:#8f1d19">
+        <b>${c.name}</b> 属于 C 类高风险服务，平台不接受居民个人接单。
+      </div>
+      <div class="card">
+        <div class="strong small mb-8">为什么不能「邻里互助化」</div>
+        <div class="smaller" style="color:var(--ink-2);line-height:1.75">${c.reason}</div>
+        <div class="hr"></div>
+        <div class="strong small mb-8">可对接的机构类型</div>
+        <div class="row wrapf" style="gap:5px">
+          ${c.orgTypes.map(t => `<span class="tag tag-gray">${t}</span>`).join('')}
+        </div>
+      </div>
+      <div class="card" style="background:var(--risk-c-bg);border-color:#f8cfcd">
+        <div class="smaller" style="color:#8f1d19;line-height:1.75">
+          <b>红线拦截已生效</b>：该品类不允许普通居民接单，需求将被引导至持证机构入口。
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg mt-12" onclick="location.href='agency.html'">查看机构资质与评价</button>
+      <div class="smaller muted center mt-8">平台不参与定价，只做资质展示和入口</div>
+    `;
+  } else {
+    h = `
+      <div class="risk-banner" style="background:${isB ? 'var(--risk-b-bg)' : 'var(--risk-a-bg)'};border-color:${isB ? '#f5dcb4' : '#c3ead2'};color:${isB ? '#7c4a06' : '#10612e'}">
+        <b>${c.name}</b> · ${c.risk} 类${Data.riskLabel(c.risk)}${isB ? '<br>需平台认证 + 书面协议 + 保险覆盖' : '<br>认证居民即可接单'}
+      </div>
+
+      <div class="card">
+        <div class="strong small mb-12">需求信息</div>
+        ${c.fields.map(f => `
+          <div class="field" style="margin-bottom:12px">
+            <label>${f.k}${f.req ? '<span class="req">*</span>' : ''}</label>
+            ${f.photo ? `<div class="row" style="gap:7px">
+                <div class="thumb">已上传</div>
+                <div class="thumb">已上传</div>
+                <div class="thumb empty">+ 上传</div>
+              </div>`
+            : f.code ? `<div class="row" style="gap:8px">
+                <input type="text" value="8 8 3 6" readonly class="locked" style="flex:1">
+                <button class="btn btn-sm" onclick="toast('确认码已重新生成')">重新生成</button>
+              </div>
+              <div class="hint">交接时由家长出示，服务者输入后订单才可完成</div>`
+            : f.declare ? `<label class="check-row" style="font-size:12px">
+                <input type="checkbox" id="decl">
+                <span>我声明该物品/包裹来源合法，不含违禁品，并同意平台在异常时暂停订单核验。</span>
+              </label>
+              <div class="hint-warn">未勾选无法提交 —— 防止被利用代取来源不明物品</div>`
+            : f.mask ? `<input type="text" value="••••" readonly class="locked">`
+            : f.k.includes('时间') || f.k.includes('时段') ? `<select><option>今天 18:00 前</option><option>明天上午</option><option>本周末</option></select>`
+            : f.k.includes('方式') || f.k.includes('类型') || f.k.includes('内容') || f.k.includes('是否') ? `<select><option>请选择</option><option>选项一</option><option>选项二</option></select>`
+            : `<input type="text" placeholder="请填写${f.k}">`}
+          </div>`).join('')}
+        <div class="field" style="margin-bottom:0">
+          <label>补充说明</label>
+          <textarea placeholder="可补充门牌号、特殊要求等"></textarea>
+          <div class="hint">门牌号发布时对其他人不可见，接单后才显示</div>
+        </div>
+      </div>
+
+      ${isB ? `
+      <div class="card">
+        <div class="strong small mb-8">接单门槛（本单强制）</div>
+        <div class="gate"><span>🔒</span><div>需<b>平台认可</b>及以上（实名 + 人脸${c.special === 'kid' ? ' + 无犯罪记录核验' : ''}）</div></div>
+        <div class="gate"><span>📄</span><div>需签署<b>${(AGREEMENTS.find(a => a.id === c.agreement) || {}).name}</b></div></div>
+        <div class="gate"><span>🛡️</span><div>平台责任险覆盖，平台角色为<b>居间撮合 + 凭证留存</b></div></div>
+      </div>` : ''}
+
+      <div class="card">
+        <div class="row-between mb-8">
+          <span class="strong small">平台指导价</span>
+          <span class="price">${c.guide}</span>
+        </div>
+        <div class="smaller muted" style="line-height:1.7">低于市场价的低偿定价，为「帮忙」提供明确、可负担的兑换率。服务完成即时到账。</div>
+      </div>
+
+      <button class="btn btn-primary btn-block btn-lg" onclick="submit()">发布需求</button>
+      <div class="smaller muted center mt-8">发布后优先推送给同楼栋服务者</div>
+    `;
+  }
+
+  document.getElementById('phone').innerHTML = phoneOpen('发布需求', 'body', { back: 'index.html', tabs: TABS.user });
+  document.getElementById('body').innerHTML = h;
+
+  // ---- 右侧：字段配置详情 ----
+  const reqFields = (c.fields || []).filter(f => f.req);
+  document.getElementById('detail').innerHTML = `
+    <div class="card-head">
+      <h3>${c.icon} ${c.name}</h3>
+      <span class="tag ${Data.riskClass(c.risk)}">${c.risk} 类 · ${Data.riskLabel(c.risk)}</span>
+    </div>
+    <div class="row-between small mb-12"><span class="muted">平台指导价</span><span class="price">${c.guide}</span></div>
+
+    ${isC ? `
+      <div class="notice notice-danger">
+        <span class="ic">🚫</span>
+        <div><b>红线拦截</b>：${c.reason}。平台不接受居民个人接单，需求引导至机构入口。</div>
+      </div>
+      <div class="hr"></div>
+      <div class="small strong mb-8">可对接机构类型</div>
+      <div class="row wrapf" style="gap:6px">${c.orgTypes.map(t => `<span class="tag tag-gray">${t}</span>`).join('')}</div>
+    ` : `
+      <div class="small strong mb-8">风险强制字段（${reqFields.length} 项）</div>
+      <div class="row wrapf" style="gap:5px">
+        ${reqFields.map(f => `<span class="tag ${f.declare || f.code || f.photo ? 'tag-warn' : 'tag-gray'}">${f.k}</span>`).join('')}
+      </div>
+      ${reqFields.some(f => f.declare || f.code || f.photo) ? `
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>带橙色标记的字段是本单的<b>风控关键项</b>：
+            ${reqFields.filter(f => f.declare).length ? '来源声明（防违禁品）' : ''}
+            ${reqFields.filter(f => f.code).length ? '家长确认码（防冒领）' : ''}
+            ${reqFields.filter(f => f.photo).length ? '服务前照片（举证基础）' : ''}
+            。缺任一项无法提交。</div>
+        </div>` : ''}
+
+      <div class="hr"></div>
+      <div class="small strong mb-8">匹配与门槛</div>
+      <div class="row-between small" style="padding:5px 0"><span class="muted">接单信任等级</span><span class="strong">lv≥${c.needLv}（${Data.trustName(c.needLv)}）</span></div>
+      <div class="row-between small" style="padding:5px 0"><span class="muted">书面协议</span><span>${c.agreement ? (AGREEMENTS.find(a => a.id === c.agreement) || {}).name : '不需要'}</span></div>
+      <div class="row-between small" style="padding:5px 0"><span class="muted">保险</span><span>${c.insurance ? '平台责任险' : '无'}</span></div>
+      <div class="row-between small" style="padding:5px 0"><span class="muted">匹配范围</span><span>${c.risk === 'A' ? '同楼栋优先' : '同楼栋 → 同片区 → 全小区'}</span></div>
+    `}
+
+    <div class="hr"></div>
+    <div class="small strong mb-8">切换到其他品类看差异</div>
+    <div class="row wrapf" style="gap:6px">
+      ${CATEGORIES.map(x => `<button class="btn btn-sm${x.id === cat ? ' btn-primary' : ''}" onclick="setCat('${x.id}')">${x.id}</button>`).join('')}
+    </div>
+  `;
+}
+
+function submit() {
+  const d = document.getElementById('decl');
+  if (d && !d.checked) { toast('请先勾选来源声明'); return; }
+  const c = Data.catById(cat);
+  toast(c.risk === 'B' ? '已发布，进入人工复核流程' : '发布成功，已推送同楼栋服务者');
+}
+render();
+</script>
+</body>
+</html>

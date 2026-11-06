@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>服务者推荐 — 协调人端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .pcard { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 12px; margin-bottom: 9px; }
+  .pcard.top { border-color: #c3ead2; background: var(--risk-a-bg); }
+  .recline { font-size: 11.5px; color: var(--ink-2); line-height: 1.7; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">协调人端 · 服务者推荐</h1>
+    <p class="muted small mt-4">向本楼居民推荐已认证的本楼服务者。熟人推荐是冷启动最有效信任来源。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <a href="index.html" class="btn btn-sm">身份职责</a>
+        <a href="review.html" class="btn btn-sm">需求初审</a>
+        <a href="recommend.html" class="btn btn-sm btn-primary">服务者推荐</a>
+        <a href="dispute.html" class="btn btn-sm">纠纷初调</a>
+        <a href="board.html" class="btn btn-sm">楼栋看板</a>
+        <a href="switch.html" class="btn btn-sm">开通开关</a>
+      </div>
+
+      <div id="noteC03"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>推荐为什么比算法管用</h3></div>
+        <div class="tl">
+          <div class="tl-item done">
+            <div class="tt">算法只能证明「合格」，熟人能证明「靠谱」</div>
+            <div class="td">平台能核验身份证、健康证、无犯罪记录 —— 这些都是准入线。但「她带孩子细心」「他修东西不乱收费」这种判断，只有同楼住的人才给得出。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">推荐有社会成本，所以稀缺</div>
+            <div class="td">协调人拿自己的面子做担保。推荐一次翻车，他在楼里的信誉就没了 —— 这个约束比任何平台规则都强。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">推荐必须实名留痕</div>
+            <div class="td">推荐记录要挂在协调人账号上，可见可追溯。防止协调人变成「收费中介」，也防止出事后无人负责。</div>
+          </div>
+        </div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>协调人<b>只能推荐本楼、且已通过平台认证的服务者</b>。未认证的邻居再熟也不能推荐 ——
+          否则等于绕过平台的风控体系，出事时平台无法举证自己尽到了审核义务。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('coord/index.html', { root: '../' });
+document.getElementById('noteC03').innerHTML = featureNote('C03');
+
+const MY_B = 'B012';
+const myB = Data.buildingById(MY_B);
+
+// 本楼可推荐服务者：仅限已认证（lv>=2 才能被推荐到高风险品类）
+const RECOMMENDABLE = PROVIDERS.filter(p => p.building === MY_B);
+
+// 推荐记录（实名留痕）
+const REC_LOGS = [
+  { date: '11-04', to: '业主 12-1-201', p: '陈晓雯', cat: 'B3 帮接娃', note: '孩子同校，路线熟悉', status: '已成交' },
+  { date: '11-02', to: '业主 12-3-502', p: '王秀兰', cat: 'A1 代取快递', note: '退休在家，时间灵活', status: '已成交' },
+  { date: '10-28', to: '业主 12-2-701', p: '李建国', cat: 'B2 简单维修', note: '水电工出身', status: '已成交' }
+];
+
+const myProvider = '王秀兰';
+
+document.getElementById('phone').innerHTML = phoneOpen('推荐本楼服务者', 'body', {
+  tabs: TABS.coord, right: myB.name
+});
+
+document.getElementById('body').innerHTML = `
+  <div class="card" style="padding:11px;background:var(--brand-softer);border-color:#d9e7ff">
+    <div class="smaller" style="line-height:1.7;color:var(--ink-2)">
+      只推荐<b>本楼</b>（${myB.name}）且<b>已通过平台认证</b>的服务者<br>
+      推荐记录实名留痕，可见可追溯
+    </div>
+  </div>
+
+  <div class="sec-head" style="margin:12px 0 8px">
+    <div class="row-between">
+      <h2 style="font-size:13px">🤝 本楼可推荐服务者</h2>
+      <span class="smaller muted">${RECOMMENDABLE.length} 人</span>
+    </div>
+  </div>
+
+  ${RECOMMENDABLE.map(p => `
+    <div class="pcard ${p.name === myProvider ? 'top' : ''}">
+      <div class="row" style="gap:10px;align-items:flex-start">
+        <div class="avatar" style="background:${Data.avatarColor(p.name)}">${Data.initials(p.name)}</div>
+        <div style="flex:1;min-width:0">
+          <div class="row wrapf" style="gap:6px">
+            <span class="strong small">${p.name}</span>
+            ${Data.trustDots(p.lv)}
+            ${p.name === myProvider ? '<span class="tag tag-ok" style="font-size:10px">我常推荐</span>' : ''}
+          </div>
+          <div class="smaller muted mt-4">${Data.trustName(p.lv)} · 信用分 ${p.score} · ${p.orders} 单 · 评分 ${p.rating}</div>
+          <div class="row wrapf mt-8" style="gap:5px">
+            ${p.cats.map(cid => {
+              const c = Data.catById(cid);
+              return `<span class="tag ${Data.riskClass(c.risk)}" style="font-size:10px">${c.name.slice(0, 8)}</span>`;
+            }).join('')}
+          </div>
+          <div class="recline mt-8" style="padding:7px 9px;background:var(--line-soft);border-radius:5px">
+            <b>可推荐理由：</b>${p.name === '王秀兰'
+              ? '本楼住了 8 年，退休在家时间灵活，143 单零纠纷'
+              : '本楼住户，水电工出身，62 单无纠纷记录'}
+          </div>
+          <div class="row mt-8" style="gap:6px">
+            <button class="btn btn-sm" style="flex:1" onclick="toast('已复制推荐语，可发到楼栋群')">生成推荐语</button>
+            <button class="btn btn-sm btn-primary" style="flex:1" onclick="toast('已推送给本楼居民（记录已留痕）')">推送给本楼</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('')}
+
+  <div class="sec-head" style="margin:14px 0 8px">
+    <h2 style="font-size:13px">📋 我的推荐记录</h2>
+  </div>
+
+  <div class="card" style="padding:12px">
+    ${REC_LOGS.map(l => `
+      <div style="padding:8px 0;border-bottom:1px solid var(--line-soft)">
+        <div class="row-between mb-4">
+          <span class="small strong">${l.p} · ${l.cat}</span>
+          <span class="tag tag-ok" style="font-size:10px">${l.status}</span>
+        </div>
+        <div class="smaller muted">推荐给 ${l.to} · ${l.date} · ${l.note}</div>
+      </div>`).join('')}
+    <div class="smaller muted mt-8" style="line-height:1.7">
+      推荐记录挂在我的账号上，居民与平台均可查看。<br>
+      推荐翻车会直接影响我的楼栋信誉。
+    </div>
+  </div>
+
+  <div class="card" style="background:var(--risk-c-bg);border:1px dashed #f8cfcd">
+    <div class="smaller center" style="line-height:1.7;color:#8f1d19">
+      ⚠ 未通过平台认证的邻居，再熟也不能推荐<br>
+      绕过风控体系，出事时平台无法举证
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

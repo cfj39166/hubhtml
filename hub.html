@@ -179,17 +179,44 @@ const PAGES = [
   {
     title: "有故事线的情侣纪念网页",
     desc: "星空开场 · 密码解锁 · 恋爱计时 · 时间轴 · 相册 · 地图足迹 · 心愿清单 · 海报生成。",
-    url: "love.html",   // 同目录下，部署后自动拼接域名
+    url: "love.html",
     cover: "",
     cat: "互动",
     badge: "hot",
     date: "2026-11-06"
   },
+  {
+    title: "我们的宇宙 · 情侣纪念日",
+    desc: "只属于两个人的纪念日网页。深空主题、双人卡片、纪念时光轴、相册与心愿墙。",
+    url: "commemorate/index.html",
+    cover: "",
+    cat: "纪念",
+    badge: "new",
+    date: "2026-11-06"
+  },
+  {
+    title: "锦和苑 · 社区邻里服务平台",
+    desc: "面向小区居民的邻里互助平台原型：服务发布、订单管理、协调人分发、管理员后台。",
+    url: "shequ/index.html",
+    cover: "",
+    cat: "平台",
+    badge: "new",
+    date: "2026-11-06"
+  },
+  {
+    title: "滨江翡翠城邻里服务平台",
+    desc: "100 栋超大型小区的低偿邻里互助平台。住户核验、风险分级、楼栋协调人、四端协同。",
+    url: "binjiang/index.html",
+    cover: "",
+    cat: "平台",
+    badge: "new",
+    date: "2026-11-06"
+  },
   // ───── 以后加新网页，复制下面这段改成你的 ─────
   // {
-  //   title: "第二个网页的名字",
+  //   title: "新网页的名字",
   //   desc: "一句话描述这个网页是做什么的。",
-  //   url: "https://你的域名/xxx.html",
+  //   url: "新网页文件名.html",
   //   cover: "",
   //   cat: "工具",
   //   badge: "new",
@@ -202,10 +229,11 @@ const PALETTES={
   "互动":["#ff5c8a","#a86bff"],
   "工具":["#5ce1ff","#a86bff"],
   "纪念":["#ff8fb1","#ffd479"],
+  "平台":["#5ce1ff","#a86bff"],
   "默认":["#a86bff","#5ce1ff"]
 };
 const ICONS={
-  "互动":"💖","工具":"🛠️","纪念":"💝","默认":"✨"
+  "互动":"💖","工具":"🛠️","纪念":"💝","平台":"🏘️","默认":"✨"
 };
 function placeholder(title,cat){
   const p=PALETTES[cat]||PALETTES["默认"];
@@ -251,8 +279,8 @@ function renderCards(){
   list.forEach((p,i)=>{
     const el=document.createElement("a");
     el.className="card";
-    el.href=p.url;
-    el.target="_blank";
+    // 同窗口跳转，避免微信内置浏览器拦截 target=_blank；带 from=hub 参数让子页面显示返回按钮
+    el.href = p.url.includes("?") ? p.url + "&from=hub" : p.url + "?from=hub";
     el.rel="noopener";
     el.style.animationDelay=(i*0.06)+"s";
     const badgeHtml = p.badge ? `<div class="cover-badge ${p.badge}">${

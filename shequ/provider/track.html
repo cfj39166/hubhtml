@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>服务过程留痕 — 服务者端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .step { display: flex; gap: 11px; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+  .step:last-child { border-bottom: none; }
+  .step .n { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center;
+    font-size: 11px; font-weight: 700; background: var(--line-soft); color: var(--ink-4); }
+  .step .n.done { background: var(--risk-a); color: #fff; }
+  .step .n.now { background: var(--brand); color: #fff; }
+  .code-box { background: var(--ink); color: #fff; border-radius: var(--r-sm); padding: 9px;
+    text-align: center; font-family: "SF Mono", Consolas, monospace; letter-spacing: 5px; font-size: 17px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">服务过程留痕</h1>
+    <p class="muted small mt-4">出发打卡、到达拍照、完成拍照、异常上报。与用户端凭证形成双向证据链。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <a href="join.html" class="btn btn-sm">分层认证</a>
+        <a href="cats.html" class="btn btn-sm">品类开关</a>
+        <a href="hall.html" class="btn btn-sm">接单大厅</a>
+        <a href="certs.html" class="btn btn-sm">资质到期</a>
+        <a href="agreement.html" class="btn btn-sm">协议保险</a>
+        <a href="track.html" class="btn btn-sm btn-primary">过程留痕</a>
+        <a href="income.html" class="btn btn-sm">收入结算</a>
+        <a href="appeal.html" class="btn btn-sm">评价申诉</a>
+      </div>
+
+      <div id="noteS06"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>为什么要「双向」留痕</h3></div>
+        <p class="small" style="line-height:1.9;color:var(--ink-2)">
+          只有需求方能上传凭证是不够的 —— 那样证据链是单方面的，服务者无法自证。
+          <b>双向留痕意味着：服务者的每次打卡、拍照都成为自己的保护</b>。
+        </p>
+        <div class="hr"></div>
+        <div class="small strong mb-8">典型场景：宠物寄养纠纷</div>
+        <div class="tl">
+          <div class="tl-item done"><div class="tt">服务者：接走时拍了宠物状态照</div><div class="td">照片带时间戳，显示宠物离开时的状态。</div></div>
+          <div class="tl-item done"><div class="tt">服务者：每天上传反馈</div><div class="td">4 天 × 每日照片 + 文字，形成连续记录。</div></div>
+          <div class="tl-item done"><div class="tt">服务者：交接时双方确认签收</div><div class="td">需求方签收即表示认可交付状态。</div></div>
+          <div class="tl-item now"><div class="tt">结果：需求方主张宠物应激</div><div class="td">平台比对前后照片与每日反馈，判定服务者流程完整 —— <b>服务者靠自己的留痕自证了</b>。</div></div>
+        </div>
+        <div class="notice notice-info mt-12" style="font-size:12px">
+          <span class="ic">i</span>
+          <div>留痕不是给平台看的，是<b>给服务者自己用的</b>。这一点要在引导文案里说清楚，
+          否则服务者会认为「又多了一堆要填的表」。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('provider/hall.html', { root: '../' });
+document.getElementById('noteS06').innerHTML = featureNote('S06');
+
+document.getElementById('phone').innerHTML = phoneOpen('服务中 · JH0612001', 'body', { tabs: TABS.provider });
+
+document.getElementById('body').innerHTML = `
+  <div class="card" style="padding:11px">
+    <div class="row-between">
+      <div>
+        <div class="small strong">代取快递/外卖</div>
+        <div class="smaller muted mt-3">12 号楼 3 单元 502 · 同楼栋</div>
+      </div>
+      <span class="price">¥5</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">服务流程打卡</div>
+
+    <div class="step">
+      <div class="n done">✓</div>
+      <div style="flex:1">
+        <div class="row-between">
+          <span class="small strong">出发打卡</span>
+          <span class="smaller muted">09:14</span>
+        </div>
+        <div class="smaller muted mt-3">已记录出发位置与时间</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="n done">✓</div>
+      <div style="flex:1">
+        <div class="row-between">
+          <span class="small strong">到达驿站拍照</span>
+          <span class="smaller muted">09:41</span>
+        </div>
+        <div class="row">
+          <div class="thumb">驿站照片</div>
+          <div class="thumb">包裹照片</div>
+        </div>
+        <div class="smaller muted mt-4">取件码后四位：••••（完整码不展示）</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="n now">3</div>
+      <div style="flex:1">
+        <div class="row-between">
+          <span class="small strong">送达拍照签收</span>
+          <span class="smaller muted">待完成</span>
+        </div>
+        <div class="smaller muted mt-3">送达时需拍照，并请需求方确认</div>
+        <button class="btn btn-sm btn-primary btn-block mt-8" onclick="toast('请拍照上传')">上传送达照片</button>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="n">4</div>
+      <div style="flex:1">
+        <div class="small strong muted">完成并结算</div>
+        <div class="smaller muted-2 mt-3">双方确认后自动到账 ¥4.75</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">与需求方的凭证对照</div>
+    <div class="smaller muted" style="line-height:1.85">
+      · 我的「到达驿站拍照」↔ 需求方看到的「服务中：驿站取件拍照」<br>
+      · 我的「送达拍照签收」↔ 需求方看到的「服务后：送达拍照签收」<br>
+      双方看到的是<b>同一批凭证</b>，不存在两套记录。
+    </div>
+  </div>
+
+  <div class="card" style="background:var(--risk-b-bg);border-color:#f5dcb4">
+    <div class="strong small mb-8" style="color:#7c4a06">异常上报</div>
+    <div class="smaller" style="color:#7c4a06;line-height:1.75">
+      遇到包裹破损、门牌错误、宠物状态异常、需求方失联等情况，立即上报。
+      上报后订单转入复核，<b>不计入我的超时</b>。
+    </div>
+    <button class="btn btn-sm btn-block mt-8" onclick="toast('已上报异常，订单转入复核')">上报异常</button>
+  </div>
+`;
+</script>
+</body>
+</html>

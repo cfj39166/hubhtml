@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>楼栋看板 — 协调人端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .m { padding: 10px 11px; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); }
+  .m .k { font-size: 11px; color: var(--ink-3); }
+  .m .v { font-size: 19px; font-weight: 700; margin-top: 2px; letter-spacing: -.4px; }
+  .m .v small { font-size: 11px; font-weight: 500; color: var(--ink-3); }
+  .brow { display: flex; align-items: center; gap: 9px; padding: 7px 0; font-size: 12px; }
+  .brow .nm { width: 66px; flex-shrink: 0; color: var(--ink-2); }
+  .brow .bar { flex: 1; }
+  .brow .n { width: 46px; text-align: right; color: var(--ink-3); font-size: 11px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">协调人端 · 楼栋看板</h1>
+    <p class="muted small mt-4">本楼需求数、接单率、活跃服务者、未闭环订单。指导楼栋运营，不靠感觉推广。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <a href="index.html" class="btn btn-sm">身份职责</a>
+        <a href="review.html" class="btn btn-sm">需求初审</a>
+        <a href="recommend.html" class="btn btn-sm">服务者推荐</a>
+        <a href="dispute.html" class="btn btn-sm">纠纷初调</a>
+        <a href="board.html" class="btn btn-sm btn-primary">楼栋看板</a>
+        <a href="switch.html" class="btn btn-sm">开通开关</a>
+      </div>
+
+      <div id="noteC05"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>看板要看的是「该停还是该推」</h3></div>
+        <p class="small" style="color:var(--ink-2);line-height:1.75">
+          楼栋看板不是业绩报表，是<b>运营决策依据</b>。四个指标里，任何一个掉下来都要改变动作。
+        </p>
+        <div class="hr"></div>
+        <table class="tbl">
+          <thead><tr><th>指标</th><th>健康的信号</th><th>该做什么</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="strong">接单率</td>
+              <td class="small">&gt; 80%</td>
+              <td class="small">继续拉需求</td>
+            </tr>
+            <tr>
+              <td class="strong">接单率</td>
+              <td class="small" style="color:var(--risk-c)">&lt; 50%</td>
+              <td class="small" style="color:var(--risk-c)"><b>停止推广，先招服务者</b></td>
+            </tr>
+            <tr>
+              <td class="strong">活跃服务者</td>
+              <td class="small">≥ 3 人</td>
+              <td class="small">可开放 B 类品类</td>
+            </tr>
+            <tr>
+              <td class="strong">未闭环订单</td>
+              <td class="small">0 单</td>
+              <td class="small">正常</td>
+            </tr>
+            <tr>
+              <td class="strong">未闭环订单</td>
+              <td class="small" style="color:var(--risk-c)">≥ 2 单超 48h</td>
+              <td class="small" style="color:var(--risk-c)"><b>逐个跟进，别攒着</b></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="notice notice-danger mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>最常见的失败是<b>「供给没起来先猛推需求」</b>：居民发了一周的单没人接，之后这个楼就再也不会有人发了。
+          接单率低于 50% 时必须踩刹车。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('coord/index.html', { root: '../' });
+document.getElementById('noteC05').innerHTML = featureNote('C05');
+
+const MY_B = 'B012';
+const myB = Data.buildingById(MY_B);
+const bldOrders = ORDERS.filter(o => o.building === MY_B);
+const bldProviders = PROVIDERS.filter(p => p.building === MY_B);
+
+const demand = myB.demand;      // 本楼需求数（示例 4）
+const supply = bldProviders.length;
+const taken = bldOrders.filter(o => o.provider).length;
+const open = bldOrders.filter(o => o.status === 'open').length;
+const closed = bldOrders.filter(o => ['done', 'dispute', 'flagged'].includes(o.status)).length;
+const unfin = bldOrders.filter(o => o.status !== 'done').length;
+const rate = demand > 0 ? Math.round(taken / demand * 100) : 0;
+const health = rate >= 80 ? 'ok' : rate >= 50 ? 'warn' : 'bad';
+
+// 品类分布（本楼）
+const catDist = {};
+bldOrders.forEach(o => {
+  const c = Data.catById(o.catId);
+  catDist[c.risk] = (catDist[c.risk] || 0) + 1;
+});
+
+// 近 7 日需求走势（虚构）
+const TREND = [
+  { d: '11-01', v: 1 }, { d: '11-02', v: 2 }, { d: '11-03', v: 1 },
+  { d: '11-04', v: 3 }, { d: '11-05', v: 2 }, { d: '11-06', v: demand }
+];
+const maxV = Math.max.apply(null, TREND.map(t => t.v));
+
+document.getElementById('phone').innerHTML = phoneOpen('楼栋看板 · ' + myB.name, 'body', {
+  tabs: TABS.coord, right: myB.districtName
+});
+
+document.getElementById('body').innerHTML = `
+  <div class="card" style="padding:11px;background:${health === 'ok' ? 'var(--risk-a-bg)' : health === 'warn' ? 'var(--risk-b-bg)' : 'var(--risk-c-bg)'};border-color:${health === 'ok' ? '#c3ead2' : health === 'warn' ? '#f5dcb4' : '#f8cfcd'}">
+    <div class="smaller" style="line-height:1.7;color:${health === 'ok' ? '#10612e' : health === 'warn' ? '#7c4a06' : '#8f1d19'}">
+      <b>${health === 'ok' ? '✅ 接单率健康，可以继续拉需求' : health === 'warn' ? '⚠ 接单率偏低，建议同时招服务者' : '🛑 接单率过低，停止推广，先招服务者'}</b><br>
+      当前接单率 ${rate}%（健康线 80%）
+    </div>
+  </div>
+
+  <div class="grid grid-2 mt-12" style="gap:8px">
+    <div class="m"><div class="k">本楼需求</div><div class="v">${demand}<small> 单</small></div></div>
+    <div class="m"><div class="k">接单率</div><div class="v" style="color:${health === 'ok' ? 'var(--risk-a)' : health === 'warn' ? 'var(--risk-b)' : 'var(--risk-c)'}">${rate}<small>%</small></div></div>
+    <div class="m"><div class="k">活跃服务者</div><div class="v">${supply}<small> 人</small></div></div>
+    <div class="m"><div class="k">未闭环订单</div><div class="v" style="color:${unfin > 1 ? 'var(--risk-b)' : 'inherit'}">${unfin}<small> 单</small></div></div>
+  </div>
+
+  <div class="sec-head" style="margin:14px 0 8px">
+    <h2 style="font-size:13px">📈 近 6 日需求走势</h2>
+  </div>
+  <div class="card" style="padding:12px">
+    ${TREND.map(t => `
+      <div class="brow">
+        <span class="nm">${t.d}</span>
+        <span class="bar"><span class="bar-i" style="display:block;height:6px;border-radius:4px;background:var(--brand);width:${Math.round(t.v / maxV * 100)}%"></span></span>
+        <span class="n">${t.v} 单</span>
+      </div>`).join('')}
+  </div>
+
+  <div class="sec-head" style="margin:14px 0 8px">
+    <h2 style="font-size:13px">🧩 需求品类分布</h2>
+  </div>
+  <div class="card" style="padding:12px">
+    ${['A', 'B', 'C'].map(r => {
+      const n = catDist[r] || 0;
+      const tot = bldOrders.length || 1;
+      return `
+      <div class="brow">
+        <span class="nm">${r} 类 ${Data.riskLabel(r)}</span>
+        <span class="bar"><span style="display:block;height:6px;border-radius:4px;background:${r === 'A' ? 'var(--risk-a)' : r === 'B' ? 'var(--risk-b)' : 'var(--risk-c)'};width:${Math.round(n / tot * 100)}%"></span></span>
+        <span class="n">${n} 单</span>
+      </div>`;
+    }).join('')}
+    <div class="smaller muted mt-8" style="line-height:1.7">
+      A 类占多数是健康结构 —— 高风险品类要靠机构承接，不该由个人扛。
+    </div>
+  </div>
+
+  <div class="sec-head" style="margin:14px 0 8px">
+    <h2 style="font-size:13px">👥 本楼服务者活跃度</h2>
+  </div>
+  <div class="card" style="padding:12px">
+    ${bldProviders.map(p => `
+      <div class="row-between" style="padding:7px 0;border-bottom:1px solid var(--line-soft)">
+        <div class="row" style="gap:8px">
+          <div class="avatar avatar-sm" style="background:${Data.avatarColor(p.name)}">${Data.initials(p.name)}</div>
+          <div>
+            <div class="small strong">${p.name}</div>
+            <div class="smaller muted">${p.orders} 单 · 评分 ${p.rating}</div>
+          </div>
+        </div>
+        ${Data.trustDots(p.lv)}
+      </div>`).join('')}
+    ${supply < 3 ? `
+      <div class="notice notice-warn mt-8" style="font-size:11px;padding:8px 10px">
+        <span class="ic">!</span>
+        <div>本楼活跃服务者不足 3 人，暂不建议开放 B 类高风险品类。</div>
+      </div>` : ''}
+  </div>
+
+  <div class="card" style="background:var(--line-soft);border:1px dashed var(--line)">
+    <div class="smaller muted center" style="line-height:1.7">
+      看板不是业绩报表，是「该停还是该推」的依据<br>
+      接单率低于 50% 必须踩刹车
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

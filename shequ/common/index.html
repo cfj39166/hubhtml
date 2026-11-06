@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>公共能力与风控 — 锦和苑邻里服务</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .xcard { display: flex; gap: 12px; align-items: flex-start; padding: 14px;
+    border: 1px solid var(--line); border-radius: var(--r); background: var(--card); color: inherit; }
+  .xcard:hover { text-decoration: none; border-color: var(--brand); box-shadow: var(--sh); }
+  .xcard .ic { font-size: 20px; line-height: 1.2; flex-shrink: 0; }
+  .xcard .nm { font-size: 13.5px; font-weight: 600; }
+  .xcard .d { font-size: 11.5px; color: var(--ink-3); margin-top: 4px; line-height: 1.6; }
+  .xcard .w { font-size: 11px; color: #7c4a06; margin-top: 5px; line-height: 1.55; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">公共能力与风控</h1>
+    <p class="muted small mt-4">跨端能力：信任标识、信用约束、红线拦截、专项流程、证据链、权限分级、资金冻结。这 10 项不是某个端的功能，而是所有端共用的地基。</p>
+  </div>
+
+  <div class="grid grid-3 mb-16">
+    <div class="stat">
+      <div class="k">公共能力</div>
+      <div class="v" style="color:var(--brand)"><span id="p0Count"></span><small>项</small></div>
+      <div class="f">所有端共用的地基</div>
+    </div>
+    <div class="stat">
+      <div class="k">信任层级</div>
+      <div class="v">3<small>层</small></div>
+      <div class="f">真实邻居 / 平台认可 / 社区信赖</div>
+    </div>
+    <div class="stat">
+      <div class="k">红线品类</div>
+      <div class="v" style="color:var(--risk-c)">3<small>类</small></div>
+      <div class="f">托育 / 养老 / 医疗陪护</div>
+    </div>
+  </div>
+
+  <div class="card mb-16">
+    <div class="card-head"><h3>为什么这些能力必须「公共」</h3></div>
+    <p class="small" style="color:var(--ink-2);line-height:1.75">
+      信任标识、信用分、证据链这些东西，如果每个端各做一套，会出现最糟糕的情况：
+      用户端显示「社区信赖」，服务者端显示「平台认可」，后台显示「等级 3」——
+      三套口径对不上，纠纷时谁都说不清。
+    </p>
+    <div class="notice notice-warn mt-12" style="font-size:12px">
+      <span class="ic">!</span>
+      <div>公共能力的定义是：<b>只有一套数据源、一套规则、一套展示口径</b>，四个端都是它的消费方。
+      这也是为什么它单独成一节，而不是塞进某个端里。</div>
+    </div>
+  </div>
+
+  <div class="sec-head" style="margin-top:0">
+    <h2>10 项公共能力</h2>
+    <p>点击查看每项的完整设计</p>
+  </div>
+
+  <div id="xlist" class="grid grid-2"></div>
+
+  <div class="card mt-16">
+    <div class="card-head"><h3>公共能力的三个层次</h3></div>
+    <div class="tl">
+      <div class="tl-item done">
+        <div class="tt">第一层 · 信任可视化（X01 / X02）</div>
+        <div class="td">三层信任标识 + 双向信用分。作用是把「能不能信」这件事变成用户一眼可判断的信息。
+        没有这一层，100 栋楼的陌生人场景根本无法开放服务。</div>
+      </div>
+      <div class="tl-item done">
+        <div class="tt">第二层 · 风险硬约束（X03 / X04 / X05 / X06）</div>
+        <div class="td">红线拦截 + 三个专项流程（宠物 / 接娃 / 包裹）。
+        作用是把「不可逆的风险」挡在发生之前 —— 这类风险一旦发生，事后怎么赔都无法挽回。</div>
+      </div>
+      <div class="tl-item done">
+        <div class="tt">第三层 · 平台自保（X07 / X08 / X09 / X10）</div>
+        <div class="td">证据链 + 权限分级 + 资金冻结 + 小程序载体。
+        作用是让平台在纠纷中能举证、在内部能防滥用、在交易上能兜底。这是「居间方」定位的技术基础。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('common/index.html', { root: '../' });
+
+document.getElementById('p0Count').textContent = F_COMMON.length;
+
+const ICONS = {
+  X01: '🏅', X02: '⭐', X03: '🛑', X04: '🐾', X05: '🎒',
+  X06: '📦', X07: '📎', X08: '🔐', X09: '💳', X10: '📱'
+};
+
+document.getElementById('xlist').innerHTML = F_COMMON.map(f => `
+  <a href="${f.page}" class="xcard">
+    <span class="ic">${ICONS[f.id]}</span>
+    <div style="flex:1;min-width:0">
+      <div class="row wrapf" style="gap:6px">
+        <span class="nm">${f.n}</span>
+        <span class="fid">${f.id}</span>
+      </div>
+      <div class="d">${f.d}</div>
+      <div class="w">↳ ${f.w}</div>
+    </div>
+  </a>`).join('');
+</script>
+</body>
+</html>

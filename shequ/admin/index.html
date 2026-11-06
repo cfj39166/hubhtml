@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>管理后台 — 平台运营</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:22px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">管理后台 · 平台运营</h1>
+    <p class="muted small mt-4">配置风控、审核供给、处理纠纷、看数据决定扩展节奏。后台是宽屏 Web，与前三个端的手机端形态不同。</p>
+  </div>
+
+  <div class="admingrid">
+    <aside class="aside">
+      <div class="aside-card">
+        <div class="aside-title">运营模块</div>
+        <nav class="asidenav">
+          <a href="index.html" class="on">📊 后台总览</a>
+          <a href="audit.html">🔍 审核队列 <span class="fid">A01</span></a>
+          <a href="category.html">🧩 品类风险配置 <span class="fid">A02</span></a>
+          <a href="risk.html">🚨 风险订单预警 <span class="fid">A03</span></a>
+          <a href="agreement.html">📄 协议模板 <span class="fid">A04</span></a>
+          <a href="ticket.html">⚖️ 纠纷工单池 <span class="fid">A05</span></a>
+          <a href="credit-rule.html">⭐ 信用分规则 <span class="fid">A06</span></a>
+          <a href="heatmap.html">🔥 供需热力图 <span class="fid">A07</span></a>
+          <a href="agency.html">🏢 机构管理 <span class="fid">A08</span></a>
+          <a href="insurance.html">🛡️ 保险与抽成 <span class="fid">A09</span></a>
+          <a href="riskword.html">🚫 内容风控 <span class="fid">A10</span></a>
+          <a href="dashboard.html">📈 数据看板 <span class="fid">A11</span></a>
+        </nav>
+      </div>
+    </aside>
+
+    <div>
+      <div class="grid grid-4 mb-16">
+        <div class="stat">
+          <div class="k">待处理审核</div>
+          <div class="v" id="stAudit">0<small>项</small></div>
+          <div class="f" id="stAuditSub"></div>
+        </div>
+        <div class="stat">
+          <div class="k">风险订单待复核</div>
+          <div class="v" style="color:var(--risk-c)">3<small>单</small></div>
+          <div class="f">含 1 单违禁品核验</div>
+        </div>
+        <div class="stat">
+          <div class="k">纠纷工单在办</div>
+          <div class="v" style="color:var(--risk-b)">2<small>单</small></div>
+          <div class="f">最长已用 22h / SLA 48h</div>
+        </div>
+        <div class="stat">
+          <div class="k">已开通楼栋</div>
+          <div class="v">10<small>/108</small></div>
+          <div class="f">试点 5 栋运行正常</div>
+        </div>
+      </div>
+
+      <div class="sec-head" style="margin-top:0">
+        <h2>今日优先处理</h2>
+        <p>后台的工作不是「看数据」，是「把卡住的东西推过去」。</p>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card" style="border-left:3px solid var(--risk-c)">
+          <div class="card-head">
+            <h3>🚨 高风险订单拦截</h3>
+            <span class="right">3 单</span>
+          </div>
+          <div class="small muted" style="line-height:1.75">
+            涉及未成年接送 1 单、物品来源待核验 1 单、低信任等级接高风险单 1 单。
+            高风险单必须<b>先拦后审</b>，不能先放行再补审。
+          </div>
+          <a href="risk.html" class="btn btn-sm btn-primary mt-12">去处理</a>
+        </div>
+
+        <div class="card" style="border-left:3px solid var(--risk-b)">
+          <div class="card-head">
+            <h3>⚖️ 纠纷工单</h3>
+            <span class="right">SLA 计时中</span>
+          </div>
+          <div class="small muted" style="line-height:1.75">
+            TK-1105-03 服务质量争议已用 22h；TK-1104-07 待楼栋协调人提交事实说明。
+            纠纷不闭环会迅速摧毁口碑。
+          </div>
+          <a href="ticket.html" class="btn btn-sm btn-primary mt-12">去处理</a>
+        </div>
+
+        <div class="card" style="border-left:3px solid var(--brand)">
+          <div class="card-head">
+            <h3>🔍 审核队列</h3>
+            <span class="right" id="stAuditRight"></span>
+          </div>
+          <div class="small muted" style="line-height:1.75">
+            住户核验 2 项、服务者认证 2 项、机构资质 1 项。
+            自动核验能过的不要留人工 —— 人工审核是瓶颈资源。
+          </div>
+          <a href="audit.html" class="btn btn-sm btn-primary mt-12">去处理</a>
+        </div>
+
+        <div class="card" style="border-left:3px solid var(--ink-4)">
+          <div class="card-head">
+            <h3>🔥 供给缺口</h3>
+            <span class="right">6 栋楼</span>
+          </div>
+          <div class="small muted" style="line-height:1.75">
+            已开通的 10 栋楼中，有 6 栋活跃服务者不足 3 人。
+            <b>供给没起来时不要继续拉需求</b>，先招服务者。
+          </div>
+          <a href="heatmap.html" class="btn btn-sm btn-primary mt-12">去看缺口</a>
+        </div>
+      </div>
+
+      <div class="sec-head">
+        <h2>后台的 11 个模块</h2>
+        <p>覆盖审核、品类、风险、协议、纠纷、信用、供需、机构、保险、内容、数据。</p>
+      </div>
+
+      <div id="modlist" class="grid grid-2"></div>
+
+      <div class="card mt-16">
+        <div class="card-head"><h3>后台设计的三条原则</h3></div>
+        <div class="tl">
+          <div class="tl-item done">
+            <div class="tt">风险分级必须可配置，不能写死</div>
+            <div class="td">A/B/C 类的边界、每类的必填字段、准入门槛、指导价、协议模板 —— 全部在后台配置。
+            社区情况千差万别，写死的分级上线两周就会不适用。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">拦截在前，审核在后</div>
+            <div class="td">高风险订单（未成年接送、证件代办、异常报酬）在<b>发布或接单环节就拦下</b>，
+            而不是等它跑完再事后追责。事后追责解决不了已经发生的伤害。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">平台是居间方，不是服务提供方</div>
+            <div class="td">所有协议、保险、责任判定都围绕这个定位设计。
+            平台做撮合 + 凭证留存 + 争议处理，不承诺服务质量本身 —— 这是能长期存在的边界。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('admin/index.html', { root: '../' });
+
+const _open = AUDIT_QUEUE.filter(a => a.status !== '已暂停').length;
+const _manual = AUDIT_QUEUE.filter(a => a.risk === 'mid' || a.risk === 'high').length;
+document.getElementById('stAudit').innerHTML = _open + '<small>项</small>';
+document.getElementById('stAuditSub').textContent = '其中 ' + _manual + ' 项需人工';
+document.getElementById('stAuditRight').textContent = AUDIT_QUEUE.length + ' 项';
+
+const MODS = [
+  { id: 'A01', icon: '🔍', page: 'audit.html' },
+  { id: 'A02', icon: '🧩', page: 'category.html' },
+  { id: 'A03', icon: '🚨', page: 'risk.html' },
+  { id: 'A04', icon: '📄', page: 'agreement.html' },
+  { id: 'A05', icon: '⚖️', page: 'ticket.html' },
+  { id: 'A06', icon: '⭐', page: 'credit-rule.html' },
+  { id: 'A07', icon: '🔥', page: 'heatmap.html' },
+  { id: 'A08', icon: '🏢', page: 'agency.html' },
+  { id: 'A09', icon: '🛡️', page: 'insurance.html' },
+  { id: 'A10', icon: '🚫', page: 'riskword.html' },
+  { id: 'A11', icon: '📈', page: 'dashboard.html' }
+];
+
+document.getElementById('modlist').innerHTML = MODS.map(m => {
+  const f = Data.featureById(m.id);
+  return `
+  <a href="${m.page}" class="mod" style="color:inherit">
+    <span class="ic">${m.icon}</span>
+    <div style="flex:1;min-width:0">
+      <div class="nm">${f.n}</div>
+      <div class="d">${f.d}</div>
+    </div>
+  </a>`;
+}).join('');
+</script>
+</body>
+</html>

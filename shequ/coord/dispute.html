@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>纠纷初调 — 协调人端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .tk { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 12px; margin-bottom: 9px; }
+  .tk.now { border-left: 3px solid var(--risk-c); }
+  .tk.done { border-left: 3px solid var(--risk-a); opacity: .8; }
+  .evi { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--line-soft); color: var(--ink-2); display: inline-block; margin: 2px 4px 2px 0; }
+  .sla { font-size: 11px; font-weight: 700; font-family: "SF Mono", Consolas, monospace; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">协调人端 · 纠纷初调</h1>
+    <p class="muted small mt-4">接收本楼简单纠纷工单，先协调，升级平台。小纠纷楼内解决，降低平台运营成本。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <a href="index.html" class="btn btn-sm">身份职责</a>
+        <a href="review.html" class="btn btn-sm">需求初审</a>
+        <a href="recommend.html" class="btn btn-sm">服务者推荐</a>
+        <a href="dispute.html" class="btn btn-sm btn-primary">纠纷初调</a>
+        <a href="board.html" class="btn btn-sm">楼栋看板</a>
+        <a href="switch.html" class="btn btn-sm">开通开关</a>
+      </div>
+
+      <div id="noteC04"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>什么该协调人管，什么必须交平台</h3></div>
+        <table class="tbl mt-4">
+          <thead><tr><th>类型</th><th>协调人</th><th>平台</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>送达慢了、态度一般、少买了一样东西</td>
+              <td><span class="tag tag-ok">先协调</span></td>
+              <td class="muted small">协调不成再升级</td>
+            </tr>
+            <tr>
+              <td>金额争议（如 150 元的保洁效果）</td>
+              <td><span class="tag tag-warn">可参与</span></td>
+              <td><span class="tag tag-danger">必须平台判定</span></td>
+            </tr>
+            <tr>
+              <td>物品损坏、宠物伤病、人身伤害</td>
+              <td><span class="tag tag-gray">不介入</span></td>
+              <td><span class="tag tag-danger">直接平台 + 保险</span></td>
+            </tr>
+            <tr>
+              <td>疑似违禁品、诈骗、骚扰</td>
+              <td><span class="tag tag-gray">不介入</span></td>
+              <td><span class="tag tag-danger">直接平台风控</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="notice notice-danger mt-12" style="font-size:12px">
+          <span class="ic">✕</span>
+          <div>涉及<b>金额判定、人身伤害、违法嫌疑</b>的，协调人一律不碰。他没有裁判权，
+          一旦私下「和稀泥」或承诺赔偿，平台事后无法还原事实，反而把简单纠纷变成三方纠纷。</div>
+        </div>
+        <div class="notice notice-info mt-12" style="font-size:12px">
+          <span class="ic">i</span>
+          <div>协调人做的是<b>「事实采集 + 情绪安抚」</b>：把双方说法、过程照片、聊天记录整理清楚，
+          提交给平台。这一步能显著缩短平台的处理时间，因为证据已经收齐了。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('coord/index.html', { root: '../' });
+document.getElementById('noteC04').innerHTML = featureNote('C04');
+
+const MY_B = 'B012';
+const myB = Data.buildingById(MY_B);
+
+// 本楼工单：只有 stage === 'coord' 或本楼订单产生的工单才到协调人
+const MY_TICKETS = TICKETS.map(t => {
+  const o = Data.orderById(t.orderId);
+  return { t, o, mine: o && o.building === MY_B };
+});
+
+const STAGE_TAG = {
+  coord: '<span class="tag tag-danger" style="font-size:10px">待楼内初调</span>',
+  platform: '<span class="tag tag-warn" style="font-size:10px">平台处理中</span>',
+  closed: '<span class="tag tag-ok" style="font-size:10px">已关闭</span>'
+};
+
+// 演示：把 TK-1104-07 视为本楼工单（跨楼栋演示用）
+const DEMO_TICKET = MY_TICKETS.find(x => x.t.id === 'TK-1104-07');
+const OTHER_TICKETS = MY_TICKETS.filter(x => x.t.id !== 'TK-1104-07');
+
+document.getElementById('phone').innerHTML = phoneOpen('纠纷初调 · ' + myB.name, 'body', {
+  tabs: TABS.coord, right: '1 待处理'
+});
+
+document.getElementById('body').innerHTML = `
+  <div class="card" style="padding:11px;background:var(--risk-c-bg);border-color:#f8cfcd">
+    <div class="smaller" style="line-height:1.7;color:#8f1d19">
+      <b>金额判定 / 人身伤害 / 违法嫌疑</b><br>
+      协调人一律不介入，直接交平台
+    </div>
+  </div>
+
+  <div class="sec-head" style="margin:12px 0 8px">
+    <div class="row-between">
+      <h2 style="font-size:13px">⚖️ 待我初调</h2>
+      <span class="smaller muted">1 起</span>
+    </div>
+  </div>
+
+  ${DEMO_TICKET ? `
+    <div class="tk now">
+      <div class="row-between mb-8">
+        <span class="strong small">${DEMO_TICKET.t.type}</span>
+        <span class="sla" style="color:var(--risk-c)">SLA 剩 ${DEMO_TICKET.t.sla - DEMO_TICKET.t.elapsed}h</span>
+      </div>
+      <div class="smaller muted" style="line-height:1.7">
+        工单 ${DEMO_TICKET.t.id} · 订单 ${DEMO_TICKET.t.orderId}<br>
+        ${DEMO_TICKET.t.parties}<br>
+        涉及金额 ¥${DEMO_TICKET.t.amount}
+      </div>
+      <div class="small mt-8" style="padding:8px 9px;background:var(--line-soft);border-radius:5px;line-height:1.65">
+        ${DEMO_TICKET.t.desc}
+      </div>
+      <div class="mt-8">
+        <div class="smaller muted mb-4">可用证据</div>
+        ${DEMO_TICKET.t.evidence.map(e => `<span class="evi">📎 ${e}</span>`).join('')}
+      </div>
+      <div class="notice notice-warn mt-8" style="font-size:11px;padding:8px 10px">
+        <span class="ic">!</span>
+        <div>此单涉及<b>违禁品核验</b>，属风控范畴。协调人只做事实采集，不做判定。</div>
+      </div>
+      <div class="col mt-8" style="gap:6px">
+        <button class="btn btn-sm btn-primary" onclick="toast('已记录双方说法，提交平台')">记录双方说法并提交平台</button>
+        <button class="btn btn-sm" onclick="toast('已升级平台风控处理')">直接升级平台</button>
+      </div>
+    </div>` : ''}
+
+  <div class="sec-head" style="margin:14px 0 8px">
+    <h2 style="font-size:13px">📁 本楼历史工单</h2>
+  </div>
+
+  ${OTHER_TICKETS.map(x => `
+    <div class="tk ${x.t.stage === 'closed' ? 'done' : ''}">
+      <div class="row-between mb-8">
+        <span class="strong small">${x.t.type}</span>
+        ${STAGE_TAG[x.t.stage]}
+      </div>
+      <div class="smaller muted" style="line-height:1.7">
+        ${x.t.id} · ${x.t.parties}<br>
+        金额 ¥${x.t.amount} · 开启于 ${x.t.openedAt}
+      </div>
+      <div class="smaller mt-8" style="color:var(--ink-2);line-height:1.6">${x.t.desc}</div>
+    </div>`).join('')}
+
+  <div class="card" style="padding:12px">
+    <div class="small strong mb-8">协调人的实际动作</div>
+    <div class="smaller" style="line-height:1.9;color:var(--ink-2)">
+      1️⃣ 分别联系双方，听完整说法<br>
+      2️⃣ 收集过程照片、聊天记录、确认码<br>
+      3️⃣ 整理成一份「事实说明」提交平台<br>
+      4️⃣ 平台据此判定责任与退款
+    </div>
+  </div>
+
+  <div class="card" style="background:var(--line-soft);border:1px dashed var(--line)">
+    <div class="smaller muted center" style="line-height:1.7">
+      楼道里的事，见面说两句就解决了<br>
+      但协调必须留记录，防止私下和稀泥
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

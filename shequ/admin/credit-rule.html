@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>信用分规则配置 — 管理后台</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .delta { font-weight: 700; font-family: "SF Mono", Consolas, monospace; }
+  .rule-in { width: 70px; padding: 5px 8px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:22px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">信用分规则配置</h1>
+    <p class="muted small mt-4">完成单、评价、违约、恶意行为、申诉的加减分规则。动态信用比静态认证有约束力。</p>
+  </div>
+
+  <div class="admingrid">
+    <aside class="aside">
+      <div class="aside-card">
+        <div class="aside-title">运营模块</div>
+        <nav class="asidenav">
+          <a href="index.html">📊 后台总览</a>
+          <a href="audit.html">🔍 审核队列 <span class="fid">A01</span></a>
+          <a href="category.html">🧩 品类风险配置 <span class="fid">A02</span></a>
+          <a href="risk.html">🚨 风险订单预警 <span class="fid">A03</span></a>
+          <a href="agreement.html">📄 协议模板 <span class="fid">A04</span></a>
+          <a href="ticket.html">⚖️ 纠纷工单池 <span class="fid">A05</span></a>
+          <a href="credit-rule.html" class="on">⭐ 信用分规则 <span class="fid">A06</span></a>
+          <a href="heatmap.html">🔥 供需热力图 <span class="fid">A07</span></a>
+          <a href="agency.html">🏢 机构管理 <span class="fid">A08</span></a>
+          <a href="insurance.html">🛡️ 保险与抽成 <span class="fid">A09</span></a>
+          <a href="riskword.html">🚫 内容风控 <span class="fid">A10</span></a>
+          <a href="dashboard.html">📈 数据看板 <span class="fid">A11</span></a>
+        </nav>
+      </div>
+    </aside>
+
+    <div>
+      <div id="noteA06"></div>
+
+      <div class="card mt-16">
+        <div class="card-head"><h3>信用分必须双向，否则供给会跑光</h3></div>
+        <p class="small" style="color:var(--ink-2);line-height:1.75">
+          社区服务里最容易被忽视的一点：<b>居民也是会「违约」的</b>。发单之后人不在家、临时取消、
+          嫌贵不认账、恶意差评 —— 这些行为如果不受约束，服务者做几次就不干了。
+        </p>
+        <div class="grid grid-3 mt-12">
+          <div class="notice notice-warn" style="font-size:12px;flex-direction:column">
+            <div class="strong mb-4">放鸽子</div>
+            <div>服务者已经出门了，居民说不做了。这单的时间成本全在服务者身上。</div>
+          </div>
+          <div class="notice notice-warn" style="font-size:12px;flex-direction:column">
+            <div class="strong mb-4">恶意差评</div>
+            <div>不是基于服务质量的评价，而是情绪发泄或压价手段。</div>
+          </div>
+          <div class="notice notice-danger" style="font-size:12px;flex-direction:column">
+            <div class="strong mb-4">拒付已确认订单</div>
+            <div>服务已完成，居民以各种理由不确认、不付款。</div>
+          </div>
+        </div>
+        <div class="notice notice-info mt-12" style="font-size:12px">
+          <span class="ic">i</span>
+          <div>扣分规则要<b>同步作用于需求方与服务者</b>，且需求方的扣分同样影响其发单权限。
+          只有让双方都感到约束，信用体系才成立。</div>
+        </div>
+      </div>
+
+      <div class="sec-head">
+        <h2>加减分规则</h2>
+        <p>可实时调整分值，但调整只影响之后的订单 —— 已发生的记录不追溯。</p>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h3>服务者</h3>
+            <span class="right">基准分 80 · 上限 100 · 下限 0</span>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>行为</th><th>分值</th><th>调整</th></tr></thead>
+              <tbody id="tbProvider"></tbody>
+            </table>
+          </div>
+          <div class="notice notice-danger mt-12" style="font-size:12px">
+            <span class="ic">!</span>
+            <div><b>证件过期仍接单 −8 分</b>：这是最重的扣分项之一，因为它是合规问题而非服务态度问题。</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>需求方（居民）</h3>
+            <span class="right">基准分 80 · 与发单权限挂钩</span>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>行为</th><th>分值</th><th>调整</th></tr></thead>
+              <tbody id="tbDemander"></tbody>
+            </table>
+          </div>
+          <div class="notice notice-warn mt-12" style="font-size:12px">
+            <span class="ic">!</span>
+            <div>需求方信用分低于 <b>60</b> 时，发单需要预付款；低于 <b>40</b> 时暂停发单权限。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-16">
+        <div class="card-head"><h3>信用分与权限的对应关系</h3></div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>信用分区间</th><th>服务者权限</th><th>需求方权限</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="tag tag-ok">90 — 100</span></td>
+                <td class="small">可接 B 类全部品类，高风险单优先派单</td>
+                <td class="small">正常发单，可信用免押</td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-brand">70 — 89</span></td>
+                <td class="small">可接 B 类，无派单倾斜</td>
+                <td class="small">正常发单</td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-warn">50 — 69</span></td>
+                <td class="small">仅可接 A 类，B 类需人工复核</td>
+                <td class="small">发单需预付款</td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-danger">0 — 49</span></td>
+                <td class="small">暂停接单，需完成申诉或培训后恢复</td>
+                <td class="small">暂停发单权限</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="notice notice-info mt-12" style="font-size:12px">
+          <span class="ic">i</span>
+          <div>扣分必须<b>有申诉窗口期</b>（48h），且申诉期间暂缓执行。先扣再还会造成不可逆的权限损失 ——
+          比如服务者因为一次争议被降到 49 分，直接失去接单资格，这几天他等于失业。</div>
+        </div>
+        <div class="row mt-16" style="gap:8px">
+          <button class="btn btn-primary" onclick="toast('信用分规则已保存')">保存规则</button>
+          <button class="btn" onclick="toast('已恢复默认值')">恢复默认</button>
+          <button class="btn" onclick="toast('已导出规则变更记录')">变更记录</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('admin/index.html', { root: '../' });
+document.getElementById('noteA06').innerHTML = featureNote('A06');
+
+function ruleRows(items) {
+  return items.map(i => `
+    <tr>
+      <td class="small">${i.k}</td>
+      <td><span class="delta" style="color:${i.v.startsWith('+') ? 'var(--risk-a)' : 'var(--risk-c)'}">${i.v}</span></td>
+      <td><input type="text" class="rule-in" value="${i.v}" aria-label="${i.k} 分值"></td>
+    </tr>`).join('');
+}
+document.getElementById('tbProvider').innerHTML = ruleRows(CREDIT_RULES[0].items);
+document.getElementById('tbDemander').innerHTML = ruleRows(CREDIT_RULES[1].items);
+</script>
+</body>
+</html>

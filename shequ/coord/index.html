@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>楼栋协调人 — 协调人端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .duty { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line-soft); }
+  .duty:last-child { border-bottom: none; }
+  .duty .n { font-size: 12px; font-weight: 700; color: var(--brand-dark); width: 20px; flex-shrink: 0; }
+  .duty .t { font-size: 12.5px; font-weight: 600; }
+  .duty .d { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">楼栋协调人端 · 身份与职责</h1>
+    <p class="muted small mt-4">每栋楼 / 几个单元设 1 名，物业管家或热心居民兼任，后台授权。100 栋楼不能靠一个大群，必须有本地支点。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <a href="index.html" class="btn btn-sm btn-primary">身份职责</a>
+        <a href="review.html" class="btn btn-sm">需求初审</a>
+        <a href="recommend.html" class="btn btn-sm">服务者推荐</a>
+        <a href="dispute.html" class="btn btn-sm">纠纷初调</a>
+        <a href="board.html" class="btn btn-sm">楼栋看板</a>
+        <a href="switch.html" class="btn btn-sm">开通开关</a>
+      </div>
+
+      <div id="noteC01"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>协调人到底做什么（和「楼栋长」的区别）</h3></div>
+        <div class="duty">
+          <span class="n">1</span>
+          <div>
+            <div class="t">看本楼新发布的需求，标记异常</div>
+            <div class="d">不是审核通过权，是<b>风险预警权</b>。看到「帮接娃但没写学校」「多日寄养没写用药」这类信息缺口，第一时间提醒补充。</div>
+          </div>
+        </div>
+        <div class="duty">
+          <span class="n">2</span>
+          <div>
+            <div class="t">向本楼居民推荐已认证的本楼服务者</div>
+            <div class="d">冷启动阶段最有效的信任来源是熟人推荐。协调人知道谁家阿姨靠谱、谁会修水管，这个信息平台算法拿不到。</div>
+          </div>
+        </div>
+        <div class="duty">
+          <span class="n">3</span>
+          <div>
+            <div class="t">简单纠纷先协调，协调不了升级平台</div>
+            <div class="d">楼道里的事，见面说两句就解决了。走平台工单反而把小事做大 —— 但协调必须留记录，防止协调人私下和稀泥。</div>
+          </div>
+        </div>
+        <div class="duty">
+          <span class="n">4</span>
+          <div>
+            <div class="t">看本楼数据，决定要不要继续推</div>
+            <div class="d">需求数、接单率、活跃服务者、未闭环订单。哪个楼栋发了 10 单只接了 2 单，就该停下来先招服务者，而不是继续拉需求。</div>
+          </div>
+        </div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>协调人<b>不是平台员工，也不是楼栋长</b>。没有处罚权、没有强制派单权、看不到其他楼栋的数据。权限边界必须写死在系统里，
+          而不是靠口头约定 —— 否则很快会变成「谁跟协调人熟谁的单先接」。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('coord/index.html', { root: '../' });
+
+const ME = {
+  name: '刘敏', building: 'B012', role: '物业管家兼任',
+  since: '2026-09-15', units: '3 个单元', households: 48,
+  online: true, orders: 12, reviewed: 9, disputes: 1
+};
+const myB = Data.buildingById(ME.building);
+const bldProviders = PROVIDERS.filter(p => p.building === ME.building);
+const bldOrders = ORDERS.filter(o => o.building === ME.building);
+
+document.getElementById('phone').innerHTML = phoneOpen('楼栋协调人 · ' + myB.name, 'body', {
+  tabs: TABS.coord, right: ME.online ? '在线' : '离线'
+});
+
+document.getElementById('body').innerHTML = `
+  <div class="card" style="padding:13px;background:linear-gradient(135deg,#1f6feb,#4f9bff);border:none;color:#fff">
+    <div class="row" style="gap:11px;align-items:flex-start">
+      <div class="avatar" style="background:rgba(255,255,255,.22)">${Data.initials(ME.name)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="row wrapf" style="gap:6px">
+          <span class="strong" style="font-size:14px">${ME.name}</span>
+          <span class="tag" style="background:rgba(255,255,255,.22);color:#fff;font-size:10px">楼栋协调人</span>
+        </div>
+        <div class="smaller mt-4" style="color:rgba(255,255,255,.85);line-height:1.7">
+          ${myB.name} · ${ME.units} · ${ME.households} 户<br>
+          ${ME.role} · 自 ${ME.since} 起
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="gap:8px;margin-bottom:10px">
+    <div class="card" style="flex:1;padding:10px;text-align:center;margin:0">
+      <div class="strong" style="font-size:18px;color:var(--brand)">${bldOrders.length}</div>
+      <div class="smaller muted">本楼在办单</div>
+    </div>
+    <div class="card" style="flex:1;padding:10px;text-align:center;margin:0">
+      <div class="strong" style="font-size:18px;color:var(--risk-a)">${bldProviders.length}</div>
+      <div class="smaller muted">本楼服务者</div>
+    </div>
+    <div class="card" style="flex:1;padding:10px;text-align:center;margin:0">
+      <div class="strong" style="font-size:18px;color:var(--risk-b)">${ME.disputes}</div>
+      <div class="smaller muted">待初调</div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:12px">
+    <div class="small strong mb-8">我的权限边界</div>
+    <div class="smaller" style="line-height:1.9;color:var(--ink-2)">
+      <div>✅ 查看本楼（${myB.name}）需求与订单</div>
+      <div>✅ 提醒补充信息 / 标记异常</div>
+      <div>✅ 推荐本楼已认证服务者</div>
+      <div>✅ 接收本楼纠纷工单，先协调</div>
+      <div style="color:var(--risk-c)">🚫 查看其他楼栋数据</div>
+      <div style="color:var(--risk-c)">🚫 处罚用户 / 强制派单</div>
+      <div style="color:var(--risk-c)">🚫 查看门牌与联系方式（接单后才可见）</div>
+    </div>
+  </div>
+
+  <div class="sec-head" style="margin:14px 0 8px">
+    <h2 style="font-size:13px">📌 今天要处理的</h2>
+  </div>
+
+  <div class="card" style="padding:12px;border-left:3px solid var(--risk-b)">
+    <div class="row-between mb-8">
+      <span class="strong small">1 条需求信息不完整</span>
+      <span class="tag tag-warn" style="font-size:10px">待提醒</span>
+    </div>
+    <div class="smaller muted" style="line-height:1.65">
+      订单 JH0612002「帮接娃」未填写交接方式细节，涉及未成年接送，建议补充。
+    </div>
+    <div class="row mt-8" style="gap:6px">
+      <a href="review.html" class="btn btn-sm btn-primary" style="flex:1">去初审</a>
+    </div>
+  </div>
+
+  <div class="card" style="padding:12px;border-left:3px solid var(--risk-c)">
+    <div class="row-between mb-8">
+      <span class="strong small">1 起纠纷待楼内初调</span>
+      <span class="tag tag-danger" style="font-size:10px">SLA 21h</span>
+    </div>
+    <div class="smaller muted" style="line-height:1.65">
+      TK-1104-07 代送物品来源不明，已暂停订单。需先与双方沟通了解情况。
+    </div>
+    <div class="row mt-8" style="gap:6px">
+      <a href="dispute.html" class="btn btn-sm btn-primary" style="flex:1">去初调</a>
+    </div>
+  </div>
+
+  <div class="card" style="padding:12px">
+    <div class="small strong mb-8">本楼服务者</div>
+    ${bldProviders.map(p => `
+      <div class="row-between" style="padding:7px 0;border-bottom:1px solid var(--line-soft)">
+        <div class="row" style="gap:8px">
+          <div class="avatar avatar-sm" style="background:${Data.avatarColor(p.name)}">${Data.initials(p.name)}</div>
+          <div>
+            <div class="small strong">${p.name}</div>
+            <div class="smaller muted">${Data.trustName(p.lv)} · ${p.orders} 单</div>
+          </div>
+        </div>
+        <a href="recommend.html" class="btn btn-sm btn-ghost">推荐</a>
+      </div>`).join('')}
+  </div>
+`;
+</script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>双向信用约束 — 公共能力</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .delta { font-weight: 700; font-family: "SF Mono", Consolas, monospace; }
+  .sc { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">公共能力 · 双向信用约束</h1>
+    <p class="muted small mt-4">需求方和服务者都受信用分约束。只罚服务者会导致供给流失。</p>
+  </div>
+
+  <div id="noteX02" class="mb-16"></div>
+
+  <div class="card mb-16">
+    <div class="card-head"><h3>为什么必须双向</h3></div>
+    <div class="grid grid-2">
+      <div>
+        <div class="notice notice-danger" style="font-size:12.5px;flex-direction:column">
+          <div class="strong mb-8">只约束服务者的后果</div>
+          <div style="line-height:1.8">
+            服务者迟到扣分、差评扣分、纠纷败诉扣分 —— 但居民可以随意取消、随意差评、随意不认账。<br><br>
+            结果：做几单之后服务者发现<b>风险全在自己身上，收益却很有限</b>，直接退出。
+            供给一旦跑光，需求侧再热闹也没用。
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="notice notice-ok" style="font-size:12.5px;flex-direction:column">
+          <div class="strong mb-8">双向约束后的效果</div>
+          <div style="line-height:1.8">
+            居民放鸽子也会扣分，分低了发单要预付款、甚至暂停发单权限。<br><br>
+            结果：<b>双方都珍惜自己的信用分</b>。服务者敢接单了，居民也会更认真地发布需求 ——
+            整个平台的履约质量上升。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-2 mb-16">
+    <div class="card">
+      <div class="card-head"><h3>服务者信用规则</h3><span class="right">基准 80</span></div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>行为</th><th>分值</th><th>说明</th></tr></thead>
+          <tbody id="tbProviderRule"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>需求方信用规则</h3><span class="right">基准 80</span></div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>行为</th><th>分值</th><th>说明</th></tr></thead>
+          <tbody id="tbDemanderRule"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-16">
+    <div class="card-head"><h3>信用分区间与权限</h3></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>区间</th><th>服务者</th><th>需求方</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="sc" style="background:var(--risk-a-bg);color:#10612e">90 — 100</span></td>
+            <td class="small">B 类全品类 + 高风险单优先派单</td>
+            <td class="small">正常发单 + 可信用免押</td>
+          </tr>
+          <tr>
+            <td><span class="sc" style="background:var(--brand-soft);color:var(--brand-dark)">70 — 89</span></td>
+            <td class="small">B 类，无派单倾斜</td>
+            <td class="small">正常发单</td>
+          </tr>
+          <tr>
+            <td><span class="sc" style="background:var(--risk-b-bg);color:#7c4a06">50 — 69</span></td>
+            <td class="small">仅 A 类，B 类需人工复核</td>
+            <td class="small">发单需预付款</td>
+          </tr>
+          <tr>
+            <td><span class="sc" style="background:var(--risk-c-bg);color:#8f1d19">0 — 49</span></td>
+            <td class="small">暂停接单</td>
+            <td class="small">暂停发单</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-head"><h3>信用分变动必须可见</h3></div>
+      <p class="small" style="color:var(--ink-2);line-height:1.75">
+        每一次加减分都要写明<b>哪一单、什么行为、多少分、依据什么</b>。
+        用户点开信用中心就能看到完整流水。
+      </p>
+      <div class="hr"></div>
+      <div class="small" style="line-height:1.9;color:var(--ink-2)">
+        <div class="row-between" style="padding:6px 0;border-bottom:1px solid var(--line-soft)">
+          <span>完成订单 JH0611004 并获好评</span>
+          <span class="delta" style="color:var(--risk-a)">+3</span>
+        </div>
+        <div class="row-between" style="padding:6px 0;border-bottom:1px solid var(--line-soft)">
+          <span>订单 JH0611003 差评扣分（申诉中，暂缓）</span>
+          <span class="delta muted">待定</span>
+        </div>
+        <div class="row-between" style="padding:6px 0;border-bottom:1px solid var(--line-soft)">
+          <span>恶意差评已撤销，扣分回滚</span>
+          <span class="delta" style="color:var(--risk-a)">+5</span>
+        </div>
+        <div class="row-between" style="padding:6px 0">
+          <span>证件到期未及时更新，暂停 B 类接单</span>
+          <span class="delta" style="color:var(--risk-c)">−8</span>
+        </div>
+      </div>
+      <div class="notice notice-warn mt-12" style="font-size:12px">
+        <span class="ic">!</span>
+        <div><b>看不见的扣分等于没有规则。</b>如果用户只能看到一个总分在变，他只会觉得平台在暗箱操作，
+        而不是「我做错了什么」。</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>申诉窗口期</h3></div>
+      <div class="tl">
+        <div class="tl-item done">
+          <div class="tt">扣分前 · 通知</div>
+          <div class="td">扣分动作发生前先通知当事人，告知事由与分值。</div>
+        </div>
+        <div class="tl-item now">
+          <div class="tt">48h 内 · 可申诉</div>
+          <div class="td">申诉期间<b>暂缓执行扣分</b>，而不是先扣再还。信用分直接影响接单权限，
+          先扣会让服务者当场失去资格。</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tt">申诉有据 · 平台复核</div>
+          <div class="td">申诉必须挂证据（过程照片、确认码、聊天记录），平台 24h 内复核。</div>
+        </div>
+        <div class="tl-item">
+          <div class="tt">超期未申诉 · 自动生效</div>
+          <div class="td">48h 未申诉视为认可，扣分正式生效并记录。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('common/index.html', { root: '../' });
+document.getElementById('noteX02').innerHTML = featureNote('X02');
+
+const PROVIDER_NOTE = {
+  '按时完成订单': '基础正向激励，鼓励持续接单',
+  '获得好评': '额外奖励，质量导向',
+  '超时未到': '影响用户体验，中等扣分',
+  '纠纷败诉': '平台判定责任在服务者',
+  '证件过期仍接单': '合规问题，最重扣分'
+};
+const DEMANDER_NOTE = {
+  '正常完成订单': '基础正向激励',
+  '虚假需求': '浪费服务者时间，重扣',
+  '恶意差评': '非基于质量的评价，重扣',
+  '放鸽子': '服务者已付出时间成本',
+  '拒付已确认订单': '最严重，直接涉及交易诚信'
+};
+
+function ruleTable(items, notes) {
+  return items.map(i => `
+    <tr>
+      <td class="strong small">${i.k}</td>
+      <td><span class="delta" style="color:${i.v.startsWith('+') ? 'var(--risk-a)' : 'var(--risk-c)'}">${i.v}</span></td>
+      <td class="smaller muted">${notes[i.k] || ''}</td>
+    </tr>`).join('');
+}
+document.getElementById('tbProviderRule').innerHTML = ruleTable(CREDIT_RULES[0].items, PROVIDER_NOTE);
+document.getElementById('tbDemanderRule').innerHTML = ruleTable(CREDIT_RULES[1].items, DEMANDER_NOTE);
+</script>
+</body>
+</html>

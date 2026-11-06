@@ -3,3 +3,7 @@
 node_modules/
 .DS_Store
 Thumbs.db
+
+# 各子项目里的本地元数据 / 临时文件（不应进公开仓库）
+*.genie
+.video_agent/

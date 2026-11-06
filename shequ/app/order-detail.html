@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>订单凭证页 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .proof { border: 1px solid var(--line); border-radius: var(--r); padding: 11px; margin-bottom: 9px; background: var(--card); }
+  .proof .ph { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
+  .proof .st { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 3px; background: var(--line-soft); color: var(--ink-4); }
+  .proof .st.done { background: var(--risk-a-bg); color: var(--risk-a); }
+  .proof .st.now { background: var(--brand-soft); color: var(--brand-dark); }
+  .code-box { background: var(--ink); color: #fff; border-radius: var(--r-sm); padding: 10px;
+    text-align: center; font-family: "SF Mono", Consolas, monospace; letter-spacing: 6px; font-size: 19px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">订单凭证页</h1>
+    <p class="muted small mt-4">服务前/中/后拍照上传，自动时间戳；接娃/钥匙交接生成确认码。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <button class="btn btn-sm" onclick="setOrder('JH0612001')">A1 代取快递（进行中）</button>
+        <button class="btn btn-sm" onclick="setOrder('JH0612002')">B3 帮接娃（确认码）</button>
+        <button class="btn btn-sm" onclick="setOrder('JH0611004')">B1 宠物寄养（已完成）</button>
+        <button class="btn btn-sm" onclick="setOrder('JH0612007')">待接单</button>
+      </div>
+
+      <div id="noteU07"></div>
+
+      <div class="card" id="explain"></div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU07').innerHTML = featureNote('U07');
+
+let oid = new URLSearchParams(location.search).get('id') || 'JH0612001';
+function setOrder(id) { oid = id; render(); }
+
+function render() {
+  const o = Data.orderById(oid) || ORDERS[0];
+  const c = Data.catById(o.catId);
+  const p = o.providerId ? Data.providerById(o.providerId) : null;
+
+  // ---- 手机端 ----
+  const proofs = (o.proofs || []).length ? o.proofs.map(pr => `
+    <div class="proof">
+      <div class="ph">
+        <span class="st ${pr.ok ? 'done' : ''}">${pr.s}</span>
+        <span class="small strong" style="flex:1">${pr.t}</span>
+        <span class="smaller muted">${pr.time || '待完成'}</span>
+      </div>
+      ${pr.img ? `<div class="row" style="gap:7px">
+        <div class="thumb">凭证照片</div>
+        <div class="thumb">时间戳</div>
+        <div class="thumb empty">+ 补充</div>
+      </div>` : ''}
+    </div>`) .join('') : `<div class="empty"><div class="big">📋</div>订单尚未开始<br><span class="smaller">凭证将在接单后逐段生成</span></div>`;
+
+  document.getElementById('phone').innerHTML = phoneOpen('订单凭证', 'body', { back: 'index.html', tabs: TABS.user });
+  document.getElementById('body').innerHTML = `
+    <div class="card">
+      <div class="row wrapf" style="gap:6px">
+        <span class="tag ${Data.riskClass(o.risk)}" style="font-size:10px">${o.risk} 类</span>
+        <span class="tag ${Data.statusClass(o.status)}" style="font-size:10px">${Data.statusLabel(o.status)}</span>
+      </div>
+      <div class="strong mt-8" style="font-size:14.5px">${c.icon} ${c.name}</div>
+      <div class="smaller muted mt-4 mono">${o.id}</div>
+      ${o.flags.length ? `<div class="notice notice-warn mt-12" style="font-size:11px;padding:8px 10px">
+        <span class="ic">⚠</span><div>${o.flags.join('<br>')}</div></div>` : ''}
+    </div>
+
+    <div class="card">
+      <div class="strong small mb-8">需求信息</div>
+      ${Object.entries(o.fields).map(([k, v]) => `<div class="kv"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}
+      <div class="kv"><div class="k">地址</div><div class="v">${o.addrVisible ? o.addr : '<span class="muted">接单后可见（当前仅显示 ' + Data.buildingById(o.building).name + '）</span>'}</div></div>
+    </div>
+
+    ${o.catId === 'B3' ? `
+    <div class="card">
+      <div class="strong small mb-8">家长确认码</div>
+      <div class="code-box">8836</div>
+      <div class="smaller muted mt-8 center">交接时由家长出示，服务者输入后订单才可完成</div>
+    </div>` : ''}
+
+    ${o.catId === 'B5' ? `
+    <div class="card">
+      <div class="strong small mb-8">交接确认码</div>
+      <div class="code-box">4172</div>
+      <div class="smaller muted mt-8 center">钥匙/证件类交接必须双码确认 + 拍照留痕</div>
+    </div>` : ''}
+
+    <div class="card">
+      <div class="row-between mb-8">
+        <span class="strong small">交付凭证</span>
+        <span class="smaller muted">${(o.proofs || []).length} 段</span>
+      </div>
+      ${proofs}
+    </div>
+
+    ${p ? `
+    <div class="card">
+      <div class="row-between mb-8">
+        <span class="strong small">服务者</span>
+        <span class="tag tag-ok" style="font-size:10px">已接单</span>
+      </div>
+      <div class="row" style="gap:10px">
+        <div class="avatar" style="background:${Data.avatarColor(p.name)}">${Data.initials(p.name)}</div>
+        <div style="flex:1">
+          <div class="row" style="gap:5px"><span class="small strong">${p.name}</span>${Data.trustDots(p.lv)}</div>
+          <div class="smaller muted mt-3">${Data.buildingById(p.building).name} · 信用分 ${p.score}</div>
+        </div>
+        <button class="btn btn-sm" onclick="toast('已发起会话')">联系</button>
+      </div>
+    </div>` : `
+    <div class="card">
+      <div class="strong small mb-8">服务者</div>
+      <div class="smaller muted mb-12">需求已优先推送给同楼栋服务者，等待接单。</div>
+      <button class="btn btn-sm btn-block" onclick="toast('已扩大匹配范围到同片区')">扩大匹配范围到同片区</button>
+    </div>`}
+
+    <div class="card">
+      <div class="row-between">
+        <span class="small muted">服务金额</span>
+        <span class="price-lg">${o.amount > 0 ? '¥' + o.amount : '信用免押'}</span>
+      </div>
+      <div class="smaller muted mt-8" style="line-height:1.7">服务完成并由双方确认后结算，平台抽成仅覆盖支付与运营成本。</div>
+    </div>
+
+    ${o.status === 'open' ? `<button class="btn btn-primary btn-block btn-lg" onclick="toast('已接单')">接单</button>`
+    : o.status === 'doing' ? `
+      <button class="btn btn-primary btn-block btn-lg" onclick="toast('已上传服务后凭证')">上传服务后凭证</button>
+      <button class="btn btn-block mt-8" onclick="toast('已上报异常，订单转入复核')">上报异常</button>`
+    : o.status === 'done' ? `<button class="btn btn-primary btn-block btn-lg" onclick="location.href='review.html'">评价这次服务</button>`
+    : o.status === 'dispute' ? `<div class="notice notice-danger" style="font-size:11.5px">
+        <span class="ic">⚖</span><div>订单处于纠纷处理中，关联工单 <b>TK-1105-03</b>。资金已冻结，双方均可在工单中补充证据。</div></div>`
+    : o.status === 'flagged' ? `<div class="notice notice-danger" style="font-size:11.5px">
+        <span class="ic">🚫</span><div>订单已<b>拦截</b>。物品来源待核验，已进入人工复核流程。</div></div>`
+    : `<button class="btn btn-primary btn-block btn-lg" onclick="toast('已确认签收')">确认签收</button>`}
+  `;
+
+  // ---- 右侧说明 ----
+  document.getElementById('explain').innerHTML = `
+    <div class="card-head"><h3>这单的凭证结构</h3><span class="sub">${o.id}</span></div>
+    <div class="tl">
+      <div class="tl-item done">
+        <div class="tt">服务前</div>
+        <div class="td">${(o.proofs || []).find(x => x.s === '服务前') ? (o.proofs.find(x => x.s === '服务前').t + ' · ' + (o.proofs.find(x => x.s === '服务前').time || '待完成')) : '未生成'}
+        ${o.catId === 'A1' ? '。代取快递在此阶段做取件码脱敏 —— 服务者看到的是后四位，看不到完整码。' : ''}</div>
+      </div>
+      <div class="tl-item ${(o.proofs || []).some(x => x.s === '服务中' && x.ok) ? 'done' : (o.proofs || []).some(x => x.s === '服务中') ? 'now' : ''}">
+        <div class="tt">服务中</div>
+        <div class="td">${(o.proofs || []).find(x => x.s === '服务中') ? (o.proofs.find(x => x.s === '服务中').t + ' · ' + (o.proofs.find(x => x.s === '服务中').time || '待完成')) : '未生成'}
+        ${o.catId === 'B3' ? '。接娃类服务在此阶段共享实时位置。' : ''}</div>
+      </div>
+      <div class="tl-item ${(o.proofs || []).some(x => x.s === '服务后' && x.ok) ? 'done' : ''}">
+        <div class="tt">服务后</div>
+        <div class="td">${(o.proofs || []).find(x => x.s === '服务后') ? (o.proofs.find(x => x.s === '服务后').t + ' · ' + (o.proofs.find(x => x.s === '服务后').time || '待完成')) : '未生成'}
+        未确认签收的订单不进入结算。</div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+    <div class="small strong mb-8">风控关键项</div>
+    <div class="row wrapf" style="gap:6px">
+      ${o.catId === 'A1' || o.catId === 'B5' ? '<span class="tag tag-warn">来源声明</span>' : ''}
+      ${o.catId === 'B3' ? '<span class="tag tag-warn">家长确认码</span><span class="tag tag-warn">实时位置</span>' : ''}
+      ${o.catId === 'B1' ? '<span class="tag tag-warn">健康申报</span><span class="tag tag-warn">医疗费用上限</span>' : ''}
+      ${o.catId === 'B5' ? '<span class="tag tag-warn">交接确认码</span><span class="tag tag-warn">双验证</span>' : ''}
+      <span class="tag tag-gray">自动时间戳</span>
+      <span class="tag tag-gray">双方确认</span>
+    </div>
+
+    <div class="notice notice-info mt-12" style="font-size:12px">
+      <span class="ic">i</span>
+      <div>纠纷处理靠证据链，不靠口头约定。平台的角色是<b>居间撮合 + 凭证留存</b>，
+      这句话必须落到数据结构上 —— 每个订单都带三段式凭证、协议版本、服务者当时的信任等级快照。</div>
+    </div>
+  `;
+}
+render();
+</script>
+</body>
+</html>

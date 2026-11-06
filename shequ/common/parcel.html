@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>包裹来源声明 — 公共能力</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .gate { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 14px; margin-bottom: 10px; }
+  .gate .n { display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: var(--brand);
+    color: #fff; text-align: center; line-height: 22px; font-size: 11px; font-weight: 700; margin-right: 8px; }
+  .gate .t { font-size: 13.5px; font-weight: 700; display: inline; }
+  .gate .d { font-size: 12px; color: var(--ink-2); margin-top: 6px; line-height: 1.7; }
+  .gate .why { font-size: 11.5px; color: #7c4a06; margin-top: 5px; line-height: 1.6; }
+  .badge { display: inline-block; font-size: 10.5px; padding: 2px 7px; border-radius: 4px;
+    background: var(--risk-c-bg); color: #8f1d19; font-weight: 700; margin-left: 6px; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">公共能力 · 包裹来源声明</h1>
+    <p class="muted small mt-4">代取快递需声明来源，异常高报酬订单预警。防止被利用代取不明包裹。</p>
+  </div>
+
+  <div id="noteX06" class="mb-16"></div>
+
+  <div class="card mb-16">
+    <div class="card-head"><h3>为什么代取快递需要「声明来源」</h3></div>
+    <div class="grid grid-2">
+      <div>
+        <div class="notice notice-danger" style="font-size:12.5px;flex-direction:column">
+          <div class="strong mb-8">风险场景</div>
+          <div style="line-height:1.8">
+            代取快递看起来是最无害的服务：3 块钱，走一趟驿站，把包裹拿回来。<br><br>
+            但如果有人发一单「帮我取个包裹，报酬 50 元」，且不说明是什么 ——
+            <b>服务者就成了不明物品的运输工具</b>。真出了问题，服务者是最直接的经手人。
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="notice notice-ok" style="font-size:12.5px;flex-direction:column">
+          <div class="strong mb-8">声明的实际作用</div>
+          <div style="line-height:1.8">
+            <b>不是平台在查你，是给服务者拒绝的依据。</b><br><br>
+            当订单上写着「物品来源：未声明」并被标红，服务者就可以直接拒绝接单，
+            而不需要承受「都答应了又反悔」的人情压力。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-16">
+    <div class="card-head"><h3>四道拦截门</h3></div>
+
+    <div class="gate">
+      <span class="n">1</span><span class="t">违禁词硬拦截</span><span class="badge">发布时</span>
+      <div class="d">订单描述命中违禁词（香烟、酒、药品、处方药、现金、证件原件）时，<b>订单不予发布</b>。</div>
+      <div class="why">↳ 这些物品的运输本身就可能违法或违反平台规则，不讨论、不留口子。</div>
+    </div>
+
+    <div class="gate">
+      <span class="n">2</span><span class="t">来源声明强制勾选</span><span class="badge">发布时</span>
+      <div class="d">代取 / 代办类订单，必须勾选「我声明所托物品来源合法，不含违禁品」。<b>不勾选无法提交表单。</b></div>
+      <div class="why">↳ 这是最基础的一道。作用不是拦住恶意用户（他可以勾选），而是让「不勾选」这件事变得不可能 ——
+      从而让服务者知道「这个订单的主人至少做过声明」。</div>
+    </div>
+
+    <div class="gate">
+      <span class="n">3</span><span class="t">异常报酬预警</span><span class="badge">发布时</span>
+      <div class="d">单笔报酬 &gt; 指导价 5 倍时，转人工核查，暂不派单。</div>
+      <div class="why">↳ 取快递指导价 3—5 元。出现 50 元的取快递订单，说明这件事的价值不在「取快递」本身。
+      这是最有价值的信号 —— 高报酬是异常行为的天然标记。</div>
+    </div>
+
+    <div class="gate">
+      <span class="n">4</span><span class="t">高频异常限流</span><span class="badge">接单后</span>
+      <div class="d">同一服务者 24h 内代取 &gt; 10 单，触发限流 + 人工复核。</div>
+      <div class="why">↳ 正常居民一周也就取几次快递。一天十几单说明这个账号已经不是「邻居顺手帮忙」，
+      而是被当成了跑腿工具。</div>
+    </div>
+
+    <div class="notice notice-info mt-12" style="font-size:12px">
+      <span class="ic">i</span>
+      <div>还有一道辅助规则：<b>送达地址为政府机关 / 学校内部时转人工审核</b>。
+      正常社区服务不会以这些地址为终点。</div>
+    </div>
+  </div>
+
+  <div class="grid grid-2 mb-16">
+    <div class="card">
+      <div class="card-head"><h3>声明在订单上的呈现</h3></div>
+      <div class="card" style="padding:13px;border-left:3px solid var(--risk-c)">
+        <div class="row-between mb-8">
+          <span class="strong small">📦 代取快递</span>
+          <span class="tag tag-danger" style="font-size:10px">来源待核验</span>
+        </div>
+        <div class="kv"><span class="k">取件点</span><span class="v">小区北门菜鸟驿站</span></div>
+        <div class="kv"><span class="k">取件码</span><span class="v mono">••••</span></div>
+        <div class="kv"><span class="k">包裹来源声明</span><span class="v" style="color:var(--risk-c);font-weight:700">⚠ 未声明</span></div>
+        <div class="kv"><span class="k">报酬</span><span class="v"><span class="price">¥50</span> <span class="smaller muted">（指导价 3—5 元）</span></span></div>
+        <div class="notice notice-danger mt-8" style="font-size:11px;padding:8px 10px">
+          <span class="ic">⚠</span>
+          <div>此订单已触发<b>异常报酬 + 来源未声明</b>，暂不派单，等待人工核查。
+          服务者可以放心拒绝这类订单。</div>
+        </div>
+      </div>
+      <div class="notice notice-warn mt-12" style="font-size:12px">
+        <span class="ic">!</span>
+        <div>风险信息必须<b>显示在列表页，而不是详情页</b>。服务者应该在扫一眼大厅时就能看出这单有问题 ——
+        而不是点进去才发现。</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>取件码脱敏</h3></div>
+      <p class="small" style="color:var(--ink-2);line-height:1.75">
+        服务者只需要知道取件码的<b>后四位</b>用于核对，不需要知道完整码。
+        完整码在需求方手里，服务者凭后四位 + 订单号在驿站取件。
+      </p>
+      <div class="hr"></div>
+      <div class="small" style="line-height:1.9;color:var(--ink-2)">
+        <div class="row-between" style="padding:5px 0">
+          <span>需求方看到的</span>
+          <span class="mono strong">8-3-2214</span>
+        </div>
+        <div class="row-between" style="padding:5px 0">
+          <span>服务者看到的</span>
+          <span class="mono strong">••••2214</span>
+        </div>
+        <div class="row-between" style="padding:5px 0">
+          <span>订单列表展示</span>
+          <span class="mono strong">••••</span>
+        </div>
+      </div>
+      <div class="notice notice-info mt-12" style="font-size:12px">
+        <span class="ic">i</span>
+        <div>脱敏的目的不是防服务者，而是<b>防冒领</b>。如果完整码存在服务者手机上，
+        手机丢失或截图外泄都可能导致包裹被他人取走。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>违禁词库与处置</h3></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>类型</th><th>规则内容</th><th>触发动作</th></tr></thead>
+        <tbody id="tbRiskWords"></tbody>
+      </table>
+    </div>
+    <div class="notice notice-warn mt-12" style="font-size:12px">
+      <span class="ic">!</span>
+      <div>风控的目标是<b>让服务者能明确拒绝</b>，而不是「抓到坏人」。
+      平台没有执法权，能做的是：把风险信息前置、给出拒绝依据、留下完整记录。</div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('common/index.html', { root: '../' });
+document.getElementById('noteX06').innerHTML = featureNote('X06');
+document.getElementById('tbRiskWords').innerHTML = RISK_WORDS.map(r => `
+  <tr>
+    <td><span class="tag tag-danger">${r.type}</span></td>
+    <td class="small" style="color:var(--ink-2)">${r.words ? r.words.join(' · ') : r.rule}</td>
+    <td class="small">${r.action}</td>
+  </tr>`).join('');
+</script>
+</body>
+</html>

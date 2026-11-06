@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>住户核验注册 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .stepbar { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+  .stepbar .s { flex: 1; text-align: center; font-size: 10px; color: var(--ink-4); }
+  .stepbar .s .d { width: 22px; height: 22px; border-radius: 50%; background: var(--line-soft);
+    color: var(--ink-4); display: grid; place-items: center; margin: 0 auto 4px; font-weight: 700; font-size: 11px; }
+  .stepbar .s.on .d { background: var(--brand); color: #fff; }
+  .stepbar .s.on { color: var(--brand-dark); font-weight: 600; }
+  .opt { border: 1px solid var(--line); border-radius: var(--r); padding: 12px; margin-bottom: 9px; cursor: pointer; transition: all .15s; }
+  .opt:hover { border-color: var(--brand); }
+  .opt.on { border-color: var(--brand); background: var(--brand-softer); box-shadow: 0 0 0 1px var(--brand) inset; }
+  .opt .t { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
+  .opt .d { font-size: 11.5px; color: var(--ink-3); margin-top: 4px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">住户核验注册</h1>
+    <p class="muted small mt-4">100 栋楼陌生人社会，先确认「真实邻居」才敢开放服务。这是三层信任的第一层，也是唯一无法跳过的门槛。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+
+    <div>
+      <div id="noteU01"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>为什么这一步不能省</h3></div>
+        <p class="small" style="line-height:1.9;color:var(--ink-2)">
+          三层信任里，只有第一层是<b>硬门槛</b>：没有「真实邻居」标识，连 A 类代取快递都发不出去。
+          因为它同时解决两个问题 —— 一是把非住户挡在外面（防止外部人员利用平台做跑腿代取），
+          二是给后续的楼栋匹配提供依据（不知道你住哪栋，就无法做「同楼栋优先」）。
+        </p>
+        <div class="hr"></div>
+        <div class="small strong mb-8">三种核验路径，优先级从高到低</div>
+        <div class="tl">
+          <div class="tl-item done">
+            <div class="tt">对接物业住户数据（自动）</div>
+            <div class="td">手机号 + 楼栋房号 → 匹配物业台账 → 秒级通过。覆盖率最高，体验最好。</div>
+          </div>
+          <div class="tl-item now">
+            <div class="tt">上传房产 / 租赁证明（半自动）</div>
+            <div class="td">物业数据缺失或不一致时兜底。系统做 OCR 预校验，模糊件转人工。</div>
+          </div>
+          <div class="tl-item">
+            <div class="tt">楼栋协调人确认（人工）</div>
+            <div class="td">最后兜底路径。协调人熟悉本楼住户，能确认「这人确实住这」。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU01').innerHTML = featureNote('U01');
+
+document.getElementById('phone').innerHTML = phoneOpen('住户核验', 'body', { back: 'index.html' });
+
+document.getElementById('body').innerHTML = `
+  <div class="stepbar">
+    <div class="s on"><div class="d">1</div>手机号</div>
+    <div class="s on"><div class="d">2</div>楼栋房号</div>
+    <div class="s on"><div class="d">3</div>核验</div>
+    <div class="s"><div class="d">4</div>完成</div>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label>手机号<span class="req">*</span></label>
+      <input type="tel" value="138 6621 ****" readonly class="locked">
+      <div class="hint">已通过微信授权获取，用于接收订单通知</div>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <label>楼栋房号<span class="req">*</span></label>
+      <div class="row" style="gap:8px">
+        <select style="flex:1.2">
+          <option>12 号楼</option><option>13 号楼</option><option>24 号楼</option>
+        </select>
+        <select style="flex:1">
+          <option>3 单元</option><option>1 单元</option><option>2 单元</option>
+        </select>
+        <input type="text" value="502" style="flex:1">
+      </div>
+      <div class="hint">房号仅用于核验与楼栋匹配，发布需求时对其他人只显示楼栋</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">选择核验方式</div>
+    <div class="opt on" onclick="pick(this)">
+      <div class="t">⚡ 物业住户数据核验 <span class="tag tag-ok" style="font-size:10px">推荐</span></div>
+      <div class="d">系统匹配物业台账，通常 10 秒内自动通过</div>
+    </div>
+    <div class="opt" onclick="pick(this)">
+      <div class="t">📄 上传房产 / 租赁证明</div>
+      <div class="d">物业数据未匹配时使用，需 1 个工作日内审核</div>
+    </div>
+    <div class="opt" onclick="pick(this)">
+      <div class="t">🤝 楼栋协调人确认</div>
+      <div class="d">兜底路径，由 12 号楼协调人确认你的居住情况</div>
+    </div>
+  </div>
+
+  <div class="card" style="background:var(--brand-softer);border-color:#cfe0ff">
+    <div class="smaller" style="color:var(--ink-2);line-height:1.75">
+      <b>核验通过后你获得：</b><br>
+      · 「真实邻居」标识（可发布 A 类服务）<br>
+      · 本楼栋供需信息可见<br>
+      · 如需接单，可继续做实名 + 人脸核验升级到「平台认可」
+    </div>
+  </div>
+
+  <button class="btn btn-primary btn-block btn-lg mt-12" onclick="doVerify()">提交核验</button>
+  <div class="smaller muted center mt-8">提交即表示同意《住户信息核验与隐私说明》</div>
+`;
+
+function pick(el) {
+  el.parentNode.querySelectorAll('.opt').forEach(o => o.classList.remove('on'));
+  el.classList.add('on');
+}
+function doVerify() {
+  toast('核验中…匹配物业住户数据');
+  setTimeout(() => toast('核验通过，已获得「真实邻居」标识'), 1400);
+}
+</script>
+</body>
+</html>

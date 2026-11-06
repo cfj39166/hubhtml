@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>消息通知 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .nrow { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line-soft); }
+  .nrow:last-child { border-bottom: none; }
+  .nrow .ic { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+    font-size: 14px; flex-shrink: 0; }
+  .nrow.unread .t { font-weight: 700; }
+  .dot-new { width: 6px; height: 6px; border-radius: 50%; background: var(--risk-c); flex-shrink: 0; margin-top: 6px; }
+  .tmpl { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .tmpl .h { padding: 8px 12px; background: var(--line-soft); font-size: 11.5px; font-weight: 700; color: var(--ink-3); }
+  .tmpl .b { padding: 12px; font-size: 12px; line-height: 1.8; color: var(--ink-2); }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">消息通知</h1>
+    <p class="muted small mt-4">微信模板消息/短信：接单、出发、到达、完成、异常提醒。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+
+    <div>
+      <div id="noteU11"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>微信模板消息示例</h3></div>
+        <div class="tmpl">
+          <div class="h">订单状态通知</div>
+          <div class="b">
+            订单类型：代取快递/外卖<br>
+            订单编号：JH0612001<br>
+            服务者：王秀兰<br>
+            当前状态：<span style="color:var(--brand);font-weight:600">已接单</span><br>
+            预计送达：今天 12:00 前<br>
+            <span style="color:var(--ink-4)">点击查看订单详情 ›</span>
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div class="tmpl">
+          <div class="h">风险提示通知</div>
+          <div class="b">
+            订单类型：帮接娃/放学接送<br>
+            订单编号：JH0612002<br>
+            提示：<span style="color:var(--risk-b);font-weight:600">该订单涉及未成年接送，已进入人工复核</span><br>
+            需您确认：交接方式与家长确认码<br>
+            <span style="color:var(--ink-4)">请尽快确认，避免影响接送时间 ›</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>五类通知的触发点</h3></div>
+        <div class="tl">
+          <div class="tl-item done"><div class="tt">接单</div><div class="td">服务者接单瞬间。让需求方立刻知道「有人接了」，这是最关键的一条 —— 消除「发了没人接」的焦虑。</div></div>
+          <div class="tl-item done"><div class="tt">出发</div><div class="td">服务者点击出发打卡。接娃类服务同时开启位置共享。</div></div>
+          <div class="tl-item done"><div class="tt">到达</div><div class="td">到达现场并拍照。对代取、上门类服务尤为重要。</div></div>
+          <div class="tl-item done"><div class="tt">完成</div><div class="td">服务完成，等待需求方确认签收。未确认不结算。</div></div>
+          <div class="tl-item bad"><div class="tt">异常</div><div class="td">风险预警命中、订单被拦截、服务者上报异常。这类通知必须独立成类，不能混在普通状态通知里。</div></div>
+        </div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>社区服务高频短时（代取快递全程可能只有 20 分钟），<b>通知不及时体验直接断裂</b> ——
+          用户会在等待中反复打开小程序确认状态。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU11').innerHTML = featureNote('U11');
+
+const ICONS = { '接单': ['📢', '#eaf2ff'], '出发': ['🚶', '#fdf3e3'], '到达': ['📍', '#e8f8ee'],
+  '完成': ['✅', '#e8f8ee'], '风险': ['⚠️', '#fdeceb'], '冻结': ['🔒', '#fdeceb'] };
+
+document.getElementById('phone').innerHTML = phoneOpen('消息', 'body', { back: 'index.html', tabs: TABS.user });
+
+document.getElementById('body').innerHTML = `
+  <div class="row-between mb-12">
+    <span class="small muted">${NOTICES.filter(n => !n.read).length} 条未读</span>
+    <span class="smaller" style="color:var(--brand);cursor:pointer" onclick="toast('已全部标记为已读')">全部已读</span>
+  </div>
+
+  <div class="card" style="padding:0 13px">
+    ${NOTICES.map(n => {
+      const [ic, bg] = ICONS[n.type] || ['📩', 'var(--line-soft)'];
+      return `
+      <div class="nrow ${n.read ? '' : 'unread'}" onclick="location.href='order-detail.html?id=${n.order}'" style="cursor:pointer">
+        <div class="ic" style="background:${bg}">${ic}</div>
+        <div style="flex:1;min-width:0">
+          <div class="row-between">
+            <span class="small t">${n.type}</span>
+            <span class="smaller muted">${n.time}</span>
+          </div>
+          <div class="smaller muted mt-3" style="line-height:1.6">${n.text}</div>
+          <div class="smaller muted-2 mt-3 mono">${n.order}</div>
+        </div>
+        ${n.read ? '' : '<div class="dot-new"></div>'}
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">通知设置</div>
+    <div class="row-between" style="padding:8px 0;border-bottom:1px solid var(--line-soft)">
+      <div><div class="small">微信模板消息</div><div class="smaller muted">接单、出发、到达、完成</div></div>
+      <label class="switch"><input type="checkbox" checked><span class="sl"></span></label>
+    </div>
+    <div class="row-between" style="padding:8px 0;border-bottom:1px solid var(--line-soft)">
+      <div><div class="small">短信通知</div><div class="smaller muted">微信未读时补发短信</div></div>
+      <label class="switch"><input type="checkbox" checked><span class="sl"></span></label>
+    </div>
+    <div class="row-between" style="padding:8px 0">
+      <div><div class="small">风险与异常提醒</div><div class="smaller muted">不可关闭</div></div>
+      <label class="switch"><input type="checkbox" checked disabled><span class="sl"></span></label>
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

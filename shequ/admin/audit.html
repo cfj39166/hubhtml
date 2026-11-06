@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>审核队列 — 管理后台</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:22px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">审核队列 · 住户与服务者审核</h1>
+    <p class="muted small mt-4">住户核验、实名/人脸、无犯罪承诺、品类资质审核队列。信任机制的地基。</p>
+  </div>
+
+  <div class="admingrid">
+    <aside class="aside">
+      <div class="aside-card">
+        <div class="aside-title">运营模块</div>
+        <nav class="asidenav">
+          <a href="index.html">📊 后台总览</a>
+          <a href="audit.html" class="on">🔍 审核队列 <span class="fid">A01</span></a>
+          <a href="category.html">🧩 品类风险配置 <span class="fid">A02</span></a>
+          <a href="risk.html">🚨 风险订单预警 <span class="fid">A03</span></a>
+          <a href="agreement.html">📄 协议模板 <span class="fid">A04</span></a>
+          <a href="ticket.html">⚖️ 纠纷工单池 <span class="fid">A05</span></a>
+          <a href="credit-rule.html">⭐ 信用分规则 <span class="fid">A06</span></a>
+          <a href="heatmap.html">🔥 供需热力图 <span class="fid">A07</span></a>
+          <a href="agency.html">🏢 机构管理 <span class="fid">A08</span></a>
+          <a href="insurance.html">🛡️ 保险与抽成 <span class="fid">A09</span></a>
+          <a href="riskword.html">🚫 内容风控 <span class="fid">A10</span></a>
+          <a href="dashboard.html">📈 数据看板 <span class="fid">A11</span></a>
+        </nav>
+      </div>
+    </aside>
+
+    <div>
+      <div id="noteA01"></div>
+
+      <div class="grid grid-4 mt-16 mb-16">
+        <div class="stat"><div class="k">待审核总数</div><div class="v" id="stTotal">0<small>项</small></div><div class="f">自动通过率 40%</div></div>
+        <div class="stat"><div class="k">待人工复核</div><div class="v" style="color:var(--risk-b)">3<small>项</small></div><div class="f">平均耗时 6 分钟</div></div>
+        <div class="stat"><div class="k">已暂停</div><div class="v" style="color:var(--risk-c)">1<small>项</small></div><div class="f">历史纠纷 2 起</div></div>
+        <div class="stat"><div class="k">今日已通过</div><div class="v" style="color:var(--risk-a)">17<small>项</small></div><div class="f">其中自动 11 项</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>审核队列</h3>
+          <span class="sub">按风险从高到低排序</span>
+          <span class="right" id="qCount"></span>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>类型</th><th>申请人</th><th>提交材料 / 情况</th><th>自动核验结果</th><th>风险</th><th>状态</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="qbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid grid-2 mt-16">
+        <div class="card">
+          <div class="card-head"><h3>为什么自动核验优先</h3></div>
+          <p class="small" style="color:var(--ink-2);line-height:1.75">
+            人工审核是瓶颈资源。3186 户的社区，如果每个住户核验都走人工，运营根本撑不住。
+            所以设计上：<b>能自动判的一律自动判</b>，人工只处理自动判不了的。
+          </p>
+          <div class="hr"></div>
+          <div class="small" style="line-height:1.9;color:var(--ink-2)">
+            ✅ <b>自动通过</b>：手机号 + 楼栋房号与物业住户数据完全匹配<br>
+            ⚠️ <b>转人工</b>：房产/租赁证明照片模糊、房号与物业数据不一致<br>
+            🔍 <b>强制人工</b>：服务者申请 B 类以上品类资质<br>
+            🛑 <b>直接暂停</b>：申请人存在未闭环纠纷或历史违规
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>分层认证的审核深度不同</h3></div>
+          <div class="tl">
+            <div class="tl-item done">
+              <div class="tt">lv1 真实邻居</div>
+              <div class="td">手机号 + 楼栋房号核验。目标：确认「住在这里」。绝大多数可自动通过。</div>
+            </div>
+            <div class="tl-item now">
+              <div class="tt">lv2 平台认可</div>
+              <div class="td">实名 + 人脸 + 无犯罪记录承诺 + 品类资质。<b>人脸和证件必须人工或三方核验</b>，这是能接 B 类单的前提。</div>
+            </div>
+            <div class="tl-item">
+              <div class="tt">lv3 社区信赖</div>
+              <div class="td">不审核，由完成单量、评价、纠纷记录、楼栋长推荐动态生成。买不到。</div>
+            </div>
+          </div>
+          <div class="notice notice-info mt-12" style="font-size:12px">
+            <span class="ic">i</span>
+            <div>无犯罪记录承诺是<b>承诺书</b>而不是核查结果 —— 平台无权限直接调取。所以协议里必须写明：
+            虚假承诺将承担全部法律责任并永久封禁。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('admin/index.html', { root: '../' });
+document.getElementById('noteA01').innerHTML = featureNote('A01');
+document.getElementById('stTotal').innerHTML = AUDIT_QUEUE.length + '<small>项</small>';
+document.getElementById('qCount').textContent = AUDIT_QUEUE.length + ' 项';
+
+const RISK_TAG = {
+  low: '<span class="tag tag-ok">低</span>',
+  mid: '<span class="tag tag-warn">中</span>',
+  high: '<span class="tag tag-danger">高</span>'
+};
+const ST_TAG = {
+  '待审核': '<span class="tag tag-brand">待审核</span>',
+  '待人工': '<span class="tag tag-warn">待人工</span>',
+  '待补充': '<span class="tag tag-warn">待补充</span>',
+  '已暂停': '<span class="tag tag-danger">已暂停</span>'
+};
+
+document.getElementById('qbody').innerHTML = AUDIT_QUEUE
+  .slice()
+  .sort((a, b) => ({ high: 0, mid: 1, low: 2 }[a.risk] - ({ high: 0, mid: 1, low: 2 }[b.risk])))
+  .map(a => `
+    <tr>
+      <td><span class="tag tag-gray">${a.type}</span></td>
+      <td class="strong nowrap">${a.name}</td>
+      <td class="small" style="color:var(--ink-2);max-width:280px">${a.detail}</td>
+      <td class="smaller muted">${a.auto}</td>
+      <td>${RISK_TAG[a.risk]}</td>
+      <td>${ST_TAG[a.status] || a.status}</td>
+      <td class="nowrap">
+        ${a.status === '已暂停'
+          ? `<button class="btn btn-sm" onclick="toast('已通知申请人补充材料')">通知补充</button>`
+          : `<button class="btn btn-sm btn-primary" onclick="toast('已通过审核')">通过</button>
+             <button class="btn btn-sm" onclick="toast('已驳回，原因已通知申请人')">驳回</button>`}
+      </td>
+    </tr>`).join('');
+</script>
+</body>
+</html>

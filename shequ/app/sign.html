@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>标准协议签署 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .doc { background: #fcfcfd; border: 1px solid var(--line); border-radius: var(--r); padding: 13px;
+    max-height: 250px; overflow-y: auto; font-size: 11.5px; line-height: 1.85; color: var(--ink-2); }
+  .doc h4 { font-size: 12.5px; margin: 12px 0 5px; color: var(--ink); }
+  .doc h4:first-child { margin-top: 0; }
+  .doc .em { background: #fff8e6; padding: 1px 3px; border-radius: 2px; }
+  .sign-pad { border: 2px dashed var(--line); border-radius: var(--r); height: 82px;
+    display: grid; place-items: center; color: var(--ink-4); font-size: 12px; background: #fafbfc; }
+  .agsel { border: 1px solid var(--line); border-radius: var(--r-sm); padding: 9px 11px; margin-bottom: 7px; cursor: pointer; }
+  .agsel.on { border-color: var(--brand); background: var(--brand-softer); }
+  .agsel .t { font-size: 12.5px; font-weight: 600; }
+  .agsel .m { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">标准协议签署</h1>
+    <p class="muted small mt-4">B 类订单下单前强制签署对应协议模板：宠物寄养、上门家政、接送、陪诊。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+
+    <div>
+      <div id="noteU08"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>协议模板库</h3><span class="sub" id="agSub"></span></div>
+        <div id="agList"></div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>仅靠「互助公约」<b>不具备法律效力</b>。协议模板的作用是让责任边界书面化，
+          同时明确平台是居间撮合 + 凭证留存，而非服务提供方。</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>为什么必须签，而不是点「同意」</h3></div>
+        <div class="tl">
+          <div class="tl-item done">
+            <div class="tt">签字位置对得上责任</div>
+            <div class="td">每份协议标注了需求方和服务者各自需要签字的处数 —— 宠物寄养是 2:1，接送是 3:1（含家长确认条款）。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">版本号必须留存</div>
+            <div class="td">纠纷发生时，平台要能出示「当时签的是哪一版」。协议更新后老订单仍按老版本判定。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">关键条款高亮</div>
+            <div class="td">责任边界、赔偿标准、免责声明必须高亮，不能藏在长文里。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">平台角色声明前置</div>
+            <div class="td">协议开头就写明平台不是服务提供方，避免事后争议。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU08').innerHTML = featureNote('U08');
+
+document.getElementById('agSub').textContent = `共 ${AGREEMENTS.length} 份 · 版本管理`;
+document.getElementById('agList').innerHTML = AGREEMENTS.map(a => `
+  <div class="agsel" onclick="pickAg('${a.id}')" data-ag="${a.id}">
+    <div class="row-between">
+      <span class="t">${a.name}</span>
+      <span class="tag tag-gray" style="font-size:10px">${a.ver}</span>
+    </div>
+    <div class="m">适用 ${Data.catById(a.cat).name} · 需求方 ${a.user} 处签字 · 服务者 ${a.provider} 处签字</div>
+  </div>`).join('');
+
+let agId = 'AG-PET';
+function pickAg(id) { agId = id; render(); }
+
+const DOCS = {
+  'AG-PET': `
+    <h4>一、协议主体与平台角色</h4>
+    本协议由需求方（宠物主人）与服务者（托管方）签署。平台仅提供居间撮合与凭证留存服务，
+    <span class="em">不是本协议的服务提供方，不承担宠物照护的直接责任</span>。
+    <h4>二、宠物健康状况申报</h4>
+    需求方须如实申报宠物健康状况、既往病史、是否处于用药期。隐瞒健康状况导致服务者人身或财产受损的，由需求方承担。
+    <h4>三、服务前后照片留存</h4>
+    服务开始前，服务者须拍摄宠物状态照片不少于 3 张并上传；服务期间每日上传反馈；服务结束后双方共同确认交接。
+    <h4>四、紧急医疗授权与费用上限</h4>
+    宠物出现紧急状况时，服务者有权先行送医，费用上限为需求方申报的金额。
+    <span class="em">超出上限部分须事先取得需求方书面同意</span>。
+    <h4>五、走失与伤病责任划分</h4>
+    因服务者未尽合理照护义务导致宠物走失、伤病、死亡的，服务者承担赔偿责任；
+    因宠物自身疾病突发、不可抗力导致的，服务者不承担责任，但须第一时间通知需求方并提供证据。
+  `,
+  'AG-HOME': `
+    <h4>一、协议主体与平台角色</h4>
+    本协议由需求方与服务者签署。平台提供居间撮合与凭证留存，
+    <span class="em">不是服务提供方，不承担服务质量的直接责任</span>。
+    <h4>二、服务范围确认单</h4>
+    服务开始前双方须共同确认服务范围、面积、时长、验收标准，并上传确认单。
+    <span class="em">未确认的服务项不在本次服务范围内</span>。
+    <h4>三、物品损坏赔偿标准</h4>
+    服务过程中造成需求方物品损坏的，按实际维修费用或市场折旧价赔偿，单次赔偿上限为订单金额的 3 倍。
+    <h4>四、上门人员身份核验</h4>
+    服务者须持「居家上门服务证」及有效健康证上门，需求方有权要求查验。
+    <h4>五、平台居间责任声明</h4>
+    平台已核验服务者资质与身份，但不对服务过程中的具体操作承担连带责任。
+    发生争议时，平台依据订单凭证、协议版本、聊天记录作出责任判定。
+  `,
+  'AG-KID': `
+    <h4>一、协议主体与平台角色</h4>
+    本协议由需求方（家长）与服务者签署。平台提供居间撮合与凭证留存。
+    <span class="em">平台与服务者均不替代家长的监护责任</span>。
+    <h4>二、固定路线与时间</h4>
+    接送路线须在协议中明确固定，不得擅自变更。路线为：学校 → 小区东门 → 楼栋。
+    <span class="em">服务者不得中途前往任何其他地点</span>。
+    <h4>三、家长确认码交接</h4>
+    交接时由家长出示确认码，服务者输入后方视为完成交接。
+    <span class="em">无确认码的交接无效，服务者不得将孩子交给任何人</span>。
+    <h4>四、实时位置共享</h4>
+    接送全程须开启实时位置共享，家长可随时查看。位置数据仅在本次服务期间保留。
+    <h4>五、仅限短时过渡</h4>
+    本服务仅限于「学校到小区」的短时接送与过渡，<span class="em">不包含长期看护、全日托育</span>。
+    需要长期看护的，请通过平台的机构入口对接备案托育机构。
+    <h4>六、不替代监护责任声明</h4>
+    本协议项下服务不构成监护关系。服务期间发生意外的，按过错责任原则划分责任。
+  `,
+  'AG-ELDER': `
+    <h4>一、协议主体与平台角色</h4>
+    本协议由需求方与服务者签署。平台提供居间撮合与凭证留存，不是服务提供方。
+    <h4>二、不涉医疗决策</h4>
+    服务者仅提供挂号、取药、陪同、协助沟通等非医疗行为。
+    <span class="em">服务者不得作出任何医疗决策，不得建议用药、停药或改变治疗方案</span>。
+    <h4>三、责任边界书面化</h4>
+    服务者不承担被陪护人的健康风险。因被陪护人自身疾病突发导致的后果，服务者不承担责任，但须立即联系需求方并协助就医。
+    <h4>四、过程留痕要求</h4>
+    服务者须在关键节点（到达医院、完成挂号、取药完成、离开）上传凭证。
+    <h4>五、突发情况处置流程</h4>
+    发生突发情况时，服务者须第一时间联系需求方；联系不上的，按协议约定的紧急联系人顺序通知。
+  `,
+  'AG-ITEM': `
+    <h4>一、协议主体与平台角色</h4>
+    本协议由需求方与服务者签署。平台提供居间撮合与凭证留存。
+    <h4>二、物品清单确认</h4>
+    需求方须在发布时列明物品类型、数量、外观状态，服务者接单前须确认。
+    <span class="em">未列明的物品不在本次代办范围内</span>。
+    <h4>三、身份双验证</h4>
+    交接双方须完成身份验证，钥匙类交接须使用交接确认码。
+    <h4>四、交接拍照</h4>
+    交接时须拍照留痕，照片包含物品外观与交接时间。
+    <h4>五、违禁品禁止条款</h4>
+    <span class="em">严禁利用本服务代送、代取任何违禁品、来源不明物品、政府证件原件</span>。
+    一经发现，平台将立即暂停订单、冻结资金并保留移交相关部门的权利。
+    因需求方隐瞒物品性质导致的一切后果由需求方承担。
+  `
+};
+
+function render() {
+  const a = AGREEMENTS.find(x => x.id === agId);
+  const c = Data.catById(a.cat);
+
+  document.querySelectorAll('.agsel').forEach(el => el.classList.toggle('on', el.dataset.ag === agId));
+
+  document.getElementById('phone').innerHTML = phoneOpen('签署协议', 'body', { back: 'index.html', tabs: TABS.user });
+  document.getElementById('body').innerHTML = `
+    <div class="card">
+      <div class="row-between">
+        <span class="strong small">${a.name}</span>
+        <span class="tag tag-gray" style="font-size:10px">${a.ver}</span>
+      </div>
+      <div class="smaller muted mt-4">适用品类：${c.name} · ${c.risk} 类</div>
+      <div class="notice notice-warn mt-8" style="font-size:11px;padding:8px 10px">
+        <span class="ic">!</span><div>未签署无法进入支付环节</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="strong small mb-8">协议正文</div>
+      <div class="doc">${DOCS[a.id] || ''}</div>
+    </div>
+
+    <div class="card">
+      <div class="strong small mb-8">关键条款确认（逐项勾选）</div>
+      ${a.items.map((it, i) => `
+        <label class="check-row mb-8" style="font-size:12px">
+          <input type="checkbox" checked>
+          <span>${it}</span>
+        </label>`).join('')}
+    </div>
+
+    <div class="card">
+      <div class="strong small mb-8">签名</div>
+      <div class="sign-pad">点击此处手写签名</div>
+      <div class="smaller muted mt-8">签署时间：2026-11-06 11:38 · 签署 IP 已记录</div>
+    </div>
+
+    <button class="btn btn-primary btn-block btn-lg" onclick="location.href='pay.html'">签署并进入支付</button>
+    <div class="smaller muted center mt-8">签署记录将随订单归档，纠纷时作为责任判定依据</div>
+  `;
+}
+render();
+</script>
+</body>
+</html>

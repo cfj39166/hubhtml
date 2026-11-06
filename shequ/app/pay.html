@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>低偿支付与结算 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .amount { text-align: center; padding: 18px 0 14px; }
+  .amount .n { font-size: 34px; font-weight: 700; color: var(--risk-c); letter-spacing: -1px; }
+  .amount .d { font-size: 11.5px; color: var(--ink-3); margin-top: 3px; }
+  .payrow { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line-soft); }
+  .payrow:last-child { border-bottom: none; }
+  .payrow .ic { font-size: 17px; }
+  .split-bar { display: flex; height: 26px; border-radius: var(--r-sm); overflow: hidden; font-size: 10px; font-weight: 600; color: #fff; }
+  .split-bar > div { display: grid; place-items: center; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">低偿支付与结算</h1>
+    <p class="muted small mt-4">平台给指导价，支持线上支付，完成后即时到账服务者，平台低抽成。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+
+    <div>
+      <div id="noteU09"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>资金分配（以 ¥15 代喂猫订单为例）</h3></div>
+        <div class="split-bar">
+          <div style="flex:15;background:var(--risk-a)">服务者 ¥14.25</div>
+          <div style="flex:0.75;background:var(--ink-4)">5%</div>
+        </div>
+        <div class="row-between small mt-12"><span class="muted">服务者实收</span><span class="strong">¥14.25</span></div>
+        <div class="row-between small mt-8"><span class="muted">平台抽成（5%，覆盖支付通道 + 运营）</span><span>¥0.75</span></div>
+        <div class="row-between small mt-8"><span class="muted">结算时点</span><span>双方确认签收后即时到账</span></div>
+        <div class="notice notice-info mt-12" style="font-size:12px">
+          <span class="ic">i</span>
+          <div>抽成保持极低水平 —— 目的是让服务者切实感受到「顺手帮个忙，真的有回报」。
+          远期许诺型的积分商城不如即时回报有效。</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>三种定价模式</h3></div>
+        <div class="tl">
+          <div class="tl-item done">
+            <div class="tt">A/B 类便民服务：平台指导价</div>
+            <div class="td">代取 3—5 元、遛狗喂猫 10—15 元、保洁 30—50 元/小时。低于市场价，为「帮忙」提供明确、可负担的兑换率。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">技能型服务：协商定价</div>
+            <div class="td">维修、理发、做饭、宠物美容。平台只提供参考区间和结算工具。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">C 类：机构定价</div>
+            <div class="td">平台不参与定价，只做资质展示和入口。</div>
+          </div>
+        </div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>「免费」看似美好，实际制造的是<b>模糊的人情债务</b>，反而抑制求助意愿。
+          「市场化定价」则会让邻里互助失去意义。低偿是唯一可持续的中间态。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU09').innerHTML = featureNote('U09');
+
+document.getElementById('phone').innerHTML = phoneOpen('确认支付', 'body', { back: 'sign.html', tabs: TABS.user });
+
+document.getElementById('body').innerHTML = `
+  <div class="card">
+    <div class="amount">
+      <div class="n">¥15.00</div>
+      <div class="d">简单遛狗/上门喂猫 · 单次</div>
+    </div>
+    <div class="hr"></div>
+    <div class="kv"><div class="k">服务者</div><div class="v">王秀兰 · 12 号楼</div></div>
+    <div class="kv"><div class="k">服务时段</div><div class="v">11-07 07:00—08:00</div></div>
+    <div class="kv"><div class="k">已签协议</div><div class="v">不需要（A 类服务）</div></div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">资金去向</div>
+    <div class="row-between small" style="padding:5px 0"><span class="muted">服务者实收</span><span class="strong">¥14.25</span></div>
+    <div class="row-between small" style="padding:5px 0"><span class="muted">平台服务费（5%）</span><span>¥0.75</span></div>
+    <div class="hr"></div>
+    <div class="smaller muted" style="line-height:1.7">
+      资金先由平台代收，服务完成并双方确认签收后<b>即时到账服务者</b>。
+      产生争议时资金自动冻结，争议解决后释放。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">支付方式</div>
+    <div class="payrow">
+      <span class="ic">💚</span>
+      <div style="flex:1"><div class="small strong">微信支付</div><div class="smaller muted">已绑定</div></div>
+      <span style="color:var(--brand)">✓</span>
+    </div>
+    <div class="payrow">
+      <span class="ic">💳</span>
+      <div style="flex:1"><div class="small strong">零钱</div><div class="smaller muted">余额 ¥126.40</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="background:var(--risk-a-bg);border-color:#c3ead2">
+    <div class="smaller" style="color:#10612e;line-height:1.75">
+      <b>交易保障</b><br>
+      · 资金平台代收，确认后释放<br>
+      · 争议订单自动冻结<br>
+      · 服务未完成可申请全额退款
+    </div>
+  </div>
+
+  <button class="btn btn-primary btn-block btn-lg mt-12" onclick="pay()">确认支付 ¥15.00</button>
+  <div class="smaller muted center mt-8">支付即表示同意《服务保障与退款规则》</div>
+`;
+
+function pay() {
+  toast('支付中…');
+  setTimeout(() => toast('支付成功，已通知服务者'), 1200);
+}
+</script>
+</body>
+</html>

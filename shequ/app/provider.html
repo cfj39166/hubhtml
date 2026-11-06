@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>服务者卡片 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .lvbox { border: 1px solid var(--line); border-radius: var(--r); padding: 13px 15px; background: var(--card); }
+  .lvbox + .lvbox { margin-top: 10px; }
+  .lvbox .h { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .lvbox .dot { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">服务者卡片</h1>
+    <p class="muted small mt-4">展示三层标识：真实邻居、平台认可、社区信赖；显示完成单量、评价、可接品类。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+
+    <div>
+      <div id="noteU06"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>三层标识的含义与解锁范围</h3></div>
+        <div id="lvList"></div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>实名认证只能证明「这个人存在」，不能证明「这个人可靠」。
+          <b>分层认证才证明可靠</b> —— 所以标识必须可见，且不可购买。</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>卡片上每一项的作用</h3></div>
+        <div class="tl">
+          <div class="tl-item done"><div class="tt">三层信任标识</div><div class="td">一眼判断「能不能信」。这是整个平台最核心的可见信息。</div></div>
+          <div class="tl-item done"><div class="tt">完成单量 + 评分</div><div class="td">区分「刚认证」和「长期稳定服务」。单量少不等于不可靠，但单量多能提供额外参考。</div></div>
+          <div class="tl-item done"><div class="tt">可接品类</div><div class="td">避免用户向只做保洁的人问「能不能帮接娃」—— 品类是门槛，不是标签。</div></div>
+          <div class="tl-item done"><div class="tt">资质明细（可展开）</div><div class="td">B 类服务必须能看到健康证、无犯罪记录等具体资质状态，而不只是一个「已认证」。</div></div>
+          <div class="tl-item done"><div class="tt">纠纷记录</div><div class="td">不隐藏。有纠纷记录不等于不可信，但用户有权知道。</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU06').innerHTML = featureNote('U06');
+
+document.getElementById('lvList').innerHTML = TRUST_LEVELS.map(l => `
+  <div class="lvbox" style="border-left:3px solid ${l.color}">
+    <div class="h">
+      <div class="dot" style="background:${l.color}">L${l.lv}</div>
+      <div style="flex:1">
+        <div class="strong">${l.name}</div>
+        <div class="smaller muted">全小区 ${l.count} 人</div>
+      </div>
+      <span class="tag tag-brand" style="font-size:10px">${l.unlock}</span>
+    </div>
+    <div class="smaller muted" style="line-height:1.7">${l.how}</div>
+  </div>`).join('');
+
+const P = PROVIDERS[0]; // 王秀兰
+
+document.getElementById('phone').innerHTML = phoneOpen('服务者详情', 'body', { back: 'index.html', tabs: TABS.user });
+
+document.getElementById('body').innerHTML = `
+  <div class="card">
+    <div class="row" style="gap:12px">
+      <div class="avatar avatar-lg" style="background:${Data.avatarColor(P.name)}">${Data.initials(P.name)}</div>
+      <div style="flex:1">
+        <div class="row wrapf" style="gap:6px">
+          <span class="strong" style="font-size:15px">${P.name}</span>
+          ${Data.trustDots(P.lv)}
+        </div>
+        <div class="mt-4"><span class="tag tag-brand">${Data.trustName(P.lv)}</span></div>
+        <div class="smaller muted mt-4">${Data.buildingById(P.building).name} · ${Data.districtById(P.district).name}</div>
+      </div>
+    </div>
+    <div class="hr"></div>
+    <div class="grid grid-3" style="gap:8px;text-align:center">
+      <div><div class="strong" style="font-size:17px">${P.orders}</div><div class="smaller muted">完成单量</div></div>
+      <div><div class="strong" style="font-size:17px">${P.rating}</div><div class="smaller muted">服务评分</div></div>
+      <div><div class="strong" style="font-size:17px">${P.score}</div><div class="smaller muted">信用分</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">三层信任明细</div>
+    ${TRUST_LEVELS.map(l => `
+      <div class="row-between" style="padding:7px 0;border-bottom:1px solid var(--line-soft)">
+        <div class="row" style="gap:7px">
+          <span style="width:7px;height:7px;border-radius:50%;background:${l.lv <= P.lv ? l.color : 'var(--line)'}"></span>
+          <span class="small ${l.lv <= P.lv ? 'strong' : 'muted'}">${l.name}</span>
+        </div>
+        <span class="smaller ${l.lv <= P.lv ? '' : 'muted-2'}" style="color:${l.lv <= P.lv ? 'var(--risk-a)' : ''}">
+          ${l.lv <= P.lv ? '✓ 已获得' : '未获得'}
+        </span>
+      </div>`).join('')}
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">资质与证件</div>
+    <div class="row wrapf" style="gap:6px">
+      ${P.certs.map(c => {
+        const cls = c.s === 'ok' ? 'tag-ok' : c.s === 'warn' ? 'tag-warn' : 'tag-gray';
+        const mk = c.s === 'ok' ? '✓' : c.s === 'warn' ? '!' : '…';
+        return `<span class="tag ${cls}">${mk} ${c.n}${c.exp ? ' · ' + c.exp + ' 到期' : ''}</span>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">可接品类</div>
+    ${P.cats.map(cid => {
+      const c = Data.catById(cid);
+      return `<div class="row-between" style="padding:7px 0;border-bottom:1px solid var(--line-soft)">
+        <div class="row" style="gap:7px">
+          <span>${c.icon}</span>
+          <span class="small">${c.name}</span>
+          <span class="tag ${Data.riskClass(c.risk)}" style="font-size:9px">${c.risk}</span>
+        </div>
+        <span class="smaller muted">${c.guide}</span>
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="card">
+    <div class="row-between mb-8">
+      <span class="strong small">纠纷记录</span>
+      <span class="tag tag-ok" style="font-size:10px">${P.disputes} 起</span>
+    </div>
+    <div class="smaller muted" style="line-height:1.7">
+      ${P.disputes === 0 ? '无纠纷记录。纠纷记录不隐藏 —— 有记录不等于不可信，但用户有权知道。' : '存在纠纷记录，详情可在订单凭证中查看。'}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="strong small mb-8">近期评价</div>
+    ${[
+      { n: '业主 12-3-502', t: '很快，取件码处理得很仔细，包裹完好', d: '2 天前', s: 5 },
+      { n: '业主 12-1-201', t: '帮我照看猫 4 天，每天都发照片，很放心', d: '5 天前', s: 5 },
+      { n: '业主 13-2-401', t: '沟通顺畅，价格公道', d: '1 周前', s: 5 }
+    ].map(r => `
+      <div style="padding:8px 0;border-bottom:1px solid var(--line-soft)">
+        <div class="row-between">
+          <span class="smaller strong">${r.n}</span>
+          <span class="smaller muted">${r.d}</span>
+        </div>
+        <div class="smaller mt-3" style="color:var(--risk-c)">${'★'.repeat(r.s)}</div>
+        <div class="smaller muted mt-3" style="line-height:1.6">${r.t}</div>
+      </div>`).join('')}
+  </div>
+
+  <button class="btn btn-primary btn-block btn-lg" onclick="toast('已向 ${P.name} 发起订单')">向她发布需求</button>
+`;
+</script>
+</body>
+</html>

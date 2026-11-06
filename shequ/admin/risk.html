@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>风险订单预警 — 管理后台</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .rk { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 14px; margin-bottom: 10px; }
+  .rk.high { border-left: 3px solid var(--risk-c); }
+  .rk.mid { border-left: 3px solid var(--risk-b); }
+  .lvdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:22px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">风险订单预警</h1>
+    <p class="muted small mt-4">未成年接送、多日宠物寄养、老人陪护、钥匙证件、高额报酬自动标记人工复核。高风险单必须拦截或加审。</p>
+  </div>
+
+  <div class="admingrid">
+    <aside class="aside">
+      <div class="aside-card">
+        <div class="aside-title">运营模块</div>
+        <nav class="asidenav">
+          <a href="index.html">📊 后台总览</a>
+          <a href="audit.html">🔍 审核队列 <span class="fid">A01</span></a>
+          <a href="category.html">🧩 品类风险配置 <span class="fid">A02</span></a>
+          <a href="risk.html" class="on">🚨 风险订单预警 <span class="fid">A03</span></a>
+          <a href="agreement.html">📄 协议模板 <span class="fid">A04</span></a>
+          <a href="ticket.html">⚖️ 纠纷工单池 <span class="fid">A05</span></a>
+          <a href="credit-rule.html">⭐ 信用分规则 <span class="fid">A06</span></a>
+          <a href="heatmap.html">🔥 供需热力图 <span class="fid">A07</span></a>
+          <a href="agency.html">🏢 机构管理 <span class="fid">A08</span></a>
+          <a href="insurance.html">🛡️ 保险与抽成 <span class="fid">A09</span></a>
+          <a href="riskword.html">🚫 内容风控 <span class="fid">A10</span></a>
+          <a href="dashboard.html">📈 数据看板 <span class="fid">A11</span></a>
+        </nav>
+      </div>
+    </aside>
+
+    <div>
+      <div id="noteA03"></div>
+
+      <div class="grid grid-4 mt-16 mb-16">
+        <div class="stat"><div class="k">预警规则</div><div class="v" id="stRules">0<small>条</small></div><div class="f">发布与接单环节生效</div></div>
+        <div class="stat"><div class="k">本周命中</div><div class="v" id="stHits">0<small>次</small></div><div class="f">拦截 6 次 / 加审 4 次</div></div>
+        <div class="stat"><div class="k">待人工复核</div><div class="v" style="color:var(--risk-c)">3<small>单</small></div><div class="f">最长等待 2h</div></div>
+        <div class="stat"><div class="k">误拦率</div><div class="v">12<small>%</small></div><div class="f">目标 &lt; 15%</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>预警规则配置</h3><span class="sub">命中后自动执行的动作</span></div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>规则</th><th>风险级别</th><th>自动动作</th><th>本周命中</th><th>操作</th></tr></thead>
+            <tbody id="tbRules">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="sec-head">
+        <h2>当前待复核订单</h2>
+        <p>被规则命中的订单全部进入这里，必须人工判定后才能继续流转。</p>
+      </div>
+
+      <div id="rklist"></div>
+
+      <div class="card mt-16">
+        <div class="card-head"><h3>为什么是「先拦后审」而不是「先放后审」</h3></div>
+        <div class="tl">
+          <div class="tl-item bad">
+            <div class="tt">先放后审 = 事后追责</div>
+            <div class="td">孩子已经交给了陌生人、宠物已经在别人家、证件已经离开视线 —— 这时候平台再判定责任，
+            也改变不了已经发生的事。社区服务里，很多风险的代价是不可逆的。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">先拦后审 = 把风险挡在发生之前</div>
+            <div class="td">命中高风险规则的订单直接暂停，通知双方等待复核。代价是几分钟的延迟，
+            换来的是「这类事根本没机会发生」。</div>
+          </div>
+          <div class="tl-item now">
+            <div class="tt">误拦是可以接受的成本</div>
+            <div class="td">12% 的误拦率意味着有些正常订单会被耽搁。但社区服务的场景下，
+            <b>拦错的成本远低于漏放的代价</b> —— 一次未成年接送事故足以摧毁整个平台。</div>
+          </div>
+        </div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>风险规则必须<b>在发布和接单两个环节都生效</b>。只在发布时拦，服务者仍可能在接单后才看到风险信息 ——
+          而这时候拒绝接单会被判为「放鸽子」，服务者反而受损。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('admin/index.html', { root: '../' });
+document.getElementById('noteA03').innerHTML = featureNote('A03');
+document.getElementById('stRules').innerHTML = RISK_RULES.length + '<small>条</small>';
+document.getElementById('stHits').innerHTML =
+  RISK_RULES.reduce((s, r) => s + r.hit, 0) + '<small>次</small>';
+
+document.getElementById('tbRules').innerHTML = RISK_RULES.map(r => `
+  <tr>
+    <td class="strong">${r.name}</td>
+    <td>
+      <span class="tag ${r.level === 'high' ? 'tag-danger' : 'tag-warn'}">
+        <span class="lvdot" style="background:${r.level === 'high' ? 'var(--risk-c)' : 'var(--risk-b)'}"></span>
+        ${r.level === 'high' ? '高' : '中'}
+      </span>
+    </td>
+    <td class="small" style="color:var(--ink-2)">${r.action}</td>
+    <td class="mono">${r.hit}</td>
+    <td><button class="btn btn-sm" onclick="toast('规则已更新')">编辑</button></td>
+  </tr>`).join('');
+
+// 待复核订单：从 ORDERS 中挑出带 flags 的
+const FLAGGED = ORDERS.filter(o => o.flags.length > 0);
+
+const RULE_OF = {
+  'JH0612002': ['minor'],
+  'JH0611002': ['item', 'price'],
+  'JH0611003': ['elder']
+};
+
+document.getElementById('rklist').innerHTML = FLAGGED.map(o => {
+  const c = Data.catById(o.catId);
+  const b = Data.buildingById(o.building);
+  const rules = (RULE_OF[o.id] || []).map(k => RISK_RULES.find(r => r.key === k)).filter(Boolean);
+  const high = rules.some(r => r.level === 'high');
+  return `
+  <div class="rk ${high ? 'high' : 'mid'}">
+    <div class="row-between wrapf mb-8" style="gap:10px">
+      <div class="row" style="gap:8px">
+        <span class="tag ${Data.riskClass(c.risk)}">${c.risk} 类</span>
+        <span class="strong">${c.name}</span>
+        <span class="tag ${Data.statusClass(o.status)}">${Data.statusLabel(o.status)}</span>
+      </div>
+      <span class="mono muted">${o.id}</span>
+    </div>
+    <div class="grid grid-2" style="gap:14px">
+      <div>
+        <div class="smaller muted mb-4">订单信息</div>
+        <div class="kv"><span class="k">需求方</span><span class="v">${o.demander}</span></div>
+        <div class="kv"><span class="k">服务者</span><span class="v">${o.provider || '待接单'}</span></div>
+        <div class="kv"><span class="k">楼栋</span><span class="v">${b.name} · ${b.districtName}</span></div>
+        <div class="kv"><span class="k">金额</span><span class="v"><span class="price">¥${o.amount}</span></span></div>
+      </div>
+      <div>
+        <div class="smaller muted mb-4">命中的规则</div>
+        ${rules.map(r => `
+          <div class="row" style="gap:6px;padding:5px 0;border-bottom:1px solid var(--line-soft)">
+            <span class="tag ${r.level === 'high' ? 'tag-danger' : 'tag-warn'}" style="font-size:10px">${r.level === 'high' ? '高' : '中'}</span>
+            <span class="small" style="flex:1">${r.name}</span>
+          </div>`).join('')}
+        <div class="smaller muted mt-8">执行动作：${rules[0] ? rules[0].action : '人工复核'}</div>
+      </div>
+    </div>
+    <div class="hr"></div>
+    <div class="smaller muted mb-4">订单标记</div>
+    <div class="row wrapf" style="gap:6px">
+      ${o.flags.map(f => `<span class="tag tag-danger" style="font-size:10px">⚠ ${f}</span>`).join('')}
+    </div>
+    <div class="row mt-12" style="gap:6px">
+      <button class="btn btn-sm btn-primary" onclick="toast('已通过复核，订单继续流转')">通过复核</button>
+      <button class="btn btn-sm" onclick="toast('已通知双方补充材料')">通知补充</button>
+      <button class="btn btn-sm btn-danger" onclick="toast('订单已终止，资金原路退回')">终止订单</button>
+    </div>
+  </div>`;
+}).join('');
+</script>
+</body>
+</html>

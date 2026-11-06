@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三层信任标识 — 公共能力</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .lvl { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--card); padding: 18px; }
+  .lvl .hd { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .lvl .badge { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center;
+    font-size: 17px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .lvl .nm { font-size: 15px; font-weight: 700; }
+  .lvl .unlock { font-size: 11.5px; margin-top: 2px; }
+  .lvl ul { margin: 0; padding-left: 17px; font-size: 12.5px; color: var(--ink-2); line-height: 1.85; }
+  .lvl.lv1 { border-top: 3px solid #1f6feb; }
+  .lvl.lv2 { border-top: 3px solid #16a34a; }
+  .lvl.lv3 { border-top: 3px solid #7c3aed; }
+  .chip { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 5px;
+    background: var(--line-soft); color: var(--ink-2); margin: 3px 5px 3px 0; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">公共能力 · 三层信任标识</h1>
+    <p class="muted small mt-4">真实邻居、平台认可、社区信赖，用户端可见。100 栋楼陌生人场景，信任必须可视化。</p>
+  </div>
+
+  <div id="noteX01" class="mb-16"></div>
+
+  <div class="grid grid-3 mb-16" id="lvlList"></div>
+
+  <div class="card mb-16">
+    <div class="card-head"><h3>标识在用户端的呈现方式</h3><span class="sub">同一套数据，四个端口径一致</span></div>
+    <div class="grid grid-2">
+      <div>
+        <div class="smaller muted mb-8">服务者卡片上的样子</div>
+        <div id="pvList"></div>
+      </div>
+      <div>
+        <div class="smaller muted mb-8">设计要点</div>
+        <div class="tl">
+          <div class="tl-item done">
+            <div class="tt">三层标识 + 文字名称同时出现</div>
+            <div class="td">只有小圆点或只有图标，居民看不懂。必须「三点 + 文字」同时给 —— 圆点用于快速扫视，文字用于确认。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">信用分与信任等级是两个维度</div>
+            <div class="td">等级是「准入门槛」（能不能接这类单），信用分是「历史表现」（做得好不好）。
+            两者都要显示，但不要合并成一个数字 —— 合并后居民无法判断「这个人有没有资格」。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">社区信赖不可购买</div>
+            <div class="td">lv3 由完成单量、评价、纠纷记录、楼栋长推荐动态生成。买不到、申请不到 ——
+            这是它有价值的前提。一旦可购买，整个信任体系立刻失效。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>三层信任与品类的对应关系</h3></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>信任等级</th><th>可接品类</th><th>强制要求</th><th>典型服务</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="strong" style="color:#1f6feb">lv1 真实邻居</td>
+            <td><span class="tag tag-a">A 类</span></td>
+            <td class="small">手机号 + 楼栋房号核验</td>
+            <td class="small">代取快递、代扔垃圾、借还工具、遛狗喂猫</td>
+          </tr>
+          <tr>
+            <td class="strong" style="color:#16a34a">lv2 平台认可</td>
+            <td><span class="tag tag-a">A 类</span> <span class="tag tag-b">B 类</span></td>
+            <td class="small">实名 + 人脸 + 无犯罪记录承诺 + 品类资质</td>
+            <td class="small">宠物寄养、家政保洁、帮接娃、陪诊、跑腿代办</td>
+          </tr>
+          <tr>
+            <td class="strong" style="color:#7c3aed">lv3 社区信赖</td>
+            <td><span class="tag tag-a">A 类</span> <span class="tag tag-b">B 类</span></td>
+            <td class="small">动态生成，无需额外认证</td>
+            <td class="small">同上，但高风险单优先派单</td>
+          </tr>
+          <tr>
+            <td class="strong muted">机构</td>
+            <td><span class="tag tag-c">C 类</span></td>
+            <td class="small">营业执照 + 行业许可 + 全员资格证</td>
+            <td class="small">托育、养老照护、医疗陪护</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="notice notice-danger mt-12" style="font-size:12px">
+      <span class="ic">✕</span>
+      <div>个人<b>永远不能</b>通过提升信任等级获得 C 类接单资格。lv3 也接不了托育、失能照护、医疗陪护 ——
+      这不是等级问题，是资质问题。</div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('common/index.html', { root: '../' });
+document.getElementById('noteX01').innerHTML = featureNote('X01');
+
+document.getElementById('lvlList').innerHTML = TRUST_LEVELS.map(l => `
+  <div class="lvl lv${l.lv}">
+    <div class="hd">
+      <div class="badge" style="background:${l.color}">${l.lv}</div>
+      <div>
+        <div class="nm">${l.name}</div>
+        <div class="unlock" style="color:${l.color}">${l.unlock}</div>
+      </div>
+    </div>
+    <ul>${l.how.split('，').map(x => `<li>${x}</li>`).join('')}</ul>
+    <div class="hr"></div>
+    <div class="row-between">
+      <span class="smaller muted">当前人数</span>
+      <span class="strong">${l.count.toLocaleString()} 人</span>
+    </div>
+    <div class="bar mt-8"><i style="width:${Math.round(l.count / 1284 * 100)}%;background:${l.color}"></i></div>
+  </div>`).join('');
+
+document.getElementById('pvList').innerHTML = PROVIDERS.slice(0, 4).map(p => `
+  <div class="card" style="padding:12px;margin-bottom:8px">
+    <div class="row" style="gap:10px">
+      <div class="avatar" style="background:${Data.avatarColor(p.name)}">${Data.initials(p.name)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="row wrapf" style="gap:6px">
+          <span class="strong small">${p.name}</span>
+          ${Data.trustDots(p.lv)}
+          <span class="tag tag-brand" style="font-size:10px">${Data.trustName(p.lv)}</span>
+        </div>
+        <div class="smaller muted mt-4">信用分 ${p.score} · ${p.orders} 单 · 评分 ${p.rating}</div>
+      </div>
+    </div>
+  </div>`).join('');
+</script>
+</body>
+</html>

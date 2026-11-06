@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>拼单/轮值工具 — 用户端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .gcard { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 13px; margin-bottom: 9px; }
+  .avs { display: flex; }
+  .avs .a { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff;
+    display: grid; place-items: center; font-size: 9px; font-weight: 700; color: #fff; margin-left: -6px; }
+  .avs .a:first-child { margin-left: 0; }
+  .avs .a.more { background: var(--line-soft); color: var(--ink-3); }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">拼单/轮值工具</h1>
+    <p class="muted small mt-4">接娃拼单、团购自提、寒暑假看护拼班，平台只做协调和确认。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div id="noteU15"></div>
+      <div class="card">
+        <div class="card-head"><h3>「只做协调」是什么意思</h3></div>
+        <p class="small" style="line-height:1.9;color:var(--ink-2)">
+          拼单和轮值的本质是<b>家长之间的自治安排</b>，平台不参与排班决策、不派单、不抽成。
+          平台提供的只有三样东西：<b>成员管理、交接确认、争议留痕</b>。
+        </p>
+        <div class="hr"></div>
+        <div class="small strong mb-8">这条边界的法律意义</div>
+        <div class="tl">
+          <div class="tl-item bad">
+            <div class="tt">如果平台排班派单</div>
+            <div class="td">平台就参与了接送服务的组织与指派，一旦出事，平台可能被认定为组织者而承担责任。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">平台只做协调工具</div>
+            <div class="td">轮值顺序由家长自行商定，交接由家长确认码完成。平台是工具提供方，不是服务组织方。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">拼班规避托育资质红线</div>
+            <div class="td">寒暑假看护拼班限定为「作业看护」，不涉及全日托育、不提供餐食住宿，因此不构成托育经营。</div>
+          </div>
+        </div>
+        <div class="notice notice-danger mt-12" style="font-size:12px">
+          <span class="ic">🚫</span>
+          <div>任何拼单/轮值都<b>不替代监护责任</b>。平台在拼单协议中明确这一点，并要求所有成员勾选确认。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('app/index.html', { root: '../' });
+document.getElementById('noteU15').innerHTML = featureNote('U15');
+
+document.getElementById('phone').innerHTML = phoneOpen('拼单 / 轮值', 'body', { back: 'index.html', tabs: TABS.user });
+
+document.getElementById('body').innerHTML = `
+  <div class="notice notice-warn mb-12" style="font-size:11.5px;padding:9px 11px">
+    <span class="ic">!</span>
+    <div>平台只做协调和确认，<b>不替代监护责任</b>，不参与排班决策。</div>
+  </div>
+
+  ${GROUPS.map(g => {
+    const colors = ['#1f6feb','#16a34a','#d97706','#7c3aed','#0891b2'];
+    let avs = '';
+    for (let i = 0; i < Math.min(g.members, 4); i++) {
+      avs += `<div class="a" style="background:${colors[i % 5]}">${'居'}</div>`;
+    }
+    if (g.members > 4) avs += `<div class="a more">+${g.members - 4}</div>`;
+    return `
+    <div class="gcard">
+      <div class="row-between mb-8">
+        <span class="tag tag-brand" style="font-size:10px">${g.type}</span>
+        <span class="tag ${g.status === '招募中' ? 'tag-warn' : 'tag-ok'}" style="font-size:10px">${g.status}</span>
+      </div>
+      <div class="strong small">${g.name}</div>
+      <div class="smaller muted mt-4">${g.schedule} · ${Data.buildingById(g.building).name}</div>
+      <div class="row-between mt-8">
+        <div class="avs">${avs}</div>
+        <span class="smaller muted">${g.members}/${g.need} 人</span>
+      </div>
+      <div class="smaller muted mt-8" style="line-height:1.6">${g.note}</div>
+      ${g.status === '招募中' ? `<button class="btn btn-sm btn-primary btn-block mt-8" onclick="toast('已提交加入申请')">申请加入</button>` : ''}
+    </div>`;
+  }).join('')}
+
+  <div class="card">
+    <div class="strong small mb-8">发起拼单</div>
+    <div class="row wrapf" style="gap:6px">
+      <button class="btn btn-sm" onclick="toast('选择「接娃拼单」')">🚗 接娃拼单</button>
+      <button class="btn btn-sm" onclick="toast('选择「团购自提」')">📦 团购自提</button>
+      <button class="btn btn-sm" onclick="toast('选择「看护拼班」')">📚 寒暑假看护拼班</button>
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

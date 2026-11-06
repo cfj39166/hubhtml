@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>本楼需求初审 — 协调人端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .q { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 12px; margin-bottom: 9px; }
+  .q.new { border-left: 3px solid var(--brand); }
+  .q.warn { border-left: 3px solid var(--risk-b); }
+  .q.high { border-left: 3px solid var(--risk-c); }
+  .gapitem { font-size: 11px; color: var(--risk-c); }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">协调人端 · 本楼需求初审</h1>
+    <p class="muted small mt-4">查看本楼新发布需求，标记异常 / 高风险，提醒补充信息。第一时间降低风险，比平台远程审核快。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <a href="index.html" class="btn btn-sm">身份职责</a>
+        <a href="review.html" class="btn btn-sm btn-primary">需求初审</a>
+        <a href="recommend.html" class="btn btn-sm">服务者推荐</a>
+        <a href="dispute.html" class="btn btn-sm">纠纷初调</a>
+        <a href="board.html" class="btn btn-sm">楼栋看板</a>
+        <a href="switch.html" class="btn btn-sm">开通开关</a>
+      </div>
+
+      <div id="noteC02"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>初审只做一件事：找信息缺口</h3></div>
+        <p class="small" style="color:var(--ink-2);line-height:1.75">
+          协调人<b>不判断这个需求该不该发</b>，也不判断价格合不合理。他只看一件事：
+          发布者有没有把「出了事需要说清楚的信息」写全。
+        </p>
+        <div class="hr"></div>
+        <div class="small strong mb-8">典型的缺口长这样</div>
+        <div class="notice notice-danger" style="font-size:12px;margin-bottom:8px">
+          <span class="ic">✕</span>
+          <div>「帮接娃」写了学校和时间，但<b>没写交接方式和固定路线</b> —— 出事时无法界定责任</div>
+        </div>
+        <div class="notice notice-warn" style="font-size:12px;margin-bottom:8px">
+          <span class="ic">!</span>
+          <div>「宠物寄养」写了天数，但<b>没写是否用药、紧急联系人</b> —— 宠物突发状况时无从处置</div>
+        </div>
+        <div class="notice notice-warn" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>「代送物品」写了地址，但<b>物品来源声明空白</b> —— 这是违禁品拦截规则的第一道口</div>
+        </div>
+        <div class="notice notice-info mt-12" style="font-size:12px">
+          <span class="ic">i</span>
+          <div>协调人的动作是<b>「提醒补充」</b>，不是「驳回」。需求仍然会进入匹配池，
+          但协调人的提醒会同时推给发布者 —— 补充得越快，接单越快，这个激励比强制审核有效。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('coord/index.html', { root: '../' });
+document.getElementById('noteC02').innerHTML = featureNote('C02');
+
+const MY_B = 'B012';
+
+// 初审队列：本楼需求 + 平台风险规则命中的补充提示
+const QUEUE = [
+  { id: 'JH0612002', cat: 'B3', level: 'high', status: '待提醒',
+    gaps: ['未填写「固定路线」完整路径', '未确认家长确认码交接人'],
+    hit: '风险规则命中：涉及未成年接送', time: '11-06 08:30' },
+  { id: 'JH0612001', cat: 'A1', level: 'ok', status: '已通过',
+    gaps: [], hit: '信息完整', time: '11-06 09:12' },
+  { id: 'JH0612007', cat: 'A2', level: 'ok', status: '已通过',
+    gaps: [], hit: '信息完整', time: '11-06 10:45' },
+  { id: 'JH0612006', cat: 'A3', level: 'new', status: '待初审',
+    gaps: ['借用物品未写明是否含配件'], hit: '—', time: '11-06 10:20' }
+];
+
+const LV_CLS = { high: 'high', warn: 'warn', ok: '', new: 'new' };
+const LV_TAG = {
+  high: '<span class="tag tag-danger" style="font-size:10px">高风险 · 待提醒</span>',
+  warn: '<span class="tag tag-warn" style="font-size:10px">待提醒</span>',
+  ok: '<span class="tag tag-ok" style="font-size:10px">已通过</span>',
+  new: '<span class="tag tag-brand" style="font-size:10px">待初审</span>'
+};
+
+document.getElementById('phone').innerHTML = phoneOpen('本楼需求初审 · ' + Data.buildingById(MY_B).name, 'body', {
+  tabs: TABS.coord, right: '4 条'
+});
+
+document.getElementById('body').innerHTML = `
+  <div class="card" style="padding:11px;background:var(--brand-softer);border-color:#d9e7ff">
+    <div class="smaller" style="line-height:1.7;color:var(--ink-2)">
+      <b>只看本楼</b>（${Data.buildingById(MY_B).name}）<br>
+      初审不判断该不该发，只找信息缺口
+    </div>
+  </div>
+
+  <div class="row" style="gap:6px;margin-bottom:11px">
+    <button class="btn btn-sm btn-primary" style="flex:1">待处理 2</button>
+    <button class="btn btn-sm" style="flex:1">已处理 2</button>
+  </div>
+
+  <div class="sec-head" style="margin:0 0 8px">
+    <div class="row-between">
+      <h2 style="font-size:13px">🔍 本楼新发布</h2>
+      <span class="smaller muted">${QUEUE.length} 条</span>
+    </div>
+  </div>
+
+  ${QUEUE.map(q => {
+    const c = Data.catById(q.cat);
+    const o = Data.orderById(q.id);
+    return `
+    <div class="q ${LV_CLS[q.level]}">
+      <div class="row-between mb-8">
+        <div class="row" style="gap:6px">
+          <span class="tag ${Data.riskClass(c.risk)}" style="font-size:10px">${c.risk} 类</span>
+          <span class="strong small">${c.name}</span>
+        </div>
+        ${LV_TAG[q.level]}
+      </div>
+      <div class="smaller muted" style="line-height:1.75">
+        ${o ? Object.entries(o.fields).slice(0, 2).map(([k, v]) => `${k}：${v}`).join('<br>') : ''}
+        <br>发布时间：${q.time}
+      </div>
+      ${q.gaps.length ? `
+        <div class="mt-8" style="padding:8px 9px;background:var(--risk-c-bg);border-radius:5px">
+          <div class="smaller strong" style="color:#8f1d19;margin-bottom:3px">发现的信息缺口</div>
+          ${q.gaps.map(g => `<div class="gapitem">· ${g}</div>`).join('')}
+        </div>` : ''}
+      ${q.level === 'high' ? `<div class="smaller mt-8" style="color:var(--risk-b)">⚠ ${q.hit}</div>` : ''}
+      ${q.level === 'high' || q.level === 'new' ? `
+        <div class="row mt-8" style="gap:6px">
+          <button class="btn btn-sm" style="flex:1" onclick="toast('已标记异常，已通知平台复核')">标记异常</button>
+          <button class="btn btn-sm btn-primary" style="flex:1" onclick="toast('已提醒发布者补充信息')">提醒补充</button>
+        </div>` : `
+        <div class="smaller muted mt-8">✓ ${q.hit} · 无需动作</div>`}
+    </div>`;
+  }).join('')}
+
+  <div class="card" style="background:var(--line-soft);border:1px dashed var(--line)">
+    <div class="smaller muted center" style="line-height:1.7">
+      提醒不是驳回，需求仍会进入匹配池<br>
+      补充得越快，接单越快
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>

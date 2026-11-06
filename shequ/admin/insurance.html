@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>保险与抽成配置 — 管理后台</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .calc { background: var(--brand-softer); border: 1px solid #d9e7ff; border-radius: var(--r); padding: 14px; }
+  .calc .row2 { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+  .calc .row2.total { border-top: 1px solid #cfe0ff; margin-top: 6px; padding-top: 10px; font-weight: 700; }
+  .num { font-family: "SF Mono", Consolas, monospace; font-weight: 700; }
+  .cov { display: flex; gap: 9px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); font-size: 12.5px; }
+  .cov:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:22px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">保险与抽成配置</h1>
+    <p class="muted small mt-4">平台责任险、订单险、抽成比例、退款规则。低偿模式必须控制成本和风险。</p>
+  </div>
+
+  <div class="admingrid">
+    <aside class="aside">
+      <div class="aside-card">
+        <div class="aside-title">运营模块</div>
+        <nav class="asidenav">
+          <a href="index.html">📊 后台总览</a>
+          <a href="audit.html">🔍 审核队列 <span class="fid">A01</span></a>
+          <a href="category.html">🧩 品类风险配置 <span class="fid">A02</span></a>
+          <a href="risk.html">🚨 风险订单预警 <span class="fid">A03</span></a>
+          <a href="agreement.html">📄 协议模板 <span class="fid">A04</span></a>
+          <a href="ticket.html">⚖️ 纠纷工单池 <span class="fid">A05</span></a>
+          <a href="credit-rule.html">⭐ 信用分规则 <span class="fid">A06</span></a>
+          <a href="heatmap.html">🔥 供需热力图 <span class="fid">A07</span></a>
+          <a href="agency.html">🏢 机构管理 <span class="fid">A08</span></a>
+          <a href="insurance.html" class="on">🛡️ 保险与抽成 <span class="fid">A09</span></a>
+          <a href="riskword.html">🚫 内容风控 <span class="fid">A10</span></a>
+          <a href="dashboard.html">📈 数据看板 <span class="fid">A11</span></a>
+        </nav>
+      </div>
+    </aside>
+
+    <div>
+      <div id="noteA09"></div>
+
+      <div class="card mt-16">
+        <div class="card-head"><h3>抽成比例：5% 是怎么算出来的</h3></div>
+        <p class="small" style="color:var(--ink-2);line-height:1.75">
+          社区服务是低偿模式，单笔金额小（5 元取快递、20 元接娃）。抽成过高会让服务者觉得不值，
+          抽成过低平台无法覆盖保险和运营成本。5% 是这两条线的交点。
+        </p>
+        <div class="grid grid-2 mt-12">
+          <div class="calc">
+            <div class="smaller muted mb-8">示例：一笔 ¥20 的接娃订单</div>
+            <div class="row2"><span>用户支付</span><span class="num">¥20.00</span></div>
+            <div class="row2"><span>平台抽成（5%）</span><span class="num" style="color:var(--risk-b)">− ¥1.00</span></div>
+            <div class="row2"><span>订单险成本</span><span class="num" style="color:var(--risk-b)">− ¥0.30</span></div>
+            <div class="row2"><span>支付通道费</span><span class="num" style="color:var(--risk-b)">− ¥0.12</span></div>
+            <div class="row2 total"><span>服务者实收</span><span class="num" style="color:var(--risk-a)">¥18.58</span></div>
+            <div class="smaller muted mt-8" style="line-height:1.65">
+              服务者实收占比 <b>92.9%</b>。这是「值得顺手做一下」的心理线 ——
+              低于 90% 服务者会觉得平台拿太多。
+            </div>
+          </div>
+          <div>
+            <div class="small strong mb-8">为什么不做「免费互助」</div>
+            <div class="small" style="color:var(--ink-2);line-height:1.75">
+              免费模式的问题不是「平台赚不到钱」，而是<b>它会制造人情债</b>。
+              帮邻居取了三次快递，第四次你不好意思拒绝了，但心里不舒服 ——
+              这种关系持续不了几轮。
+            </div>
+            <div class="hr"></div>
+            <div class="small" style="color:var(--ink-2);line-height:1.75">
+              低偿的作用是<b>把互助变成交易</b>：双方都清楚这是有偿服务，可以坦然拒绝、可以要求质量、
+              可以在不满意时走投诉流程。反而更可持续。
+            </div>
+            <div class="notice notice-info mt-12" style="font-size:12px">
+              <span class="ic">i</span>
+              <div>平台给<b>指导价</b>而不是固定价。居民可以上下浮动，但异常高于指导价 5 倍的订单会被风控拦截 ——
+              高额报酬往往意味着「这件事不该在社区平台上做」。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-16">
+        <div class="card-head"><h3>保险覆盖范围</h3><span class="sub">B 类订单自动投保，A 类不投保</span></div>
+        <div class="cov">
+          <span class="tag tag-ok" style="flex-shrink:0">✓ 覆盖</span>
+          <div><b>服务过程中的人身意外</b> —— 服务者在提供服务时发生意外伤害，订单险赔付。</div>
+        </div>
+        <div class="cov">
+          <span class="tag tag-ok" style="flex-shrink:0">✓ 覆盖</span>
+          <div><b>服务过程中的财产损失</b> —— 上门服务导致物品损坏，在约定范围内赔付。</div>
+        </div>
+        <div class="cov">
+          <span class="tag tag-ok" style="flex-shrink:0">✓ 覆盖</span>
+          <div><b>宠物寄养期间的医疗费用</b> —— 在需求方授权的费用上限内赔付（如 ¥800）。</div>
+        </div>
+        <div class="cov">
+          <span class="tag tag-danger" style="flex-shrink:0">✕ 不覆盖</span>
+          <div><b>服务者自身既往疾病发作</b> —— 属于个人健康范畴，非服务导致的伤害。</div>
+        </div>
+        <div class="cov">
+          <span class="tag tag-danger" style="flex-shrink:0">✕ 不覆盖</span>
+          <div><b>超出授权额度的宠物医疗费用</b> —— 超出部分需需求方另行承担，所以额度必须在发布时写清。</div>
+        </div>
+        <div class="cov">
+          <span class="tag tag-danger" style="flex-shrink:0">✕ 不覆盖</span>
+          <div><b>故意行为、违法行为、违规接单</b> —— 包括证件过期仍接单、超出认证品类接单。</div>
+        </div>
+        <div class="notice notice-warn mt-12" style="font-size:12px">
+          <span class="ic">!</span>
+          <div>「不覆盖」的条目必须在<b>服务者接单前明确展示</b>，而不是藏在协议附件里。
+          服务者有权在接单前知道自己承担什么风险 —— 这才是公平的。</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2 mt-16">
+        <div class="card">
+          <div class="card-head"><h3>抽成配置</h3></div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>品类</th><th>抽成</th><th>订单险</th><th>说明</th></tr></thead>
+              <tbody id="tbCommission"></tbody>
+            </table>
+          </div>
+          <div class="smaller muted mt-8">A 类抽 3%（单笔 5 元，抽 0.15 元）；B 类抽 5%（含保险成本）。</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>退款与冻结规则</h3></div>
+          <div class="tl">
+            <div class="tl-item done">
+              <div class="tt">服务完成前 · 资金冻结在平台</div>
+              <div class="td">用户支付后资金不直接到服务者账户，而是由平台冻结。这是低偿模式下的交易保障。</div>
+            </div>
+            <div class="tl-item done">
+              <div class="tt">双方确认 · 即时释放</div>
+              <div class="td">服务完成且用户确认后，资金实时到账服务者。即时回报是最有效的激励。</div>
+            </div>
+            <div class="tl-item now">
+              <div class="tt">进入纠纷 · 继续冻结</div>
+              <div class="td">任一方发起纠纷，资金冻结至判定结束。<b>冻结不是没收</b> —— 这一点必须向服务者说明清楚。</div>
+            </div>
+            <div class="tl-item">
+              <div class="tt">判定完成 · 按比例分配</div>
+              <div class="td">全额退款、部分退款、全额支付三种结果，由平台依据证据链判定。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-16" style="gap:8px">
+        <button class="btn btn-primary" onclick="toast('保险与抽成配置已保存')">保存配置</button>
+        <button class="btn" onclick="toast('已进入退款规则编辑')">编辑退款规则</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('admin/index.html', { root: '../' });
+document.getElementById('noteA09').innerHTML = featureNote('A09');
+document.getElementById('tbCommission').innerHTML =
+  CATEGORIES.filter(c => c.risk !== 'C').map(c => `
+    <tr>
+      <td class="small strong">${c.name}</td>
+      <td class="mono">${c.risk === 'A' ? '3%' : '5%'}</td>
+      <td class="smaller">${c.insurance ? '自动投保' : '不投保'}</td>
+      <td class="smaller muted">${c.risk === 'A' ? '单笔金额小，低抽成' : '含保险成本'}</td>
+    </tr>`).join('');
+</script>
+</body>
+</html>

@@ -978,6 +978,15 @@ footer b{color:var(--pink-soft);}
 <div id="toast"></div>
 <audio id="bgm" loop preload="none"></audio>
 
+<!-- 返回合集的浮动按钮（从 hub.html 跳进来时才显示） -->
+<a id="backToHub" href="hub.html" style="display:none;position:fixed;top:18px;right:18px;z-index:75;
+  display:none;align-items:center;gap:7px;padding:9px 17px 9px 13px;border-radius:100px;
+  background:rgba(20,10,40,.92);border:1px solid rgba(255,143,177,.45);
+  backdrop-filter:blur(12px);font-size:.78rem;letter-spacing:.08em;color:#ff8fb1;
+  text-decoration:none;box-shadow:0 8px 26px rgba(0,0,0,.5);transition:transform .3s;">
+  <span style="font-size:1rem;line-height:1">‹</span> 返回合集
+</a>
+
 <script>
 /* ================================================================
    CONFIG —— 只改这一块，全站生效
@@ -1778,6 +1787,21 @@ const Fireworks=(function(){
 /* ================================================================
    7. 主站渲染
    ================================================================ */
+
+// 从 hub 跳进来时显示返回合集按钮
+(function(){
+  const params=new URLSearchParams(location.search);
+  if(params.get("from")==="hub"){
+    const btn=document.getElementById("backToHub");
+    if(btn){
+      btn.style.display="flex";
+      // hover/active 效果
+      btn.addEventListener("mouseenter",()=>btn.style.transform="translateY(-2px) scale(1.04)");
+      btn.addEventListener("mouseleave",()=>btn.style.transform="none");
+    }
+  }
+})();
+
 const App=(function(){
   let booted=false;
 

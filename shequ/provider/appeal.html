@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>评价与申诉 — 服务者端</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .rev { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 12px; margin-bottom: 9px; }
+  .stars { color: #f59e0b; font-size: 12px; letter-spacing: 1px; }
+  .logrow { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); font-size: 12px; }
+  .logrow:last-child { border-bottom: none; }
+  .logrow .d { color: var(--ink-3); width: 62px; flex-shrink: 0; }
+  .delta { font-weight: 700; font-family: "SF Mono", Consolas, monospace; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+
+<div class="wrap" style="padding-top:24px">
+  <div class="mb-16">
+    <h1 style="font-size:21px">服务者端 · 评价与申诉</h1>
+    <p class="muted small mt-4">查看评价、对恶意差评申诉、信用分变动记录。双向公平，保护供给端。</p>
+  </div>
+
+  <div class="split">
+    <div id="phone"></div>
+    <div>
+      <div class="row wrapf mb-12" style="gap:6px">
+        <a href="join.html" class="btn btn-sm">分层认证</a>
+        <a href="cats.html" class="btn btn-sm">品类开关</a>
+        <a href="hall.html" class="btn btn-sm">接单大厅</a>
+        <a href="certs.html" class="btn btn-sm">资质到期</a>
+        <a href="agreement.html" class="btn btn-sm">协议保险</a>
+        <a href="track.html" class="btn btn-sm">过程留痕</a>
+        <a href="income.html" class="btn btn-sm">收入结算</a>
+        <a href="appeal.html" class="btn btn-sm btn-primary">评价申诉</a>
+      </div>
+
+      <div id="noteS08"></div>
+
+      <div class="card">
+        <div class="card-head"><h3>为什么必须给服务者一条申诉通道</h3></div>
+        <div class="tl">
+          <div class="tl-item done">
+            <div class="tt">差评不能一票否决</div>
+            <div class="td">居民也会记错、情绪化、或者干脆是同行刷的。如果差评立刻扣分且无法申辩，服务者会主动放弃高风险品类 —— 结果是平台供给塌陷。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">申诉要有举证，不是喊冤</div>
+            <div class="td">申诉必须挂上证据：过程照片、确认码、聊天记录。这三样在服务过程中本来就在留痕，申诉时直接调用，服务者不需要额外做事。</div>
+          </div>
+          <div class="tl-item done">
+            <div class="tt">信用分变动必须可查</div>
+            <div class="td">每一次加减分都要写明「哪一单、什么行为、多少分」。看不见的扣分等于没有规则，服务者只会觉得平台在暗箱操作。</div>
+          </div>
+        </div>
+        <div class="notice notice-info mt-12" style="font-size:12px">
+          <span class="ic">i</span>
+          <div>申诉期间<b>信用分暂缓扣减</b>，而不是先扣再还。先扣分会立刻影响服务者能否接 B 类单，这个损失无法通过事后补分弥补。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+initPage('provider/hall.html', { root: '../' });
+document.getElementById('noteS08').innerHTML = featureNote('S08');
+
+const REVIEWS = [
+  { id: 'R1', order: 'JH0611004', from: '业主 24-2-1103', stars: 5, cat: 'B1',
+    text: '寄养 4 天，每天都发照片和视频，猫回来状态很好。下次还找孙姐。', date: '11-09',
+    status: 'normal' },
+  { id: 'R2', order: 'JH0611003', from: '业主 47-2-802', stars: 2, cat: 'B2',
+    text: '油烟机清洗效果一般，感觉没拆开洗。', date: '11-05',
+    status: 'appealing', appealNote: '服务前已与业主确认「不拆机」范围，确认单已签署并留痕' },
+  { id: 'R3', order: 'JH0611001', from: '业主 35-1-601', stars: 5, cat: 'A4',
+    text: '喂猫很仔细，还顺手帮我浇了花。', date: '11-05', status: 'normal' },
+  { id: 'R4', order: 'JH0608021', from: '业主 12-2-701', stars: 1, cat: 'A1',
+    text: '慢死了。', date: '10-28', status: 'revoked',
+    appealNote: '该单因电梯故障延误，已提前报备；平台复核后判定为恶意差评并撤销' }
+];
+
+const SCORE_LOG = [
+  { d: '11-09', t: '完成订单 JH0611004 并获好评', v: '+3' },
+  { d: '11-05', t: '完成订单 JH0611001 并获好评', v: '+3' },
+  { d: '11-05', t: '订单 JH0611003 差评扣分（申诉中，暂缓执行）', v: '待定' },
+  { d: '11-02', t: '完成订单并按时到达', v: '+2' },
+  { d: '10-28', t: '恶意差评已撤销，扣分回滚', v: '+5' },
+  { d: '10-20', t: '证件到期未及时更新，暂停 B 类接单', v: '−8' }
+];
+
+const STAR = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+
+document.getElementById('phone').innerHTML = phoneOpen('评价与申诉', 'body', { tabs: TABS.provider });
+
+document.getElementById('body').innerHTML = `
+  <div class="card" style="padding:12px;background:var(--brand-softer);border-color:#d9e7ff">
+    <div class="row-between">
+      <div>
+        <div class="small strong">王秀兰</div>
+        <div class="smaller muted mt-4">综合评分 4.9 · 累计 143 单</div>
+      </div>
+      <div class="center">
+        <div class="strong" style="color:var(--risk-a);font-size:17px">96</div>
+        <div class="smaller muted">信用分</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="gap:6px;margin-bottom:11px">
+    <button class="btn btn-sm btn-primary" style="flex:1">全部评价</button>
+    <button class="btn btn-sm" style="flex:1">待申诉 1</button>
+    <button class="btn btn-sm" style="flex:1">信用记录</button>
+  </div>
+
+  <div class="sec-head" style="margin:0 0 8px">
+    <div class="row-between">
+      <h2 style="font-size:13px">📝 收到的评价</h2>
+      <span class="smaller muted">4 条</span>
+    </div>
+  </div>
+
+  ${REVIEWS.map(r => {
+    const c = Data.catById(r.cat);
+    const badge = r.status === 'appealing'
+      ? '<span class="tag tag-warn" style="font-size:10px">申诉中</span>'
+      : r.status === 'revoked'
+        ? '<span class="tag tag-ok" style="font-size:10px">已撤销</span>'
+        : '';
+    return `
+    <div class="rev" style="${r.status === 'revoked' ? 'opacity:.65' : ''}">
+      <div class="row-between mb-8">
+        <div class="row" style="gap:6px">
+          <span class="stars">${STAR(r.stars)}</span>
+          <span class="smaller muted">${c.name.slice(0, 8)}</span>
+        </div>
+        ${badge}
+      </div>
+      <div class="small" style="line-height:1.65">${r.text}</div>
+      <div class="smaller muted mt-8">${r.from} · ${r.date} · 订单 ${r.order}</div>
+      ${r.appealNote ? `
+        <div class="smaller mt-8" style="padding:7px 9px;background:var(--line-soft);border-radius:5px;color:var(--ink-2);line-height:1.6">
+          <b>申诉说明：</b>${r.appealNote}
+        </div>` : ''}
+      ${r.status === 'appealing' ? `
+        <div class="row mt-8" style="gap:6px">
+          <button class="btn btn-sm" style="flex:1" onclick="toast('已补充证据：服务前确认单 + 完成照片')">补充证据</button>
+          <button class="btn btn-sm btn-primary" style="flex:1" onclick="toast('申诉已提交，平台 24 小时内复核')">查看进度</button>
+        </div>` : ''}
+    </div>`;
+  }).join('')}
+
+  <div class="sec-head" style="margin:14px 0 8px">
+    <h2 style="font-size:13px">⭐ 信用分变动记录</h2>
+  </div>
+
+  <div class="card" style="padding:12px">
+    ${SCORE_LOG.map(l => {
+      const color = l.v.startsWith('+') ? 'var(--risk-a)' : l.v.startsWith('−') ? 'var(--risk-c)' : 'var(--ink-3)';
+      return `<div class="logrow">
+        <span class="d">${l.d}</span>
+        <span style="flex:1;line-height:1.6">${l.t}</span>
+        <span class="delta" style="color:${color}">${l.v}</span>
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="card" style="background:var(--line-soft);border:1px dashed var(--line)">
+    <div class="smaller muted center" style="line-height:1.7">
+      申诉期间信用分暂缓扣减，不是先扣再还<br>
+      看不见的扣分等于没有规则
+    </div>
+  </div>
+`;
+</script>
+</body>
+</html>
