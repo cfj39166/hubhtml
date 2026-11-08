@@ -7,6 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230B0F1A'/%3E%3Cpath d='M8 12.5L3 7.8C1.7 6.5 2.2 4 4.2 4c1 0 1.7.6 2 .9l1.8 1.8 1.8-1.8c.3-.3 1-.9 2-.9 2 0 2.5 2.5 1.2 3.8L8 12.5z' fill='%2314B8A6'/%3E%3C/svg%3E">
 <title>幼师工作台 · 观察记录生成工具</title>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
 <style>
 :root{
   --bg:#0B0F1A;
@@ -372,7 +373,7 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
 .outline-item .pn{font-size:10px;color:var(--text-faint);font-variant-numeric:tabular-nums;width:24px;}
 .outline-item .pt{color:var(--text-dim);}
 
-/* ===== PPT 课件预览 ===== */
+/* ===== PPT 课件预览（卡通可爱风） ===== */
 .course-result{
   background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius);
   padding:18px;margin-top:14px;animation:fade .35s ease;
@@ -393,45 +394,76 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
 .slides-scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px;}
 
 .slide-card{
-  flex:0 0 auto;width:320px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;
-  position:relative;border:1px solid var(--line);scroll-snap-align:center;
-  transition:transform .2s,border-color .2s;cursor:pointer;background:#fff;
+  flex:0 0 auto;width:320px;aspect-ratio:16/9;border-radius:14px;overflow:hidden;
+  position:relative;scroll-snap-align:center;
+  transition:transform .2s,box-shadow .2s;cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
-.slide-card.on{transform:translateY(-2px);border-color:var(--teal);box-shadow:0 6px 18px rgba(20,184,166,.2);}
+.slide-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.15);}
+.slide-card.on{transform:translateY(-3px);box-shadow:0 10px 28px rgba(20,184,166,.25);}
 .slide-card-num{
   position:absolute;top:6px;right:6px;z-index:3;
-  font-size:10px;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.55);
-  color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.04em;
+  width:22px;height:22px;border-radius:50%;
+  display:grid;place-items:center;
+  font-size:10px;font-weight:800;color:#fff;
+  font-variant-numeric:tabular-nums;letter-spacing:.04em;
+  box-shadow:0 2px 5px rgba(0,0,0,.18);
 }
 .slide-card .slide-cover,.slide-card .slide-list,.slide-card .slide-process,.slide-card .slide-thanks{
-  width:100%;height:100%;padding:18px 20px;display:flex;flex-direction:column;
-  font-family:var(--font);overflow:hidden;position:relative;
+  width:100%;height:100%;padding:18px 22px;display:flex;flex-direction:column;
+  font-family:"Comic Sans MS","PingFang SC","Microsoft YaHei",round,sans-serif;
+  overflow:hidden;position:relative;
+  border-radius:14px;
 }
+
+/* 卡通装饰元素 */
+.slide-deco-cloud{
+  position:absolute;font-size:16px;opacity:.85;pointer-events:none;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.1));
+}
+.slide-corner-deco{
+  position:absolute;right:-14px;bottom:-14px;width:60px;height:60px;
+  border-radius:50%;opacity:.55;pointer-events:none;
+}
+
 /* 封面 */
 .slide-cover{justify-content:center;align-items:center;text-align:center;}
-.slide-cover-mark{font-size:9px;letter-spacing:.16em;opacity:.85;margin-bottom:8px;text-transform:uppercase;}
-.slide-cover-title{font-size:24px;font-weight:800;letter-spacing:-.01em;line-height:1.2;margin-bottom:6px;}
-.slide-cover-sub{font-size:11px;opacity:.9;}
-.slide-cover-foot{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:9px;opacity:.7;}
+.slide-cover-emoji{font-size:32px;margin-bottom:6px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.1));}
+.slide-cover-title{
+  font-size:22px;font-weight:900;letter-spacing:-.01em;line-height:1.2;margin-bottom:6px;
+  text-shadow:0 1px 0 rgba(255,255,255,.8);
+}
+.slide-cover-sub{font-size:11px;color:#6B6B6B;font-weight:500;}
+.slide-cover-stripe{
+  width:60%;height:3px;border-radius:3px;margin:8px auto 4px;
+}
+.slide-cover-foot{font-size:9px;color:#999;font-weight:500;}
+
 /* 列表页 */
 .slide-list{justify-content:flex-start;}
-.slide-list-h{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;margin-bottom:4px;}
-.slide-emoji{font-size:14px;}
-.slide-list-sub{font-size:9.5px;opacity:.7;margin-bottom:8px;}
-.slide-list-items{list-style:none;display:flex;flex-direction:column;gap:4px;font-size:10px;line-height:1.45;}
-.slide-list-items li{display:flex;gap:5px;align-items:flex-start;}
-.slide-bullet{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.slide-list-h{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:900;margin-bottom:4px;}
+.slide-h-emoji{font-size:16px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.1));}
+.slide-list-sub{font-size:9.5px;color:#888;margin-bottom:8px;font-weight:500;}
+.slide-list-items{list-style:none;display:flex;flex-direction:column;gap:5px;font-size:10.5px;line-height:1.5;color:#444;font-weight:500;}
+.slide-list-items li{display:flex;gap:6px;align-items:flex-start;}
+.slide-bullet{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;box-shadow:0 1px 2px rgba(0,0,0,.1);}
+
 /* 过程页 */
 .slide-process{justify-content:flex-start;}
-.slide-process-h{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:8px;}
-.slide-step-num{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;letter-spacing:.04em;}
-.slide-process-body{font-size:10px;line-height:1.6;white-space:pre-wrap;opacity:.85;}
-.slide-process-deco{position:absolute;right:-20px;bottom:-20px;width:80px;height:80px;border-radius:50%;}
+.slide-process-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;margin-bottom:8px;}
+.slide-step-num{
+  font-size:9px;padding:3px 8px;border-radius:12px;font-weight:800;letter-spacing:.04em;
+  box-shadow:0 2px 4px rgba(0,0,0,.12);
+}
+.slide-process-body{font-size:10px;line-height:1.65;white-space:pre-wrap;color:#555;font-weight:500;}
+
 /* 结束页 */
 .slide-thanks{justify-content:center;align-items:center;text-align:center;}
-.slide-thanks-title{font-size:22px;font-weight:700;margin-bottom:6px;}
-.slide-thanks-sub{font-size:11px;opacity:.9;}
-.slide-thanks-foot{position:absolute;bottom:14px;font-size:9px;opacity:.7;}
+.slide-thanks-emoji{font-size:28px;margin-bottom:8px;}
+.slide-thanks-title{font-size:20px;font-weight:900;margin-bottom:6px;text-shadow:0 1px 0 rgba(255,255,255,.8);}
+.slide-thanks-sub{font-size:11px;color:#777;font-weight:500;}
+.slide-thanks-emoji-row{font-size:13px;margin:8px 0 4px;letter-spacing:4px;}
+.slide-thanks-foot{font-size:9px;color:#999;font-weight:500;}
 
 .slides-nav{
   display:flex;align-items:center;justify-content:center;gap:16px;margin-top:14px;
@@ -451,10 +483,14 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
 
 @media(max-width:768px){
   .slide-card{width:260px;}
-  .slide-cover-title{font-size:20px;}
+  .slide-cover-emoji{font-size:28px;}
+  .slide-cover-title{font-size:18px;}
   .slide-list-h{font-size:14px;}
+  .slide-h-emoji{font-size:14px;}
   .slide-list-items{font-size:11px;}
   .slide-process-body{font-size:11px;}
+  .slide-thanks-title{font-size:17px;}
+  .slide-deco-cloud{font-size:13px;}
   .course-result{padding:14px;}
   .course-result-h{flex-direction:column;gap:8px;}
   .course-actions{width:100%;}
@@ -463,7 +499,8 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
 }
 @media(max-width:380px){
   .slide-card{width:230px;}
-  .slide-cover-title{font-size:17px;}
+  .slide-cover-title{font-size:16px;}
+  .slide-cover-emoji{font-size:24px;}
 }
 
 /* Toast */
@@ -892,6 +929,19 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
 
           <div class="card">
             <div class="card-h">
+              <h3>上传教案 <span style="font-size:11px;color:var(--text-faint);font-weight:400;">（可选）</span></h3>
+            </div>
+            <label class="upload" id="planUpload" style="padding:18px;">
+              <span class="upload-ico"><svg><use href="#i-upload"/></svg></span>
+              <div class="upload-t">点击或拖入教案文件</div>
+              <div class="upload-s">Word (.docx) 自动提取文字 · 图片 (.jpg/.png) 仅占位提示</div>
+            </label>
+            <input type="file" id="planFile" accept=".docx,.pdf,image/*" hidden>
+            <div id="planStatus"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-h">
               <h3>活动信息</h3>
               <button class="btn ghost sm" id="courseTemplate" type="button">
                 <svg><use href="#i-sparkles"/></svg>示例
@@ -952,12 +1002,13 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
             <div class="field">
               <label class="field-label">主题配色</label>
               <div class="chips" id="courseTheme">
-                <span class="chip on" data-theme="forest" data-c1="#2D7A4A" data-c2="#7BD8A0" data-bg="#F0F7F1">森林动物</span>
-                <span class="chip" data-theme="ocean" data-c1="#1F6FB2" data-c2="#7CC5E8" data-bg="#EAF4FB">海洋世界</span>
-                <span class="chip" data-theme="space" data-c1="#3B2A8C" data-c2="#B5A6F0" data-bg="#1A1538">太空探险</span>
-                <span class="chip" data-theme="warm" data-c1="#E0702A" data-c2="#FFC078" data-bg="#FFF6E8">节日庆典</span>
-                <span class="chip" data-theme="simple" data-c1="#2C3E50" data-c2="#95A5A6" data-bg="#FFFFFF">简约卡通</span>
-                <span class="chip" data-theme="pink" data-c1="#D63384" data-c2="#FFB3D9" data-bg="#FFF0F7">温柔粉调</span>
+                <span class="chip on" data-theme="cream" data-c1="#F5B941" data-c2="#FFDD83" data-bg="#FFFBF0" data-emoji="🐻">奶油蜂蜜</span>
+                <span class="chip" data-theme="strawberry" data-c1="#E96A8E" data-c2="#FFB3C7" data-bg="#FFF0F4" data-emoji="🍓">草莓粉粉</span>
+                <span class="chip" data-theme="mint" data-c1="#4FB286" data-c2="#A6E6C5" data-bg="#F0FBF5" data-emoji="🐸">薄荷草地</span>
+                <span class="chip" data-theme="sky" data-c1="#5AA9E6" data-c2="#A8D8F0" data-bg="#F0F8FF" data-emoji="☁️">天空白云</span>
+                <span class="chip" data-theme="lavender" data-c1="#9B7AD1" data-c2="#CFBEE9" data-bg="#F6F0FC" data-emoji="🦄">薰衣草</span>
+                <span class="chip" data-theme="peach" data-c1="#F08E5A" data-c2="#FFC196" data-bg="#FFF5EC" data-emoji="🦊">蜜桃小狐</span>
+                <span class="chip" data-theme="rainbow" data-c1="#E96A8E" data-c2="#5AA9E6" data-bg="#FFFBF0" data-emoji="🌈">彩虹糖果</span>
               </div>
             </div>
             <div class="field">
@@ -1429,6 +1480,87 @@ $("#animSubmit").addEventListener("click",()=>{
 bindChips("courseTheme"); bindChips("coursePages"); bindChips("cDomain");
 
 // 示例模板一键填充
+// 教案文件上传
+$("#planUpload").addEventListener("click",()=>$("#planFile").click());
+$("#planFile").addEventListener("change",async (e)=>{
+  const f=e.target.files[0];
+  if(!f) return;
+  const status=$("#planStatus");
+  const lname=f.name.toLowerCase();
+  status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(20,184,166,.06);border-radius:6px;font-size:12px;color:var(--text-dim);"><span class="spinner" style="width:11px;height:11px;border-top-color:var(--teal);margin:0 6px 0 0;display:inline-block;vertical-align:middle;"></span>正在解析 ${escapeHtml(f.name)}…</div>`;
+
+  if(lname.endsWith(".docx")){
+    try{
+      const buf=await f.arrayBuffer();
+      const result=await window.mammoth.extractRawText({arrayBuffer:buf});
+      const text=result.value.trim();
+      if(!text){
+        status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ 文件里没找到文字，可能是扫描版 Word。</div>`;
+        return;
+      }
+      // 智能填充：按关键词归到各字段
+      autoFillFromText(text);
+      status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(20,184,166,.08);border-radius:6px;font-size:12px;color:var(--teal-soft);">✅ 已从 Word 解析 ${text.length} 字，自动填入下方各字段，可再手动调整。</div>`;
+      toast("教案已解析填入");
+    }catch(err){
+      console.error(err);
+      status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ 解析失败：${escapeHtml(err.message||"未知错误")}</div>`;
+    }
+  } else if(lname.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/)){
+    status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(245,158,11,.08);border-radius:6px;font-size:12px;color:#F59E0B;">📷 已收到教案图片（${escapeHtml(f.name)}）。当前为纯前端原型不做 OCR，请手动把图片里的关键字段填入下方；接入 AI 后此处将自动识别。</div>`;
+  } else if(lname.endsWith(".pdf")){
+    status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(245,158,11,.08);border-radius:6px;font-size:12px;color:#F59E0B;">📄 已收到 PDF（${escapeHtml(f.name)}）。当前为纯前端原型不做 PDF 解析，请手动填入下方；接入 AI 后此处将自动读取。</div>`;
+  } else {
+    status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ 暂不支持该格式，请上传 .docx / .pdf / 图片。</div>`;
+  }
+  e.target.value="";
+});
+
+// 从一段教案文本智能拆分到各字段
+function autoFillFromText(text){
+  const lines=text.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+
+  function findSection(keywords){
+    // 找包含某关键词的行，把它到下一个「数字+.」「目标」「准备」之类标题前的内容聚合
+    const idx=lines.findIndex(l=>keywords.some(k=>l.includes(k)));
+    if(idx<0) return [];
+    const out=[];
+    for(let i=idx;i<lines.length;i++){
+      const l=lines[i];
+      // 命中下一个段落标题就停
+      if(i>idx && /^(活动目标|活动准备|活动过程|活动延伸|互动提问|活动导入|活动重点|活动难点|教学反思|一[、.osta]|二[、.osta]|三[、.osta]|四[、.osta]|五[、.osta])/.test(l)) break;
+      out.push(l);
+    }
+    return out;
+  }
+
+  // 活动名称：第一行如果像标题（短、不带标号）就用
+  const maybeTitle=lines.find(l=>l.length>=4 && l.length<=30 && !/^\d/.test(l) && !/^(活动|一|二|三|四|五|教学)/.test(l));
+  if(maybeTitle && !$("#cTitle").value.trim()) $("#cTitle").value=maybeTitle.replace(/[【】\[\]《》]/g,"").trim();
+
+  // 活动目标
+  const goalLines=findSection(["活动目标","活动目的"]);
+  if(goalLines.length && !$("#cGoals").value.trim()) $("#cGoals").value=goalLines.join("\n");
+
+  // 活动准备
+  const prepLines=findSection(["活动准备","物质准备","经验准备"]);
+  if(prepLines.length && !$("#cPrep").value.trim()) $("#cPrep").value=prepLines.join("\n");
+
+  // 活动过程（包括多个环节）
+  const procLines=[];
+  let inProc=false;
+  for(const l of lines){
+    if(/^(活动过程|教学过程|活动流程)/.test(l)){ inProc=true; continue; }
+    if(inProc && /^(活动延伸|教学反思|互动提问|活动反思|板书|作业)/.test(l)){ inProc=false; break; }
+    if(inProc) procLines.push(l);
+  }
+  if(procLines.length && !$("#cProcess").value.trim()) $("#cProcess").value=procLines.join("\n");
+
+  // 互动提问
+  const qLines=findSection(["互动提问","思考题","讨论","启发"]);
+  if(qLines.length && !$("#cQuestions").value.trim()) $("#cQuestions").value=qLines.join("\n");
+}
+
 $("#courseTemplate").addEventListener("click",()=>{
   $("#cTitle").value="认识常见的昆虫";
   $("#cAge").value="中班";
@@ -1524,46 +1656,62 @@ function renderSlidesPreview(slides,theme,pages){
   const total=Math.min(slides.length,pages);
   const shown=slides.slice(0,total);
   const c1=theme.c1,c2=theme.c2,bg=theme.bg;
-  const isDark=bg.toLowerCase()==="#1a1538";
+  const emoji=theme.emoji||"⭐";
+  // 卡通风：浅底色、深字色（不再是深底白字）
+  const textColor="#2A2A2A";
+  const subColor="#6B6B6B";
 
   return shown.map((s,i)=>{
     let inner="";
     if(s.type==="cover"){
       inner=`
-        <div class="slide-cover" style="background:linear-gradient(135deg,${c1},${c2});color:#fff;">
-          <div class="slide-cover-mark">${s.domain||""}课</div>
-          <div class="slide-cover-title">${escapeHtml(s.title)}</div>
+        <div class="slide-cover" style="background:${bg};color:${textColor};border:3px solid ${c1};">
+          <div class="slide-deco-cloud" style="left:14px;top:14px;">☁️</div>
+          <div class="slide-deco-cloud" style="right:14px;top:18px;">⭐</div>
+          <div class="slide-deco-cloud" style="left:20px;bottom:46px;">🌈</div>
+          <div class="slide-deco-cloud" style="right:20px;bottom:50px;">${emoji}</div>
+          <div class="slide-cover-emoji">${emoji}</div>
+          <div class="slide-cover-title" style="color:${c1};">${escapeHtml(s.title)}</div>
           <div class="slide-cover-sub">${escapeHtml(s.subtitle||"")}</div>
+          <div class="slide-cover-stripe" style="background:linear-gradient(90deg,${c1},${c2});"></div>
           <div class="slide-cover-foot">${escapeHtml(s.footer||"")}</div>
         </div>`;
     } else if(s.type==="list"){
+      const listEmoji = s.title.includes("目标") ? "🎯" : s.title.includes("准备") ? "🎒" : s.title.includes("提问") ? "❓" : "✨";
       inner=`
-        <div class="slide-list" style="background:${bg};color:${isDark?"#fff":"#1a1a1a"};">
-          <div class="slide-list-h"><span class="slide-emoji">${s.icon||""}</span><span>${escapeHtml(s.title)}</span></div>
+        <div class="slide-list" style="background:${bg};color:${textColor};border:3px solid ${c2};">
+          <div class="slide-list-h" style="color:${c1};">
+            <span class="slide-h-emoji">${listEmoji}</span>
+            <span>${escapeHtml(s.title)}</span>
+          </div>
           <div class="slide-list-sub">${escapeHtml(s.subtitle||"")}</div>
           <ul class="slide-list-items">
             ${s.items.map((it,idx)=>`<li><span class="slide-bullet" style="background:${c1};"></span><span>${escapeHtml(it)}</span></li>`).join("")}
           </ul>
+          <div class="slide-corner-deco" style="background:${c2};"></div>
         </div>`;
     } else if(s.type==="process"){
       inner=`
-        <div class="slide-process" style="background:${bg};color:${isDark?"#fff":"#1a1a1a"};">
+        <div class="slide-process" style="background:${bg};color:${textColor};border:3px solid ${c2};">
           <div class="slide-process-h">
             <span class="slide-step-num" style="background:${c1};color:#fff;">${s.stepNum}/${s.totalStep}</span>
-            <span>${escapeHtml(s.subtitle||s.title)}</span>
+            <span style="color:${c1};font-weight:800;">${escapeHtml(s.subtitle||s.title)}</span>
           </div>
           ${s.body?`<div class="slide-process-body">${escapeHtml(s.body)}</div>`:""}
-          <div class="slide-process-deco" style="background:${c2};opacity:.25;"></div>
+          <div class="slide-deco-cloud" style="right:10px;top:10px;font-size:14px;">🌟</div>
+          <div class="slide-deco-cloud" style="right:14px;bottom:14px;font-size:16px;">${emoji}</div>
         </div>`;
     } else if(s.type==="thanks"){
       inner=`
-        <div class="slide-thanks" style="background:linear-gradient(135deg,${c2},${c1});color:#fff;">
-          <div class="slide-thanks-title">${escapeHtml(s.title)}</div>
+        <div class="slide-thanks" style="background:${bg};color:${textColor};border:3px dashed ${c1};">
+          <div class="slide-thanks-emoji">🎈</div>
+          <div class="slide-thanks-title" style="color:${c1};">${escapeHtml(s.title)}</div>
           <div class="slide-thanks-sub">${escapeHtml(s.subtitle||"")}</div>
+          <div class="slide-thanks-emoji-row">🌟🎈🌟🎈🌟</div>
           <div class="slide-thanks-foot">${escapeHtml(s.footer||"")}</div>
         </div>`;
     }
-    return `<div class="slide-card" data-idx="${i}"><div class="slide-card-num">P${i+1}</div>${inner}</div>`;
+    return `<div class="slide-card" data-idx="${i}"><div class="slide-card-num" style="background:${c1};">${i+1}</div>${inner}</div>`;
   }).join("");
 }
 
@@ -1583,43 +1731,61 @@ function downloadPptx(slides,theme,meta){
   pptx.title=meta.title;
 
   const c1=theme.c1, c2=theme.c2, bg=theme.bg;
-  const isDark=bg.toLowerCase()==="#1a1538";
-  const textColor=isDark?"FFFFFF":"222222";
-  const subColor=isDark?"DDDDDD":"666666";
+  const emoji=theme.emoji||"⭐";
+  const textColor="2A2A2A";
+  const subColor="6B6B6B";
+  const cartoonFont="Microsoft YaHei";
 
   slides.forEach(s=>{
     const slide=pptx.addSlide();
     if(s.type==="cover"){
-      slide.background={color:hexNo(c1)};
-      slide.addShape(pptx.ShapeType.rect,{x:0,y:0,w:"100%",h:"100%",fill:{type:"solid",color:hexNo(c1)}});
-      // 渐变模拟：叠加深色块
-      slide.addShape(pptx.ShapeType.rect,{x:3.5,y:0,w:6.5,h:"100%",fill:{type:"solid",color:hexNo(c2)}});
-      slide.addText(s.title,{x:0.5,y:2.4,w:9,h:1.2,fontSize:40,bold:true,color:"FFFFFF",align:"center",fontFace:"Microsoft YaHei"});
-      slide.addText(s.subtitle||"",{x:0.5,y:3.7,w:9,h:0.6,fontSize:18,color:"FFFFFF",align:"center"});
-      slide.addText(s.footer||"",{x:0.5,y:6.5,w:9,h:0.4,fontSize:11,color:"EEEEEE",align:"center"});
+      // 卡通封面：浅底色 + 彩色装饰圆 + 大标题
+      slide.background={color:hexNo(bg)};
+      // 左上、右上、左下、右下四个装饰圆
+      slide.addShape(pptx.ShapeType.ellipse,{x:-0.8,y:-0.8,w:2.2,h:2.2,fill:{type:"solid",color:hexNo(c2)}});
+      slide.addShape(pptx.ShapeType.ellipse,{x:8.5,y:-0.6,w:1.8,h:1.8,fill:{type:"solid",color:hexNo(c1)}});
+      slide.addShape(pptx.ShapeType.ellipse,{x:-0.5,y:5.8,w:1.6,h:1.6,fill:{type:"solid",color:hexNo(c1)}});
+      slide.addShape(pptx.ShapeType.ellipse,{x:8.8,y:6,w:2,h:2,fill:{type:"solid",color:hexNo(c2)}});
+      // 大 emoji
+      slide.addText(emoji,{x:3.8,y:1.4,w:2.4,h:1.6,fontSize:54,align:"center",fontFace:cartoonFont});
+      // 标题彩色横条
+      slide.addShape(pptx.ShapeType.roundRect,{x:2.5,y:3.1,w:5,h:0.16,fill:{type:"solid",color:hexNo(c1)},rectRadius:0.08});
+      slide.addText(s.title,{x:1,y:3.4,w:8,h:1.2,fontSize:40,bold:true,color:hexNo(c1),align:"center",fontFace:cartoonFont});
+      slide.addText(s.subtitle||"",{x:1,y:4.7,w:8,h:0.6,fontSize:18,color:hexNo(subColor),align:"center",fontFace:cartoonFont});
+      slide.addText(s.footer||"",{x:1,y:6.5,w:8,h:0.4,fontSize:11,color:"999999",align:"center",fontFace:cartoonFont});
     } else if(s.type==="list"){
       slide.background={color:hexNo(bg)};
-      slide.addText(`${s.icon||""} ${s.title}`,{x:0.5,y:0.35,w:9,h:0.6,fontSize:26,bold:true,color:hexNo(c1),fontFace:"Microsoft YaHei"});
-      slide.addShape(pptx.ShapeType.line,{x:0.5,y:1.05,w:9,h:0,line:{color:hexNo(c2),width:2}});
-      if(s.subtitle) slide.addText(s.subtitle,{x:0.5,y:1.2,w:9,h:0.4,fontSize:13,color:hexNo(subColor),italic:true});
-      const items=s.items.map((it,i)=>({text:`${i+1}. ${it}`,options:{breakLine:true,fontSize:15,color:hexNo(textColor),bullet:false,paraSpaceAfter:8,fontFace:"Microsoft YaHei"}}));
-      slide.addText(items,{x:0.6,y:1.8,w:8.8,h:5,fontSize:15});
+      const listEmoji=s.title.includes("目标")?"🎯":s.title.includes("准备")?"🎒":s.title.includes("提问")?"❓":"✨";
+      slide.addText(`${listEmoji}  ${s.title}`,{x:0.5,y:0.35,w:9,h:0.7,fontSize:28,bold:true,color:hexNo(c1),fontFace:cartoonFont});
+      // 彩色波浪线（圆角矩形细条）
+      slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:1.1,w:4,h:0.08,fill:{type:"solid",color:hexNo(c2)},rectRadius:0.04});
+      if(s.subtitle) slide.addText(s.subtitle,{x:0.5,y:1.3,w:9,h:0.4,fontSize:13,color:hexNo(subColor),italic:true,fontFace:cartoonFont});
+      const items=s.items.map(it=>({text:`▸  ${it}`,options:{breakLine:true,fontSize:15,color:textColor,paraSpaceAfter:8,fontFace:cartoonFont,bullet:false}}));
+      slide.addText(items,{x:0.6,y:1.9,w:8.8,h:5,fontSize:15});
+      // 右下装饰圆
+      slide.addShape(pptx.ShapeType.ellipse,{x:8.7,y:6.3,w:1.5,h:1.5,fill:{type:"solid",color:hexNo(c2)}});
     } else if(s.type==="process"){
       slide.background={color:hexNo(bg)};
       // 步骤编号圆角矩形
-      slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:0.35,w:1.4,h:0.55,fill:{type:"solid",color:hexNo(c1)},line:{color:hexNo(c1),width:1},rectRadius:0.1});
-      slide.addText(`${s.stepNum}/${s.totalStep}`,{x:0.5,y:0.35,w:1.4,h:0.55,fontSize:14,bold:true,color:"FFFFFF",align:"center",valign:"middle"});
-      slide.addText(s.subtitle||s.title,{x:2.1,y:0.35,w:7.4,h:0.55,fontSize:22,bold:true,color:hexNo(c1),fontFace:"Microsoft YaHei",valign:"middle"});
-      slide.addShape(pptx.ShapeType.line,{x:0.5,y:1.1,w:9,h:0,line:{color:hexNo(c2),width:2}});
+      slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:0.35,w:1.5,h:0.6,fill:{type:"solid",color:hexNo(c1)},line:{color:hexNo(c1),width:1},rectRadius:0.12});
+      slide.addText(`${s.stepNum}/${s.totalStep}`,{x:0.5,y:0.35,w:1.5,h:0.6,fontSize:14,bold:true,color:"FFFFFF",align:"center",valign:"middle",fontFace:cartoonFont});
+      slide.addText(s.subtitle||s.title,{x:2.2,y:0.35,w:7.3,h:0.6,fontSize:22,bold:true,color:hexNo(c1),fontFace:cartoonFont,valign:"middle"});
+      slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:1.15,w:5,h:0.08,fill:{type:"solid",color:hexNo(c2)},rectRadius:0.04});
       if(s.body){
-        const paras=s.body.split(/\n+/).filter(Boolean).map(p=>({text:p,options:{breakLine:true,fontSize:14,color:hexNo(textColor),paraSpaceAfter:6,fontFace:"Microsoft YaHei"}}));
-        slide.addText(paras,{x:0.6,y:1.4,w:8.8,h:5.4});
+        const paras=s.body.split(/\n+/).filter(Boolean).map(p=>({text:p,options:{breakLine:true,fontSize:14,color:textColor,paraSpaceAfter:6,fontFace:cartoonFont}}));
+        slide.addText(paras,{x:0.6,y:1.5,w:8.8,h:5.4});
       }
+      slide.addText("🌟",{x:8.8,y:0.3,w:0.7,h:0.7,fontSize:24,align:"center"});
+      slide.addShape(pptx.ShapeType.ellipse,{x:-0.5,y:6.2,w:1.4,h:1.4,fill:{type:"solid",color:hexNo(c2)}});
     } else if(s.type==="thanks"){
-      slide.background={color:hexNo(c1)};
-      slide.addText(s.title,{x:0.5,y:2.6,w:9,h:1,fontSize:36,bold:true,color:"FFFFFF",align:"center",fontFace:"Microsoft YaHei"});
-      slide.addText(s.subtitle||"",{x:0.5,y:3.7,w:9,h:0.8,fontSize:16,color:"EEEEEE",align:"center"});
-      slide.addText(s.footer||"",{x:0.5,y:6,h:9,h:0.5,fontSize:13,color:"FFFFFF",align:"center"});
+      slide.background={color:hexNo(bg)};
+      slide.addShape(pptx.ShapeType.ellipse,{x:-0.8,y:-0.8,w:2.4,h:2.4,fill:{type:"solid",color:hexNo(c2)}});
+      slide.addShape(pptx.ShapeType.ellipse,{x:8.4,y:5.6,w:2.4,h:2.4,fill:{type:"solid",color:hexNo(c1)}});
+      slide.addText("🎈",{x:4,y:1.8,w:2,h:1.3,fontSize:48,align:"center"});
+      slide.addText(s.title,{x:1,y:3.2,w:8,h:1,fontSize:36,bold:true,color:hexNo(c1),align:"center",fontFace:cartoonFont});
+      slide.addText(s.subtitle||"",{x:1,y:4.3,w:8,h:0.8,fontSize:16,color:hexNo(subColor),align:"center",fontFace:cartoonFont});
+      slide.addText("🌟 🎈 🌟 🎈 🌟",{x:1,y:5.2,w:8,h:0.5,fontSize:14,align:"center",fontFace:cartoonFont});
+      slide.addText(s.footer||"",{x:1,y:6.2,w:8,h:0.5,fontSize:12,color:"999999",align:"center",fontFace:cartoonFont});
     }
   });
 
