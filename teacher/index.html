@@ -2199,6 +2199,61 @@ $("#courseTemplate").addEventListener("click",()=>{
   toast("已填入示例教案");
 });
 
+/* ============================================================
+   主题智能匹配：根据教案内容自动选对应的卡通图案组合
+   —— 扫描全文命中关键词最多的主题胜出，每主题配 8 个 emoji
+   ============================================================ */
+const THEME_LIB={
+  // 自然科学类
+  insect:{name:"昆虫",emoji:["🦋","🐝","🐜","🦗","🐛","🐌","🐞","🪲"],kw:["昆虫","蝴蝶","蜜蜂","蚂蚁","蜗牛","毛毛虫","蜘蛛","瓢虫","蜻蜓","知了","虫子","害虫","益虫"]},
+  plant:{name:"植物",emoji:["🌱","🌻","🌳","🌺","🍀","🌷","🌵","🌹"],kw:["植物","种子","树叶","花朵","花园","大树","小草","蔬菜","水果","苹果","草莓","西瓜","胡萝卜","番茄","玉米","种植","发芽","光合"]},
+  ocean:{name:"海洋",emoji:["🐟","🐙","🌊","🐬","🐳","🦀","🐚","🐠"],kw:["海洋","大海","海底","鱼","海豚","鲸鱼","鲨鱼","螃蟹","贝壳","海龟","水母","珊瑚","海带","沙滩","海浪"]},
+  animal:{name:"动物",emoji:["🐰","🐻","🐼","🦁","🐯","🐘","🦒","🦊"],kw:["动物","小兔","小狗","小猫","狮子","老虎","大象","熊猫","猴子","小鸟","鸭子","小鸡","奶牛","马","动物园","森林"]},
+  bird:{name:"鸟类",emoji:["🐦","🐤","🦜","🕊️","🦆","🦉","🦅","🐧"],kw:["鸟","小鸟","麻雀","燕子","老鹰","猫头鹰","鹦鹉","鸽子","企鹅","鸭子","天鹅","羽毛","翅膀","飞翔","鸟窝","鸟蛋"]},
+  dinosaur:{name:"恐龙",emoji:["🦕","🦖","🥚","🌋","🌴","🦴","👣","🌍"],kw:["恐龙","霸王龙","三角龙","翼龙","化石","侏罗纪","远古","蛋","火山"]},
+  weather:{name:"天气",emoji:["☀️","🌧️","⛅","❄️","🌈","⚡","🌪️","💧"],kw:["天气","太阳","下雨","雨","雪","风","云","彩虹","闪电","打雷","台风","雾","温度","气象"]},
+  season:{name:"季节",emoji:["🌸","🌞","🍁","❄️","🍃","🌻","🌨️","🍂"],kw:["季节","春天","夏天","秋天","冬天","春季","夏季","秋季","冬季","立春","立夏","立秋","立冬","四季"]},
+  space:{name:"太空",emoji:["🚀","🌍","🌙","⭐","🪐","☀️"," Comet","🛸"],kw:["太空","宇宙","星球","月亮","太阳","星星","火箭","宇航员","银河","卫星","陨石","行星","黑洞"]},
+  magnet:{name:"磁铁科学",emoji:["🧲","⚡","🔋","💡","⚙️","🔧","🔬","🧪"],kw:["磁铁","磁性","磁力","吸铁","南北极","磁场","科学","实验","探究","观察","发现","电流","电路","电池","放大镜"]},
+  water:{name:"水",emoji:["💧","💦","🌊","🚰","🧊","☔","🏊","🛶"],kw:["水","喝水","水源","河流","小溪","湖泊","冰","水蒸气","蒸发","凝结","溶解","沉淀","过滤","节水"]},
+  fire:{name:"火与安全",emoji:["🔥","🚒","🚨","🪜","🦺","⚠️","🧯","🏥"],kw:["火","火灾","安全","消防","逃生","报警","危险","急救","保护","红灯","绿灯","斑马线","陌生人"]},
+  // 社会健康类
+  food:{name:"食物",emoji:["🍎","🍞","🥛","🍚","🥕","🍪","🍳","🥗"],kw:["食物","吃饭","早餐","午餐","晚餐","蔬菜","水果","牛奶","面包","鸡蛋","营养","健康","不挑食","膳食","维生素"]},
+  body:{name:"身体",emoji:["👀","👃","👄","👂","🖐️","🦶","🧠","❤️"],kw:["身体","眼睛","鼻子","嘴巴","耳朵","手","脚","头","牙齿","骨头","心脏","大脑","五官","感官","情绪","开心","生气"]},
+  family:{name:"家庭",emoji:["👨","👩","👧","👦","👶","👴","👵","🏡"],kw:["家庭","家人","爸爸","妈妈","爷爷","奶奶","外公","外婆","哥哥","姐姐","弟弟","妹妹","宝贝","亲人","家","爱"]},
+  festival:{name:"节日",emoji:["🎉","🎊","🎈","🎂","🧧","🏮","🎄","🎃"],kw:["节日","新年","春节","元宵","端午","中秋","国庆","圣诞","万圣","生日","庆祝","礼物","团圆","月饼","粽子","饺子","灯笼"]},
+  transport:{name:"交通",emoji:["🚗","🚌","✈️","🚂","🚲","🚢","🚑","🚜"],kw:["交通","汽车","公交车","飞机","火车","自行车","船","地铁","红绿灯","斑马线","车轮","方向盘","安全带","旅行"]},
+  music:{name:"音乐",emoji:["🎵","🎶","🎸","🥁","🎹","🎤","🎺","🎻"],kw:["音乐","唱歌","歌曲","乐器","钢琴","吉他","鼓","节奏","旋律","跳舞","舞蹈","拍手","节拍"]},
+  art:{name:"美术",emoji:["🎨","🖌️","✏️","📝","🌈","🖼️","✂️","📌"],kw:["美术","画画","绘画","颜色","彩色","红色","黄色","蓝色","绿色","画笔","颜料","手工","剪纸","折纸","粘贴","涂色"]},
+  sport:{name:"运动",emoji:["⚽","🏀","🏃","🤸","🏓","🏸","🥇","🏆"],kw:["运动","跑步","跳","球","足球","篮球","游泳","体操","比赛","冠军","奖牌","锻炼","体能","游戏"]},
+  // 默认通用
+  general:{name:"通用",emoji:["⭐","🌟","✨","🎈","🎀","💫","🎪","🎨"],kw:[]}
+};
+
+// 智能匹配：扫描教案全文，命中关键词最多的主题胜出
+function matchTheme(text){
+  if(!text) return "general";
+  const t=text.toLowerCase();
+  const scores={};
+  for(const [key,theme] of Object.entries(THEME_LIB)){
+    if(key==="general") continue;
+    let score=0;
+    for(const kw of theme.kw){
+      // 简单计数：每个关键词出现一次 +1
+      let idx=0;
+      while((idx=t.indexOf(kw,idx))>=0){ score++; idx+=kw.length; }
+    }
+    scores[key]=score;
+  }
+  // 找最高分
+  let best="general",bestScore=0;
+  for(const [k,s] of Object.entries(scores)){
+    if(s>bestScore){ best=k; bestScore=s; }
+  }
+  console.log("[ThemeMatch] scores:",JSON.stringify(scores),"→ winner:",best,"(score="+bestScore+")");
+  return bestScore>0?best:"general";
+}
+
 // 智能解析教案 → 幻灯片结构数组
 function parseCourseSlides(){
   const title=$("#cTitle").value.trim()||"活动课件";
@@ -2235,18 +2290,24 @@ function parseCourseSlides(){
     }
   }
 
+  // ★ 智能匹配主题图案（扫描全文）
+  const fullText=[title,goalsRaw,prepRaw,processRaw,qRaw].join("\n");
+  const themeKey=matchTheme(fullText);
+  const themeEmojis=THEME_LIB[themeKey].emoji;
+  const pickEm=(i)=>themeEmojis[i%themeEmojis.length];
+
   const slides=[];
-  // 1. 封面
-  slides.push({type:"cover",title,subtitle:`${age} · ${domain}领域`,footer:"幼师工作台 · 生成"});
+  // 1. 封面（用主题主图案）
+  slides.push({type:"cover",title,subtitle:`${age} · ${domain}领域`,footer:"幼师工作台 · 生成",emoji:themeEmojis[0]});
 
   // 2. 活动目标
   if(goals.length){
-    slides.push({type:"list",title:"活动目标",subtitle:"通过本次活动，幼儿将达到以下目标：",items:goals,icon:"🎯"});
+    slides.push({type:"list",title:"活动目标",subtitle:"通过本次活动，幼儿将达到以下目标：",items:goals,emoji:"🎯"});
   }
 
   // 3. 活动准备
   if(prepRaw){
-    slides.push({type:"list",title:"活动准备",subtitle:"物质准备 + 经验准备",items:preps.length?preps:[prepRaw],icon:"📦"});
+    slides.push({type:"list",title:"活动准备",subtitle:"物质准备 + 经验准备",items:preps.length?preps:[prepRaw],emoji:"🎒"});
   }
 
   // 4-N. 活动过程（每个环节一页，避免文字过密）
@@ -2263,23 +2324,23 @@ function parseCourseSlides(){
       body,
       stepNum:i+1,
       totalStep:steps.length,
-      icon:"🏃"
+      emoji:pickEm(i+2)   // 用主题图案点缀过程页
     });
   });
 
   // 互动提问
   if(qs.length){
-    slides.push({type:"list",title:"互动提问",subtitle:"引导幼儿深度思考：",items:qs,icon:"❓"});
+    slides.push({type:"list",title:"互动提问",subtitle:"引导幼儿深度思考：",items:qs,emoji:"❓"});
   }
 
   // 结束页
   slides.push({type:"thanks",title:"活动延伸",subtitle:"把今天学到的本领带回家，讲给爸爸妈妈听 🌟",footer:"谢谢小朋友们"});
 
-  return {slides, meta:{title,age,domain,goals,preps,steps,qs,raw:{goalsRaw,prepRaw,processRaw,qRaw}}};
+  return {slides, meta:{title,age,domain,goals,preps,steps,qs,raw:{goalsRaw,prepRaw,processRaw,qRaw},themeKey,themeName:THEME_LIB[themeKey].name,themeEmojis}};
 }
 
 // 卡片预览渲染（移动端横滑、桌面端网格）
-function renderSlidesPreview(slides,theme,pages){
+function renderSlidesPreview(slides,theme,pages,meta){
   const total=Math.min(slides.length,pages);
   const shown=slides.slice(0,total);
   const c1=theme.c1,c2=theme.c2,bg=theme.bg;
@@ -2288,23 +2349,30 @@ function renderSlidesPreview(slides,theme,pages){
   const textColor="#2A2A2A";
   const subColor="#6B6B6B";
 
+  // ★ 用主题智能匹配的图案（而非主题色固定 emoji）
+  const themeEm = meta && meta.themeEmojis ? meta.themeEmojis : null;
+  const eCover = themeEm ? themeEm[0] : emoji;          // 封面主图
+  const eCorner = (i)=> themeEm ? themeEm[i % themeEm.length] : emoji;  // 四角装饰
+
   return shown.map((s,i)=>{
     let inner="";
     if(s.type==="cover"){
       inner=`
         <div class="slide-cover" style="background:${bg};color:${textColor};border:3px solid ${c1};">
-          <div class="slide-deco-cloud" style="left:14px;top:14px;">☁️</div>
-          <div class="slide-deco-cloud" style="right:14px;top:18px;">⭐</div>
-          <div class="slide-deco-cloud" style="left:20px;bottom:46px;">🌈</div>
-          <div class="slide-deco-cloud" style="right:20px;bottom:50px;">${emoji}</div>
-          <div class="slide-cover-emoji">${emoji}</div>
+          <div class="slide-deco-cloud" style="left:14px;top:14px;">${eCorner(1)}</div>
+          <div class="slide-deco-cloud" style="right:14px;top:18px;">${eCorner(2)}</div>
+          <div class="slide-deco-cloud" style="left:20px;bottom:46px;">${eCorner(3)}</div>
+          <div class="slide-deco-cloud" style="right:20px;bottom:50px;">${eCorner(4)}</div>
+          <div class="slide-cover-emoji">${eCover}</div>
           <div class="slide-cover-title" style="color:${c1};">${escapeHtml(s.title)}</div>
           <div class="slide-cover-sub">${escapeHtml(s.subtitle||"")}</div>
           <div class="slide-cover-stripe" style="background:linear-gradient(90deg,${c1},${c2});"></div>
           <div class="slide-cover-foot">${escapeHtml(s.footer||"")}</div>
         </div>`;
     } else if(s.type==="list"){
-      const listEmoji = s.title.includes("目标") ? "🎯" : s.title.includes("准备") ? "🎒" : s.title.includes("提问") ? "❓" : "✨";
+      // 列表页图标优先用 slide 自带的（🎯/🎒/❓），保留识别度
+      const listEmoji = s.emoji || (s.title.includes("目标") ? "🎯" : s.title.includes("准备") ? "🎒" : s.title.includes("提问") ? "❓" : "✨");
+      // 列表项前面的小图案用主题图案点缀
       inner=`
         <div class="slide-list" style="background:${bg};color:${textColor};border:3px solid ${c2};">
           <div class="slide-list-h" style="color:${c1};">
@@ -2316,8 +2384,11 @@ function renderSlidesPreview(slides,theme,pages){
             ${s.items.map((it,idx)=>`<li><span class="slide-bullet" style="background:${c1};"></span><span>${escapeHtml(it)}</span></li>`).join("")}
           </ul>
           <div class="slide-corner-deco" style="background:${c2};"></div>
+          <div class="slide-deco-cloud" style="right:12px;bottom:14px;font-size:18px;">${eCorner(5)}</div>
         </div>`;
     } else if(s.type==="process"){
+      // 过程页右上点缀星、右下用主题图案
+      const procEmoji = s.emoji || eCover;
       inner=`
         <div class="slide-process" style="background:${bg};color:${textColor};border:3px solid ${c2};">
           <div class="slide-process-h">
@@ -2326,15 +2397,17 @@ function renderSlidesPreview(slides,theme,pages){
           </div>
           ${s.body?`<div class="slide-process-body">${escapeHtml(s.body)}</div>`:""}
           <div class="slide-deco-cloud" style="right:10px;top:10px;font-size:14px;">🌟</div>
-          <div class="slide-deco-cloud" style="right:14px;bottom:14px;font-size:16px;">${emoji}</div>
+          <div class="slide-deco-cloud" style="right:14px;bottom:14px;font-size:16px;">${procEmoji}</div>
         </div>`;
     } else if(s.type==="thanks"){
+      // 结束页用主题图案替代千篇一律的气球
+      const thx1 = eCorner(6), thx2 = eCorner(7);
       inner=`
         <div class="slide-thanks" style="background:${bg};color:${textColor};border:3px dashed ${c1};">
-          <div class="slide-thanks-emoji">🎈</div>
+          <div class="slide-thanks-emoji">${eCover}</div>
           <div class="slide-thanks-title" style="color:${c1};">${escapeHtml(s.title)}</div>
           <div class="slide-thanks-sub">${escapeHtml(s.subtitle||"")}</div>
-          <div class="slide-thanks-emoji-row">🌟🎈🌟🎈🌟</div>
+          <div class="slide-thanks-emoji-row">🌟${thx1}🌟${thx2}🌟</div>
           <div class="slide-thanks-foot">${escapeHtml(s.footer||"")}</div>
         </div>`;
     }
@@ -2359,6 +2432,10 @@ function downloadPptx(slides,theme,meta){
 
   const c1=theme.c1, c2=theme.c2, bg=theme.bg;
   const emoji=theme.emoji||"⭐";
+  // ★ 用智能匹配的主题图案（而非主题色固定 emoji）
+  const themeEm = meta && meta.themeEmojis ? meta.themeEmojis : null;
+  const eCover = themeEm ? themeEm[0] : emoji;
+  const eAt = (i)=> themeEm ? themeEm[i % themeEm.length] : emoji;
   const textColor="2A2A2A";
   const subColor="6B6B6B";
   const cartoonFont="Microsoft YaHei";
@@ -2373,8 +2450,12 @@ function downloadPptx(slides,theme,meta){
       slide.addShape(pptx.ShapeType.ellipse,{x:8.5,y:-0.6,w:1.8,h:1.8,fill:{type:"solid",color:hexNo(c1)}});
       slide.addShape(pptx.ShapeType.ellipse,{x:-0.5,y:5.8,w:1.6,h:1.6,fill:{type:"solid",color:hexNo(c1)}});
       slide.addShape(pptx.ShapeType.ellipse,{x:8.8,y:6,w:2,h:2,fill:{type:"solid",color:hexNo(c2)}});
-      // 大 emoji
-      slide.addText(emoji,{x:3.8,y:1.4,w:2.4,h:1.6,fontSize:54,align:"center",fontFace:cartoonFont});
+      // 四角主题图案点缀
+      slide.addText(eAt(1),{x:0.2,y:0.1,w:0.8,h:0.6,fontSize:22,align:"center"});
+      slide.addText(eAt(2),{x:8.9,y:0.1,w:0.8,h:0.6,fontSize:22,align:"center"});
+      slide.addText(eAt(3),{x:0.2,y:6.5,w:0.8,h:0.6,fontSize:22,align:"center"});
+      // 大主题图案（替代固定主题色 emoji）
+      slide.addText(eCover,{x:3.8,y:1.4,w:2.4,h:1.6,fontSize:54,align:"center",fontFace:cartoonFont});
       // 标题彩色横条
       slide.addShape(pptx.ShapeType.roundRect,{x:2.5,y:3.1,w:5,h:0.16,fill:{type:"solid",color:hexNo(c1)},rectRadius:0.08});
       slide.addText(s.title,{x:1,y:3.4,w:8,h:1.2,fontSize:40,bold:true,color:hexNo(c1),align:"center",fontFace:cartoonFont});
@@ -2382,15 +2463,16 @@ function downloadPptx(slides,theme,meta){
       slide.addText(s.footer||"",{x:1,y:6.5,w:8,h:0.4,fontSize:11,color:"999999",align:"center",fontFace:cartoonFont});
     } else if(s.type==="list"){
       slide.background={color:hexNo(bg)};
-      const listEmoji=s.title.includes("目标")?"🎯":s.title.includes("准备")?"🎒":s.title.includes("提问")?"❓":"✨";
+      const listEmoji=s.emoji||(s.title.includes("目标")?"🎯":s.title.includes("准备")?"🎒":s.title.includes("提问")?"❓":"✨");
       slide.addText(`${listEmoji}  ${s.title}`,{x:0.5,y:0.35,w:9,h:0.7,fontSize:28,bold:true,color:hexNo(c1),fontFace:cartoonFont});
       // 彩色波浪线（圆角矩形细条）
       slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:1.1,w:4,h:0.08,fill:{type:"solid",color:hexNo(c2)},rectRadius:0.04});
       if(s.subtitle) slide.addText(s.subtitle,{x:0.5,y:1.3,w:9,h:0.4,fontSize:13,color:hexNo(subColor),italic:true,fontFace:cartoonFont});
       const items=s.items.map(it=>({text:`▸  ${it}`,options:{breakLine:true,fontSize:15,color:textColor,paraSpaceAfter:8,fontFace:cartoonFont,bullet:false}}));
       slide.addText(items,{x:0.6,y:1.9,w:8.8,h:5,fontSize:15});
-      // 右下装饰圆
+      // 右下装饰圆 + 主题图案点缀
       slide.addShape(pptx.ShapeType.ellipse,{x:8.7,y:6.3,w:1.5,h:1.5,fill:{type:"solid",color:hexNo(c2)}});
+      slide.addText(eAt(5),{x:8.95,y:6.5,w:1,h:0.6,fontSize:20,align:"center"});
     } else if(s.type==="process"){
       slide.background={color:hexNo(bg)};
       // 步骤编号圆角矩形
@@ -2403,15 +2485,17 @@ function downloadPptx(slides,theme,meta){
         slide.addText(paras,{x:0.6,y:1.5,w:8.8,h:5.4});
       }
       slide.addText("🌟",{x:8.8,y:0.3,w:0.7,h:0.7,fontSize:24,align:"center"});
+      slide.addText(s.emoji || eAt(s.stepNum+1),{x:9.0,y:6.5,w:0.9,h:0.6,fontSize:22,align:"center"});  // ★ 过程页右下用主题图案
       slide.addShape(pptx.ShapeType.ellipse,{x:-0.5,y:6.2,w:1.4,h:1.4,fill:{type:"solid",color:hexNo(c2)}});
     } else if(s.type==="thanks"){
       slide.background={color:hexNo(bg)};
       slide.addShape(pptx.ShapeType.ellipse,{x:-0.8,y:-0.8,w:2.4,h:2.4,fill:{type:"solid",color:hexNo(c2)}});
       slide.addShape(pptx.ShapeType.ellipse,{x:8.4,y:5.6,w:2.4,h:2.4,fill:{type:"solid",color:hexNo(c1)}});
-      slide.addText("🎈",{x:4,y:1.8,w:2,h:1.3,fontSize:48,align:"center"});
+      // ★ 结束页用主题主图案替代固定气球
+      slide.addText(eCover,{x:4,y:1.8,w:2,h:1.3,fontSize:48,align:"center"});
       slide.addText(s.title,{x:1,y:3.2,w:8,h:1,fontSize:36,bold:true,color:hexNo(c1),align:"center",fontFace:cartoonFont});
       slide.addText(s.subtitle||"",{x:1,y:4.3,w:8,h:0.8,fontSize:16,color:hexNo(subColor),align:"center",fontFace:cartoonFont});
-      slide.addText("🌟 🎈 🌟 🎈 🌟",{x:1,y:5.2,w:8,h:0.5,fontSize:14,align:"center",fontFace:cartoonFont});
+      slide.addText(`🌟 ${eAt(6)} 🌟 ${eAt(7)} 🌟`,{x:1,y:5.2,w:8,h:0.5,fontSize:14,align:"center",fontFace:cartoonFont});
       slide.addText(s.footer||"",{x:1,y:6.2,w:8,h:0.5,fontSize:12,color:"999999",align:"center",fontFace:cartoonFont});
     }
   });
@@ -2469,13 +2553,13 @@ $("#courseSubmit").addEventListener("click",()=>{
     });
     saveRecords();
 
-    const previewHTML=renderSlidesPreview(slides,theme,99999);
+    const previewHTML=renderSlidesPreview(slides,theme,99999,meta);
     $("#courseResult").innerHTML=`
       <div class="course-result">
         <div class="course-result-h">
           <div>
             <h3>${escapeHtml(meta.title)}</h3>
-            <div class="meta">${meta.age} · ${meta.domain} · 共 ${finalSlides.length} 页</div>
+            <div class="meta">${meta.age} · ${meta.domain} · 共 ${finalSlides.length} 页 · <span style="color:var(--teal);">🎨 智能图案：${meta.themeName||"通用"}</span></div>
           </div>
           <div class="course-actions">
             <button class="btn sm" id="courseDownload" type="button">
