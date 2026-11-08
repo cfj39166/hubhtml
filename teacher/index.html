@@ -6,8 +6,55 @@
 <meta name="theme-color" content="#0B0F1A">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230B0F1A'/%3E%3Cpath d='M8 12.5L3 7.8C1.7 6.5 2.2 4 4.2 4c1 0 1.7.6 2 .9l1.8 1.8 1.8-1.8c.3-.3 1-.9 2-.9 2 0 2.5 2.5 1.2 3.8L8 12.5z' fill='%2314B8A6'/%3E%3C/svg%3E">
 <title>幼师工作台 · 观察记录生成工具</title>
-<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<script>
+// 多源 CDN 加载器：依次尝试，哪个成功用哪个
+(function loadLibs(){
+  const SOURCES={
+    pptxgenjs:[
+      "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js",
+      "https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js",
+      "https://cdn.bootcdn.net/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js",
+      "https://lib.baomitu.com/pptxgenjs/3.12.0/pptxgen.bundle.js"
+    ],
+    mammoth:[
+      "https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js",
+      "https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js",
+      "https://cdn.bootcdn.net/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js",
+      "https://cdn.staticfile.org/mammoth/1.6.0/mammoth.browser.min.js"
+    ],
+    tesseract:[
+      "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js",
+      "https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js",
+      "https://cdn.bootcdn.net/ajax/libs/tesseract.js/5.1.0/tesseract.min.js",
+      "https://lib.baomitu.com/tesseract.js/5.1.0/tesseract.min.js"
+    ]
+  };
+  const GLOBAL={pptxgenjs:"PptxGenJS",mammoth:"mammoth",tesseract:"Tesseract"};
+
+  function tryLoad(url){
+    return new Promise(res=>{
+      const s=document.createElement("script");
+      s.src=url;
+      s.onload=()=>res(true);
+      s.onerror=()=>{s.remove();res(false);};
+      s.timeout=setTimeout(()=>{s.remove();res(false);},10000);
+      document.head.appendChild(s);
+    });
+  }
+  async function loadOne(name){
+    for(const url of SOURCES[name]){
+      const ok=await tryLoad(url);
+      if(ok && window[GLOBAL[name]]!==undefined){
+        console.log(`[Lib] ${name} loaded from ${url.split("/")[2]}`);
+        return true;
+      }
+    }
+    console.warn(`[Lib] ${name} 全部 CDN 加载失败`);
+    return false;
+  }
+  window._libReady=Promise.all(["pptxgenjs","mammoth","tesseract"].map(loadOne));
+})();
+</script>
 <style>
 :root{
   --bg:#0B0F1A;
@@ -503,6 +550,38 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
   .slide-cover-emoji{font-size:24px;}
 }
 
+/* ===== 绘本动画轮播播放器 ===== */
+.anim-player{margin-bottom:14px;}
+.anim-stage{
+  position:relative;aspect-ratio:16/9;background:#000;border-radius:var(--radius);
+  overflow:hidden;border:1px solid var(--line-2);
+}
+.anim-frame{
+  position:absolute;inset:0;background-size:contain;background-position:center;
+  background-repeat:no-repeat;animation:animFadeIn .4s ease;
+}
+@keyframes animFadeIn{from{opacity:0;}to{opacity:1;}}
+.anim-progress{position:absolute;left:0;bottom:46px;height:3px;background:rgba(255,255,255,.15);width:100%;}
+.anim-progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--teal-soft));}
+.anim-frame-num{
+  position:absolute;top:8px;right:8px;font-size:11px;padding:3px 9px;border-radius:4px;
+  background:rgba(0,0,0,.55);color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.04em;
+}
+.anim-controls{
+  position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:center;gap:8px;
+}
+.anim-btn{
+  background:rgba(0,0,0,.55);color:#fff;border:none;padding:6px 12px;border-radius:6px;
+  font-size:12px;cursor:pointer;transition:background .15s;font-family:inherit;
+}
+.anim-btn:hover{background:rgba(20,184,166,.7);}
+.anim-actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;}
+
+@media(max-width:768px){
+  .anim-stage{aspect-ratio:4/3;}
+  .anim-btn{padding:8px 14px;font-size:13px;}
+}
+
 /* Toast */
 .toast{
   position:fixed;bottom:24px;left:50%;transform:translate(-50%,30px);z-index:200;
@@ -876,7 +955,7 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
             <div class="pages-grid" id="animGrid">
               <div class="page-cell empty-cell" id="animAdd">+</div>
             </div>
-            <input type="file" id="animFile" accept="image/*" hidden>
+            <input type="file" id="animFile" accept="image/*" hidden multiple>
           </div>
 
           <div class="card">
@@ -914,119 +993,121 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
 
         <!-- ==================== PPT 课件 ==================== -->
         <section class="view" data-view="course">
-          <div class="welcome" style="margin-bottom:18px;">
+          <div class="welcome" style="margin-bottom:14px;">
             <h1>PPT 课件生成</h1>
-            <p>填写活动信息，自动生成可下载的 PPT 课件（含主题封面、活动目标、活动过程、互动提问等）。</p>
+            <p>上传教案（图片 / Word / PDF），自动识别内容并生成可下载的卡通风 PPT 课件。</p>
           </div>
 
-          <div class="steps">
-            <span class="step on" id="cStep1"><span class="n">1</span>填写信息</span>
-            <span class="step-arrow">›</span>
-            <span class="step" id="cStep2"><span class="n">2</span>主题风格</span>
-            <span class="step-arrow">›</span>
-            <span class="step" id="cStep3"><span class="n">3</span>预览下载</span>
-          </div>
-
-          <div class="card">
-            <div class="card-h">
-              <h3>上传教案 <span style="font-size:11px;color:var(--text-faint);font-weight:400;">（可选）</span></h3>
-            </div>
-            <label class="upload" id="planUpload" style="padding:18px;">
-              <span class="upload-ico"><svg><use href="#i-upload"/></svg></span>
-              <div class="upload-t">点击或拖入教案文件</div>
-              <div class="upload-s">Word (.docx) 自动提取文字 · 图片 (.jpg/.png) 仅占位提示</div>
+          <!-- 上传区（傻瓜式核心入口） -->
+          <div class="card upload-hero" style="margin-bottom:14px;">
+            <label class="upload" id="planUpload" style="padding:28px 20px;border-width:2px;">
+              <span class="upload-ico" style="font-size:34px;display:block;margin-bottom:8px;">📤</span>
+              <div class="upload-t" style="font-size:16px;font-weight:700;margin-bottom:4px;">点击或拖入教案</div>
+              <div class="upload-s" style="font-size:12px;line-height:1.6;">图片（手机拍照 / 截图 / 扫描件）<br>Word (.docx) · PDF 文档</div>
+              <div style="margin-top:10px;font-size:11px;color:var(--teal);font-weight:600;">🤖 自动识别 → 自动生成</div>
             </label>
             <input type="file" id="planFile" accept=".docx,.pdf,image/*" hidden>
             <div id="planStatus"></div>
-          </div>
-
-          <div class="card">
-            <div class="card-h">
-              <h3>活动信息</h3>
-              <button class="btn ghost sm" id="courseTemplate" type="button">
-                <svg><use href="#i-sparkles"/></svg>示例
-              </button>
-            </div>
-
-            <div class="field">
-              <label class="field-label">活动名称 <span class="opt">必填</span></label>
-              <input class="input" id="cTitle" placeholder="如：认识常见的昆虫 / 有趣的磁铁游戏">
-            </div>
-
-            <div class="field">
-              <label class="field-label">年龄班</label>
-              <select class="select" id="cAge">
-                <option value="">请选择</option>
-                <option>小班</option>
-                <option selected>中班</option>
-                <option>大班</option>
-                <option>混龄班</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label class="field-label">活动领域</label>
-              <div class="chips" id="cDomain">
-                <span class="chip on">科学</span>
-                <span class="chip">语言</span>
-                <span class="chip">社会</span>
-                <span class="chip">健康</span>
-                <span class="chip">艺术</span>
-                <span class="chip">综合</span>
+            <div id="ocrProgress" style="display:none;margin-top:10px;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                <span class="spinner" style="width:14px;height:14px;"></span>
+                <span id="ocrStatus" style="font-size:12px;color:var(--text-dim);">正在准备识别引擎…</span>
               </div>
-            </div>
-
-            <div class="field">
-              <label class="field-label">活动目标 <span class="opt">每行一条</span></label>
-              <textarea class="textarea" id="cGoals" style="min-height:96px;" placeholder="如：&#10;1. 初步认识 3-4 种常见昆虫，了解其外形特征。&#10;2. 能用简单的语言描述昆虫的生活习性。&#10;3. 培养观察自然的兴趣，懂得爱护小动物。"></textarea>
-            </div>
-
-            <div class="field">
-              <label class="field-label">活动准备</label>
-              <textarea class="textarea" id="cPrep" style="min-height:72px;" placeholder="物质准备 + 经验准备，如：&#10;昆虫 PPT、放大镜、昆虫标本、记录表&#10;幼儿已有户外观察经验"></textarea>
-            </div>
-
-            <div class="field">
-              <label class="field-label">活动过程 <span class="opt">每段一个环节</span></label>
-              <textarea class="textarea" id="cProcess" style="min-height:120px;" placeholder="按环节分自然段书写：&#10;一、导入：出示蝴蝶标本，提问「你认识它吗？」引出主题。&#10;二、基本：观察三种昆虫图片，分组讨论外形特征。&#10;三、游戏：「昆虫找家」配对游戏。&#10;四、延伸：户外寻找小昆虫，记录所见。"></textarea>
-            </div>
-
-            <div class="field">
-              <label class="field-label">互动提问 <span class="opt">可选</span></label>
-              <textarea class="textarea" id="cQuestions" style="min-height:72px;" placeholder="如：&#10;1. 蝴蝶和蜜蜂有什么不一样？&#10;2. 蚂蚁是怎么搬家的？&#10;3. 你最喜欢的昆虫是什么，为什么？"></textarea>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-h"><h3>课件风格</h3></div>
-            <div class="field">
-              <label class="field-label">主题配色</label>
-              <div class="chips" id="courseTheme">
-                <span class="chip on" data-theme="cream" data-c1="#F5B941" data-c2="#FFDD83" data-bg="#FFFBF0" data-emoji="🐻">奶油蜂蜜</span>
-                <span class="chip" data-theme="strawberry" data-c1="#E96A8E" data-c2="#FFB3C7" data-bg="#FFF0F4" data-emoji="🍓">草莓粉粉</span>
-                <span class="chip" data-theme="mint" data-c1="#4FB286" data-c2="#A6E6C5" data-bg="#F0FBF5" data-emoji="🐸">薄荷草地</span>
-                <span class="chip" data-theme="sky" data-c1="#5AA9E6" data-c2="#A8D8F0" data-bg="#F0F8FF" data-emoji="☁️">天空白云</span>
-                <span class="chip" data-theme="lavender" data-c1="#9B7AD1" data-c2="#CFBEE9" data-bg="#F6F0FC" data-emoji="🦄">薰衣草</span>
-                <span class="chip" data-theme="peach" data-c1="#F08E5A" data-c2="#FFC196" data-bg="#FFF5EC" data-emoji="🦊">蜜桃小狐</span>
-                <span class="chip" data-theme="rainbow" data-c1="#E96A8E" data-c2="#5AA9E6" data-bg="#FFFBF0" data-emoji="🌈">彩虹糖果</span>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label">页数</label>
-              <div class="chips" id="coursePages">
-                <span class="chip">6 页</span>
-                <span class="chip on">8 页</span>
-                <span class="chip">10 页</span>
-                <span class="chip">12 页</span>
+              <div style="height:6px;background:var(--bg-2);border-radius:3px;overflow:hidden;">
+                <div id="ocrBar" style="height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--teal-soft));transition:width .3s;"></div>
               </div>
             </div>
           </div>
 
-          <button class="btn block" id="courseSubmit" type="button">
+          <!-- 主题色快速切换（与上传区一起，不让用户找） -->
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-h"><h3>主题配色</h3><span style="font-size:11px;color:var(--text-faint);">点选喜欢的风格</span></div>
+            <div class="chips" id="courseTheme">
+              <span class="chip on" data-theme="cream" data-c1="#F5B941" data-c2="#FFDD83" data-bg="#FFFBF0" data-emoji="🐻">🐻 奶油蜂蜜</span>
+              <span class="chip" data-theme="strawberry" data-c1="#E96A8E" data-c2="#FFB3C7" data-bg="#FFF0F4" data-emoji="🍓">🍓 草莓粉粉</span>
+              <span class="chip" data-theme="mint" data-c1="#4FB286" data-c2="#A6E6C5" data-bg="#F0FBF5" data-emoji="🐸">🐸 薄荷草地</span>
+              <span class="chip" data-theme="sky" data-c1="#5AA9E6" data-c2="#A8D8F0" data-bg="#F0F8FF" data-emoji="☁️">☁️ 天空白云</span>
+              <span class="chip" data-theme="lavender" data-c1="#9B7AD1" data-c2="#CFBEE9" data-bg="#F6F0FC" data-emoji="🦄">🦄 薰衣草</span>
+              <span class="chip" data-theme="peach" data-c1="#F08E5A" data-c2="#FFC196" data-bg="#FFF5EC" data-emoji="🦊">🦊 蜜桃小狐</span>
+              <span class="chip" data-theme="rainbow" data-c1="#E96A8E" data-c2="#5AA9E6" data-bg="#FFFBF0" data-emoji="🌈">🌈 彩虹糖果</span>
+            </div>
+          </div>
+
+          <!-- 生成按钮 -->
+          <button class="btn block" id="courseSubmit" type="button" style="font-size:15px;padding:14px;margin-bottom:14px;">
             <svg><use href="#i-sparkles"/></svg>
-            生成 PPT 课件
+            一键生成 PPT 课件
           </button>
           <div id="courseResult"></div>
+
+          <!-- 高级选项（默认折叠，不挡道） -->
+          <details class="card" id="advancedPanel" style="margin-top:14px;">
+            <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--text-dim);list-style:none;display:flex;align-items:center;gap:6px;">
+              <svg style="width:14px;height:14px;"><use href="#i-settings"/></svg>
+              <span>手动调整 / 高级选项</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--text-faint);">识别不准？点这里改</span>
+            </summary>
+            <div style="margin-top:14px;">
+              <div class="field">
+                <label class="field-label">活动名称</label>
+                <input class="input" id="cTitle" placeholder="如：认识常见的昆虫">
+              </div>
+              <div class="field">
+                <label class="field-label">年龄班</label>
+                <select class="select" id="cAge">
+                  <option value="">请选择</option>
+                  <option>小班</option>
+                  <option selected>中班</option>
+                  <option>大班</option>
+                  <option>混龄班</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">活动领域</label>
+                <div class="chips" id="cDomain">
+                  <span class="chip on">科学</span>
+                  <span class="chip">语言</span>
+                  <span class="chip">社会</span>
+                  <span class="chip">健康</span>
+                  <span class="chip">艺术</span>
+                  <span class="chip">综合</span>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">活动目标 <span class="opt">每行一条</span></label>
+                <textarea class="textarea" id="cGoals" style="min-height:96px;" placeholder="如：1. 初步认识…"></textarea>
+              </div>
+              <div class="field">
+                <label class="field-label">活动准备</label>
+                <textarea class="textarea" id="cPrep" style="min-height:72px;" placeholder="物质准备 + 经验准备"></textarea>
+              </div>
+              <div class="field">
+                <label class="field-label">活动过程 <span class="opt">每段一个环节</span></label>
+                <textarea class="textarea" id="cProcess" style="min-height:120px;" placeholder="按环节分自然段"></textarea>
+              </div>
+              <div class="field">
+                <label class="field-label">互动提问 <span class="opt">可选</span></label>
+                <textarea class="textarea" id="cQuestions" style="min-height:72px;" placeholder="如：1. …"></textarea>
+              </div>
+              <div class="field">
+                <label class="field-label">页数</label>
+                <div class="chips" id="coursePages">
+                  <span class="chip">6 页</span>
+                  <span class="chip on">8 页</span>
+                  <span class="chip">10 页</span>
+                  <span class="chip">12 页</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn ghost sm" id="courseTemplate" type="button">
+                  <svg><use href="#i-sparkles"/></svg>填入示例
+                </button>
+                <button class="btn ghost sm" id="courseClear" type="button">
+                  <svg><use href="#i-trash"/></svg>清空
+                </button>
+              </div>
+            </div>
+          </details>
         </section>
 
         <!-- ==================== 历史记录 ==================== -->
@@ -1420,12 +1501,18 @@ window.copyReport=function(id){
 let animPages=[];
 $("#animAdd").addEventListener("click",()=>$("#animFile").click());
 $("#animFile").addEventListener("change",e=>{
-  const f=e.target.files[0];
-  if(f && animPages.length<20){
+  const files=[...e.target.files];
+  if(!files.length) return;
+  let added=0;
+  for(const f of files){
+    if(animPages.length>=20) break;
     animPages.push({name:f.name,url:URL.createObjectURL(f)});
+    added++;
+  }
+  if(added>0){
     renderAnimPages();
-    toast(`已添加第 ${animPages.length} 页`);
-  } else if(animPages.length>=20){
+    toast(`已添加 ${added} 页，共 ${animPages.length} 页`);
+  } else {
     toast("最多 20 页");
   }
   e.target.value="";
@@ -1451,28 +1538,94 @@ $("#animSubmit").addEventListener("click",()=>{
   setTimeout(()=>{
     const style=$$("#animStyle .chip.on")[0]?.textContent||"生动卡通";
     const dur=$$("#animDur .chip.on")[0]?.textContent||"5 秒";
+    const secondPer=parseInt(dur)||5;
     const r={
       id:uid(),type:"animate",date:today(),time:now(),
       pages:animPages.length,style,dur,
       story:$("#animStory").value.trim(),
-      videoUrl:animPages[0]?.url
+      pagesUrls:animPages.map(p=>p.url),
+      secondPer
     };
     records.animate.unshift(r); saveRecords();
+    const aid="animplayer_"+r.id;
     $("#animResult").innerHTML=`
       <div class="report">
         <div class="report-h">
-          <div><h3>绘本动画</h3><div class="meta">${r.date} ${r.time||""} · ${r.pages} 页 · ${r.style} · ${r.dur}</div></div>
+          <div><h3>绘本动画</h3><div class="meta">${r.date} ${r.time||""} · ${r.pages} 页 · ${r.style} · 单页 ${r.dur}</div></div>
+          <span class="tag live">已生成</span>
         </div>
-        <div class="video-box"><span class="video-badge">示例预览</span><video src="${r.videoUrl}" controls muted loop></video></div>
-        ${r.story?`<div class="report-sec"><div class="report-sec-h">故事文本</div><div class="report-sec-b">${r.story}</div></div>`:""}
-        <div style="font-size:11px;color:var(--text-faint);line-height:1.7;margin-top:8px;">
-          已按「${r.style}」风格、单页 ${r.dur}生成 ${r.pages} 页连播动画。接入真实 AI 后此处将显示 AI 生成的连贯动画短片。
+        <div class="anim-player" id="${aid}">
+          <div class="anim-stage">
+            ${animPages.map((p,i)=>`<div class="anim-frame" data-i="${i}" style="background-image:url('${p.url}');${i===0?'':'display:none;'}"></div>`).join("")}
+            <div class="anim-progress"><div class="anim-progress-bar"></div></div>
+            <div class="anim-frame-num">P<span class="anim-cur">1</span>/${r.pages}</div>
+            <div class="anim-controls">
+              <button class="anim-btn anim-play" type="button">▶ 播放</button>
+              <button class="anim-btn anim-prev" type="button">‹</button>
+              <button class="anim-btn anim-next" type="button">›</button>
+            </div>
+          </div>
+        </div>
+        ${r.story?`<div class="report-sec"><div class="report-sec-h">故事文本</div><div class="report-sec-b">${escapeHtml(r.story)}</div></div>`:""}
+        <div class="report-sec">
+          <div class="report-sec-h">说明</div>
+          <div class="report-sec-b" style="font-size:12px;color:var(--text-faint);">已按「${r.style}」风格、单页 ${r.dur}把 ${r.pages} 页绘本做成连贯动画。接入真实 AI（CogVideoX）后将生成完整 MP4 视频文件，可直接下载播放。</div>
+        </div>
+        <div class="anim-actions">
+          <button class="btn sm" type="button" id="${aid}_download">📥 下载第一页图片</button>
         </div>
       </div>`;
     btn.disabled=false; btn.innerHTML=`<svg><use href="#i-film"/></svg>重新生成`;
     toast("绘本动画已生成");
+    // 启动轮播
+    initAnimPlayer(aid,animPages.length,secondPer);
+    // 下载第一页图片
+    $("#"+aid+"_download")?.addEventListener("click",()=>{
+      const a=document.createElement("a");
+      a.href=animPages[0].url;a.download=`绘本_第1页.png`;a.click();
+    });
   },1500);
 });
+
+// 绘本动画轮播播放器
+function initAnimPlayer(aid,total,dur){
+  const root=document.getElementById(aid);
+  if(!root) return;
+  const frames=root.querySelectorAll(".anim-frame");
+  const playBtn=root.querySelector(".anim-play");
+  const prevBtn=root.querySelector(".anim-prev");
+  const nextBtn=root.querySelector(".anim-next");
+  const cur=root.querySelector(".anim-cur");
+  const progressBar=root.querySelector(".anim-progress-bar");
+  let idx=0,playing=false,timer=null,startTime=0;
+
+  function show(i){
+    frames[idx].style.display="none";
+    idx=(i+total)%total;
+    frames[idx].style.display="block";
+    cur.textContent=idx+1;
+    progressBar.style.transition="none";progressBar.style.width="0";
+    if(playing){
+      // 触发进度条动画
+      requestAnimationFrame(()=>{progressBar.style.transition=`width ${dur*1000}ms linear`;progressBar.style.width="100%";});
+    }
+  }
+  function play(){
+    playing=true;playBtn.textContent="⏸ 暂停";startTime=Date.now();
+    progressBar.style.transition=`width ${dur*1000}ms linear`;
+    progressBar.style.width="0";
+    requestAnimationFrame(()=>{progressBar.style.width="100%";});
+    timer=setInterval(()=>show(idx+1),dur*1000);
+  }
+  function pause(){
+    playing=false;playBtn.textContent="▶ 播放";
+    clearInterval(timer);timer=null;
+    progressBar.style.transition="none";
+  }
+  playBtn.addEventListener("click",()=>playing?pause():play());
+  prevBtn.addEventListener("click",()=>{show(idx-1);if(playing){clearInterval(timer);play();}});
+  nextBtn.addEventListener("click",()=>{show(idx+1);if(playing){clearInterval(timer);play();}});
+}
 
 /* ============================================================
    PPT 课件
@@ -1480,40 +1633,211 @@ $("#animSubmit").addEventListener("click",()=>{
 bindChips("courseTheme"); bindChips("coursePages"); bindChips("cDomain");
 
 // 示例模板一键填充
-// 教案文件上传
+// 教案文件上传：自动识别 → 自动填充 → 一键生成
 $("#planUpload").addEventListener("click",()=>$("#planFile").click());
-$("#planFile").addEventListener("change",async (e)=>{
-  const f=e.target.files[0];
-  if(!f) return;
+$("#planUpload").addEventListener("dragover",e=>{e.preventDefault();e.currentTarget.style.borderColor="var(--teal)";});
+$("#planUpload").addEventListener("dragleave",e=>{e.currentTarget.style.borderColor="";});
+$("#planUpload").addEventListener("drop",e=>{
+  e.preventDefault();e.currentTarget.style.borderColor="";
+  if(e.dataTransfer.files[0]) handlePlanFile(e.dataTransfer.files[0]);
+});
+$("#planFile").addEventListener("change",e=>{
+  if(e.target.files[0]) handlePlanFile(e.target.files[0]);
+  e.target.value="";
+});
+
+async function handlePlanFile(f){
   const status=$("#planStatus");
+  const progress=$("#ocrProgress");
   const lname=f.name.toLowerCase();
-  status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(20,184,166,.06);border-radius:6px;font-size:12px;color:var(--text-dim);"><span class="spinner" style="width:11px;height:11px;border-top-color:var(--teal);margin:0 6px 0 0;display:inline-block;vertical-align:middle;"></span>正在解析 ${escapeHtml(f.name)}…</div>`;
+  const fname=f.name;
 
   if(lname.endsWith(".docx")){
+    // ===== Word 文件：mammoth 提取 =====
+    status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(20,184,166,.06);border-radius:6px;font-size:12px;color:var(--text-dim);"><span class="spinner" style="width:11px;height:11px;border-top-color:var(--teal);margin-right:6px;display:inline-block;vertical-align:middle;"></span>正在解析 Word 文档…</div>`;
     try{
       const buf=await f.arrayBuffer();
       const result=await window.mammoth.extractRawText({arrayBuffer:buf});
       const text=result.value.trim();
       if(!text){
-        status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ 文件里没找到文字，可能是扫描版 Word。</div>`;
+        status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ Word 里没找到文字，可能是扫描版。试试上传图片让 OCR 识别。</div>`;
         return;
       }
-      // 智能填充：按关键词归到各字段
       autoFillFromText(text);
-      status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(20,184,166,.08);border-radius:6px;font-size:12px;color:var(--teal-soft);">✅ 已从 Word 解析 ${text.length} 字，自动填入下方各字段，可再手动调整。</div>`;
-      toast("教案已解析填入");
+      status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(20,184,166,.10);border-radius:6px;font-size:12px;color:var(--teal-soft);">✅ 已从 Word 识别 ${text.length} 字，教案已填入。<br><span style="color:var(--text-faint);font-size:11px;">下面已自动生成 PPT 预览，可继续修改后点「重新生成」</span></div>`;
+      toast("Word 解析完成");
+      autoGenerate();
     }catch(err){
       console.error(err);
-      status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ 解析失败：${escapeHtml(err.message||"未知错误")}</div>`;
+      status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ Word 解析失败：${escapeHtml(err.message||"")}</div>`;
     }
   } else if(lname.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/)){
-    status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(245,158,11,.08);border-radius:6px;font-size:12px;color:#F59E0B;">📷 已收到教案图片（${escapeHtml(f.name)}）。当前为纯前端原型不做 OCR，请手动把图片里的关键字段填入下方；接入 AI 后此处将自动识别。</div>`;
+    // ===== 图片：Tesseract.js OCR =====
+    if(typeof Tesseract==="undefined"){
+      status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ OCR 引擎加载失败（CDN 不通），请检查网络或改上传 Word。</div>`;
+      return;
+    }
+    progress.style.display="block";
+    $("#ocrBar").style.width="0%";
+    $("#ocrStatus").textContent="正在初始化识别引擎…";
+    status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(20,184,166,.06);border-radius:6px;font-size:12px;color:var(--text-dim);">📷 正在识别 ${escapeHtml(fname)} 中的文字…</div>`;
+    try{
+      const text=await ocrImage(f,p=>{
+        $("#ocrBar").style.width=p+"%";
+        $("#ocrStatus").textContent=`识别中… ${p}%`;
+      });
+      progress.style.display="none";
+      if(!text || text.trim().length<20){
+        status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(245,158,11,.08);border-radius:6px;font-size:12px;color:#F59E0B;">⚠️ 没识别到足够文字（可能图片模糊或字太小）。建议重拍清晰照片，或手动在下方填写。</div>`;
+        return;
+      }
+      autoFillFromText(text);
+      status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(20,184,166,.10);border-radius:6px;font-size:12px;color:var(--teal-soft);">✅ 图片已识别 ${text.length} 字，教案已自动填入。<br><span style="color:var(--text-faint);font-size:11px;">识别不准？展开「手动调整」修改后点「重新生成」</span></div>`;
+      toast("图片识别完成");
+      autoGenerate();
+    }catch(err){
+      console.error(err);
+      progress.style.display="none";
+      status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ OCR 失败：${escapeHtml(err.message||"")}<br><span style="color:var(--text-faint);font-size:11px;">试试改上传 Word，或手动填写</span></div>`;
+    }
   } else if(lname.endsWith(".pdf")){
-    status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(245,158,11,.08);border-radius:6px;font-size:12px;color:#F59E0B;">📄 已收到 PDF（${escapeHtml(f.name)}）。当前为纯前端原型不做 PDF 解析，请手动填入下方；接入 AI 后此处将自动读取。</div>`;
+    status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(245,158,11,.08);border-radius:6px;font-size:12px;color:#F59E0B;">📄 已收到 PDF（${escapeHtml(fname)}）。PDF 解析需要后端支持，建议改上传 Word 或图片（截图 PDF 内容也行）。</div>`;
   } else {
-    status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ 暂不支持该格式，请上传 .docx / .pdf / 图片。</div>`;
+    status.innerHTML=`<div style="margin-top:10px;padding:10px 12px;background:rgba(244,63,94,.08);border-radius:6px;font-size:12px;color:#F43F5E;">⚠️ 暂不支持该格式，请上传图片 / .docx 文件。</div>`;
   }
-  e.target.value="";
+}
+
+// Tesseract.js OCR：返回识别文本，progress 是 0-100 的回调
+// 关键修复（2026-11-08 诊断后）：
+// 1) langPath 优先用 4.0.0_fast（chi_sim 仅 1.7MB，标准版 20MB 卡死）
+// 2) 单次尝试整体超时降级（60s 超时换下一个语言源）
+// 3) 多源 langPath 真正生效（不再只取第一个）
+async function ocrImage(file,progress){
+  const workerPaths=[
+    "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/worker.min.js",
+    "https://unpkg.com/tesseract.js@5.1.0/dist/worker.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/tesseract.js/5.1.0/worker.min.js",
+    "https://lib.baomitu.com/tesseract.js@5.1.0/worker.min.js"
+  ];
+  const corePaths=[
+    "https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.0/",
+    "https://unpkg.com/tesseract.js-core@5.1.0/",
+    "https://cdn.bootcdn.net/ajax/libs/tesseract.js-core/5.1.0/",
+    "https://lib.baomitu.com/tesseract.js-core/5.1.0/"
+  ];
+  // ★ 关键：fast 优先（1.7MB），best 次之（12MB），标准兜底（20MB）
+  const langPaths=[
+    "https://tessdata.projectnaptha.com/4.0.0_fast",
+    "https://tessdata.projectnaptha.com/4.0.0_best",
+    "https://tessdata.projectnaptha.com/4.0.0"
+  ];
+
+  function setStatus(t){ const el=$("#ocrStatus"); if(el) el.textContent=t; }
+  function probeUrl(u){
+    return new Promise(res=>{
+      const s=document.createElement("script");
+      s.src=u;s.onload=()=>{s.remove();res(true);};s.onerror=()=>{s.remove();res(false);};
+      setTimeout(()=>{s.remove();res(false);},5000);
+      document.head.appendChild(s);
+    });
+  }
+  // 用 fetch HEAD 探测 corePath 是否可用（HEAD 不会触发 Worker importScripts）
+  async function probeCorePath(base){
+    const testUrl=base.replace(/\/$/,"")+"/tesseract-core.wasm.js";
+    try{
+      const r=await fetch(testUrl,{method:"HEAD",mode:"no-cors",cache:"no-cache"});
+      // no-cors 模式下 r.type 可能是 'opaque'，但只要不抛错就算可用
+      return true;
+    }catch(e){ return false; }
+  }
+
+  // 探测可用 worker URL
+  let workerURL=workerPaths[0];
+  for(const u of workerPaths){
+    if(await probeUrl(u)){workerURL=u;break;}
+  }
+  // ★ 探测可用 corePath（移动端 jsdelivr 偶发失败，需提前选出真正能用的）
+  let goodCorePath=corePaths[0];
+  for(const base of corePaths){
+    const ok=await probeCorePath(base);
+    if(ok){goodCorePath=base;break;}
+  }
+  console.log("[OCR] 选用 corePath:",goodCorePath);
+
+  async function tryOnce(langPath,corePath,label){
+    setStatus(`正在加载 OCR 引擎与中文库（${label}）…`);
+    let worker=null;
+    try{
+      worker=await Tesseract.createWorker("chi_sim",1,{
+        workerPath:workerURL,
+        corePath:corePath,
+        langPath:langPath,
+        logger:m=>{
+          if(m.status==="recognizing text" && typeof m.progress==="number"){
+            progress(Math.round(m.progress*100));
+            setStatus(`正在识别文字… ${Math.round(m.progress*100)}%`);
+          } else if(m.status==="loading language traineddata"){
+            setStatus(`正在下载中文识别库（${label}）…`);
+          } else if(m.status==="loaded language traineddata"){
+            setStatus(`中文库已就绪，准备识别…`);
+          } else if(m.status==="loading tesseract core" || m.status==="initializing tesseract" || m.status==="initializing api"){
+            setStatus(`正在初始化 OCR 引擎…`);
+          } else if(m.status){
+            setStatus(m.status+"…");
+          }
+        }
+      });
+      setStatus(`识别中…`);
+      const { data }=await worker.recognize(file);
+      await worker.terminate();
+      return data.text||"";
+    }catch(e){
+      try{ worker && worker.terminate(); }catch(_){}
+      throw e;
+    }
+  }
+
+  function withTimeout(promise,ms,msg){
+    return Promise.race([
+      promise,
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error(msg)),ms))
+    ]);
+  }
+
+  let lastErr=null;
+  for(let i=0;i<langPaths.length;i++){
+    const label=i===0?"fast 1.7MB":i===1?"best 12MB":"标准 20MB";
+    // ★ 用预先探测过的可用 corePath，避免移动端 jsdelivr core 失败导致整轮失败
+    const corePath=goodCorePath;
+    try{
+      setStatus(`准备加载 ${label}…`);
+      const text=await withTimeout(
+        tryOnce(langPaths[i],corePath,label),
+        90000,
+        `加载超时（${label}），切换备用源…`
+      );
+      return text;
+    }catch(e){
+      lastErr=e;
+      console.warn(`[OCR] ${label} 失败:`,e.message);
+      if(i<langPaths.length-1) setStatus(`${label} 失败，切换下一个语言库源…`);
+    }
+  }
+  throw lastErr||new Error("OCR 全部语言源失败");
+}
+
+// 自动触发「生成 PPT 课件」
+function autoGenerate(){
+  // 直接调用 courseSubmit 的 click，复用已有逻辑
+  $("#courseSubmit").click();
+}
+
+// 清空字段
+$("#courseClear")?.addEventListener("click",()=>{
+  ["#cTitle","#cGoals","#cPrep","#cProcess","#cQuestions"].forEach(s=>$(s).value="");
+  $("#cAge").value="";
+  $("#planStatus").innerHTML="";
+  toast("已清空");
 });
 
 // 从一段教案文本智能拆分到各字段
@@ -1819,8 +2143,6 @@ $("#courseSubmit").addEventListener("click",()=>{
   const btn=$("#courseSubmit");
   btn.disabled=true; btn.innerHTML=`<span class="spinner" style="width:13px;height:13px;margin:0;"></span>正在生成…`;
   $("#courseResult").innerHTML=`<div class="loading"><div class="spinner"></div><div>正在智能解析教案并生成课件…</div></div>`;
-  $("#cStep1").classList.add("done");
-  $("#cStep2").classList.add("done");
 
   setTimeout(()=>{
     const {slides,meta}=parseCourseSlides();
@@ -1873,7 +2195,6 @@ $("#courseSubmit").addEventListener("click",()=>{
       </div>`;
 
     btn.disabled=false; btn.innerHTML=`<svg><use href="#i-sparkles"/></svg>重新生成`;
-    $("#cStep3").classList.add("done");
     bindSlidesScroll();
     $("#courseDownload").addEventListener("click",()=>downloadPptx(finalSlides,theme,meta));
     $("#courseCopy").addEventListener("click",()=>{
@@ -1973,11 +2294,28 @@ window.showDetail=function(type,id){
   let html="";
   if(type==="observe") html=renderReport(r);
   else if(type==="animate"){
+    // 兼容旧记录（只有 videoUrl 一张图）和新记录（pagesUrls 数组）
+    const urls=r.pagesUrls||(r.videoUrl?[r.videoUrl]:[]);
+    const aid="hisAnim_"+r.id;
     html=`<div class="report">
-      <div class="report-h"><div><h3>绘本动画</h3><div class="meta">${r.date} ${r.time||""} · ${r.pages} 页 · ${r.style} · ${r.dur}</div></div></div>
-      <div class="video-box"><span class="video-badge">示例</span><video src="${r.videoUrl}" controls muted loop></video></div>
-      ${r.story?`<div class="report-sec"><div class="report-sec-h">故事文本</div><div class="report-sec-b">${r.story}</div></div>`:""}
+      <div class="report-h"><div><h3>绘本动画</h3><div class="meta">${r.date} ${r.time||""} · ${r.pages} 页 · ${r.style} · 单页 ${r.dur||"5 秒"}</div></div><span class="tag live">已生成</span></div>
+      <div class="anim-player" id="${aid}">
+        <div class="anim-stage">
+          ${urls.map((u,i)=>`<div class="anim-frame" data-i="${i}" style="background-image:url('${u}');${i===0?'':'display:none;'}"></div>`).join("")}
+          ${urls.length>0?`<div class="anim-progress"><div class="anim-progress-bar"></div></div>
+          <div class="anim-frame-num">P<span class="anim-cur">1</span>/${urls.length}</div>
+          <div class="anim-controls">
+            <button class="anim-btn anim-play" type="button">▶ 播放</button>
+            <button class="anim-btn anim-prev" type="button">‹</button>
+            <button class="anim-btn anim-next" type="button">›</button>
+          </div>`:""}
+        </div>
+      </div>
+      ${r.story?`<div class="report-sec"><div class="report-sec-h">故事文本</div><div class="report-sec-b">${escapeHtml(r.story)}</div></div>`:""}
+      <div class="report-sec"><div class="report-sec-h">说明</div><div class="report-sec-b" style="font-size:12px;color:var(--text-faint);">已按「${r.style}」风格、单页 ${r.dur||"5 秒"}把 ${r.pages} 页绘本做成连贯动画。接入 AI 后将生成 MP4 视频。</div></div>
     </div>`;
+    // 初始化播放器（延后到 innerHTML 写入后）
+    setTimeout(()=>initAnimPlayer(aid,urls.length,parseInt(r.dur)||5),50);
   } else {
     html=`<div class="report">
       <div class="report-h"><div><h3>PPT 课件</h3><div class="meta">${r.date} ${r.time||""} · ${r.theme} · ${r.pages} 页</div></div></div>
