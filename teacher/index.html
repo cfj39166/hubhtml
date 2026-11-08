@@ -471,6 +471,23 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
   position:absolute;font-size:16px;opacity:.85;pointer-events:none;
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.1));
 }
+/* ★ SVG 卡通插图（大图，替代小 emoji） */
+.slide-cover-art{
+  width:96px;height:96px;margin:0 auto 8px;display:block;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.12));
+  animation:artBounce 2.6s ease-in-out infinite;
+}
+@keyframes artBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.slide-deco-art{
+  position:absolute;pointer-events:none;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.1));
+}
+.slide-thanks-art{
+  width:78px;height:78px;margin:0 auto 8px;display:block;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.12));
+}
+.slide-thanks-art-row{display:flex;justify-content:center;gap:6px;margin:8px 0 4px;}
+.slide-thanks-art-row img{width:24px;height:24px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.1));}
 .slide-corner-deco{
   position:absolute;right:-14px;bottom:-14px;width:60px;height:60px;
   border-radius:50%;opacity:.55;pointer-events:none;
@@ -2200,6 +2217,318 @@ $("#courseTemplate").addEventListener("click",()=>{
 });
 
 /* ============================================================
+   SVG 卡通插图库（圆头大眼可爱风，替代 emoji 字符）
+   —— 每个插图是一个独立 SVG，内联 base64 data URI，可直接用于 <img> 或下载到 pptx
+   ============================================================ */
+const CARTOON_SVG={};
+
+// 通用：构造 SVG data URI
+function svgDataUri(svg){
+  return "data:image/svg+xml;base64,"+btoa(unescape(encodeURIComponent(svg)));
+}
+// 通用：圆角矩形
+function rr(x,y,w,h,r,fill,stroke="",sw=0){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+r+'" ry="'+r+'" fill="'+fill+'"'+(stroke?' stroke="'+stroke+'" stroke-width="'+sw+'"':'')+'/>';}
+// 通用：大眼睛（白底+黑瞳+高光）
+function eye(cx,cy,r){
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#fff" stroke="#333" stroke-width="2"/>
+          <circle cx="${cx}" cy="${cy+r*0.15}" r="${r*0.55}" fill="#222"/>
+          <circle cx="${cx-r*0.3}" cy="${cy-r*0.25}" r="${r*0.22}" fill="#fff"/>`;
+}
+// 腮红
+function blush(cx,cy,r){return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#ffb3c7" opacity="0.7"/>`;}
+
+// 1. 蝴蝶（昆虫）
+CARTOON_SVG.butterfly=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<ellipse cx="100" cy="100" rx="6" ry="40" fill="#5a3a2a"/>
+<ellipse cx="70" cy="75" rx="32" ry="38" fill="#ff8fc7" stroke="#333" stroke-width="2.5"/>
+<ellipse cx="130" cy="75" rx="32" ry="38" fill="#ff8fc7" stroke="#333" stroke-width="2.5"/>
+<ellipse cx="72" cy="130" rx="26" ry="32" fill="#a06bff" stroke="#333" stroke-width="2.5"/>
+<ellipse cx="128" cy="130" rx="26" ry="32" fill="#a06bff" stroke="#333" stroke-width="2.5"/>
+<circle cx="62" cy="68" r="6" fill="#ffd479"/><circle cx="138" cy="68" r="6" fill="#ffd479"/>
+<circle cx="70" cy="138" r="5" fill="#5ce1ff"/><circle cx="130" cy="138" r="5" fill="#5ce1ff"/>
+<circle cx="100" cy="68" r="14" fill="#5a3a2a"/>
+${eye(95,65,4)}${eye(105,65,4)}
+<path d="M88 50 Q82 30 76 22\" stroke="#5a3a2a" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M112 50 Q118 30 124 22\" stroke="#5a3a2a" stroke-width="3" fill="none" stroke-linecap="round"/>
+<circle cx="76" cy="22" r="4" fill="#ffd479"/><circle cx="124" cy="22" r="4" fill="#ffd479"/>
+</svg>`;
+
+// 2. 蜜蜂（昆虫）
+CARTOON_SVG.bee=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<ellipse cx="65" cy="80" rx="28" ry="22" fill="#fff" stroke="#333" stroke-width="2.5" opacity="0.85"/>
+<ellipse cx="135" cy="80" rx="28" ry="22" fill="#fff" stroke="#333" stroke-width="2.5" opacity="0.85"/>
+<ellipse cx="100" cy="115" rx="42" ry="38" fill="#ffd479" stroke="#333" stroke-width="2.5"/>
+<path d="M75 105 Q100 95 125 105" stroke="#333" stroke-width="6" fill="none"/>
+<path d="M75 125 Q100 115 125 125" stroke="#333" stroke-width="6" fill="none"/>
+<circle cx="100" cy="80" r="22" fill="#ffd479" stroke="#333" stroke-width="2.5"/>
+${eye(92,78,5)}${eye(108,78,5)}
+${blush(85,88,5)}${blush(115,88,5)}
+<path d="M88 88 Q100 96 112 88" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+// 3. 兔子（动物）
+CARTOON_SVG.rabbit=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<ellipse cx="78" cy="48" rx="11" ry="32" fill="#fff" stroke="#333" stroke-width="2.5"/>
+<ellipse cx="122" cy="48" rx="11" ry="32" fill="#fff" stroke="#333" stroke-width="2.5"/>
+<ellipse cx="78" cy="50" rx="5" ry="20" fill="#ffb3c7"/>
+<ellipse cx="122" cy="50" rx="5" ry="20" fill="#ffb3c7"/>
+<circle cx="100" cy="110" r="55" fill="#fff" stroke="#333" stroke-width="3"/>
+<circle cx="100" cy="130" r="42" fill="#fff" stroke="#333" stroke-width="2.5"/>
+${eye(82,102,9)}${eye(118,102,9)}
+${blush(75,118,9)}${blush(125,118,9)}
+<ellipse cx="100" cy="125" rx="6" ry="4" fill="#ff8fc7" stroke="#333" stroke-width="1.5"/>
+<path d="M92 132 Q100 140 108 132" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+<rect x="96" y="132" width="3" height="6" fill="#fff" stroke="#333" stroke-width="1"/><rect x="101" y="132" width="3" height="6" fill="#fff" stroke="#333" stroke-width="1"/>
+</svg>`;
+
+// 4. 猫（动物）
+CARTOON_SVG.cat=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<polygon points="55,75 65,30 85,65" fill="#ffa56b" stroke="#333" stroke-width="2.5"/>
+<polygon points="145,75 135,30 115,65" fill="#ffa56b" stroke="#333" stroke-width="2.5"/>
+<polygon points="60,68 67,42 78,62" fill="#ffb3c7"/>
+<polygon points="140,68 133,42 122,62" fill="#ffb3c7"/>
+<circle cx="100" cy="115" r="58" fill="#ffa56b" stroke="#333" stroke-width="3"/>
+${eye(80,108,10)}${eye(120,108,10)}
+${blush(72,124,9)}${blush(128,124,9)}
+<path d="M97 122 L100 130 L103 122 Z" fill="#ff8fc7" stroke="#333" stroke-width="1.5"/>
+<path d="M85 134 Q100 144 115 134" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<line x1="60" y1="125" x2="40" y2="120" stroke="#333" stroke-width="1.5"/><line x1="60" y1="132" x2="40" y2="134" stroke="#333" stroke-width="1.5"/>
+<line x1="140" y1="125" x2="160" y2="120" stroke="#333" stroke-width="1.5"/><line x1="140" y1="132" x2="160" y2="134" stroke="#333" stroke-width="1.5"/>
+</svg>`;
+
+// 5. 小狗（动物）
+CARTOON_SVG.dog=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<ellipse cx="58" cy="95" rx="22" ry="35" fill="#c8915a" stroke="#333" stroke-width="2.5"/>
+<ellipse cx="142" cy="95" rx="22" ry="35" fill="#c8915a" stroke="#333" stroke-width="2.5"/>
+<circle cx="100" cy="115" r="55" fill="#e8b886" stroke="#333" stroke-width="3"/>
+${eye(82,105,9)}${eye(118,105,9)}
+${blush(75,122,8)}${blush(125,122,8)}
+<ellipse cx="100" cy="128" rx="14" ry="10" fill="#fff" stroke="#333" stroke-width="2"/>
+<ellipse cx="100" cy="125" rx="6" ry="5" fill="#333"/>
+<path d="M92 138 Q100 145 108 138" stroke="#333" stroke-width="2" fill="none"/>
+<path d="M100 143 Q100 152 92 154" stroke="#333" stroke-width="2" fill="none"/>
+</svg>`;
+
+// 6. 大象（动物）
+CARTOON_SVG.elephant=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<circle cx="160" cy="75" r="22" fill="#b8c5d6" stroke="#333" stroke-width="2.5"/>
+<ellipse cx="100" cy="110" rx="60" ry="52" fill="#b8c5d6" stroke="#333" stroke-width="3"/>
+<path d="M55 145 Q40 165 55 175 Q70 170 70 150" fill="#b8c5d6" stroke="#333" stroke-width="2.5"/>
+<path d="M75 158 Q75 178 65 180 Q55 178 60 165" fill="#b8c5d6" stroke="#333" stroke-width="2"/>
+<path d="M90 160 Q90 182 80 184 Q70 180 78 168" fill="#b8c5d6" stroke="#333" stroke-width="2"/>
+<path d="M120 145 Q130 175 115 182 Q105 180 110 165" fill="#b8c5d6" stroke="#333" stroke-width="2.5"/>
+<ellipse cx="100" cy="160" rx="14" ry="8" fill="#a8b5c6" stroke="#333" stroke-width="1.5"/>
+${eye(118,95,8)}${eye(148,72,6)}
+${blush(125,110,7)}
+<ellipse cx="170" cy="78" rx="8" ry="14" fill="#b8c5d6" stroke="#333" stroke-width="2"/>
+</svg>`;
+
+// 7. 小鱼（海洋）
+CARTOON_SVG.fish=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<ellipse cx="100" cy="110" rx="58" ry="40" fill="#5ce1ff" stroke="#333" stroke-width="3"/>
+<polygon points="40,110 10,80 12,140" fill="#5ce1ff" stroke="#333" stroke-width="3"/>
+<path d="M125 140 Q145 160 155 145" fill="#5ce1ff" stroke="#333" stroke-width="2.5"/>
+<path d="M100 75 Q120 55 135 75" fill="#5ce1ff" stroke="#333" stroke-width="2.5"/>
+<ellipse cx="125" cy="100" rx="14" ry="6" fill="#fff" opacity="0.6"/>
+${eye(125,98,9)}
+${blush(110,118,7)}
+<path d="M105 122 Q115 130 125 122" stroke="#333" stroke-width="2" fill="none"/>
+<circle cx="80" cy="100" r="4" fill="#fff" opacity="0.7"/>
+<circle cx="70" cy="115" r="3" fill="#fff" opacity="0.7"/>
+<circle cx="90" cy="125" r="3" fill="#fff" opacity="0.7"/>
+</svg>`;
+
+// 8. 海星（海洋）
+CARTOON_SVG.starfish=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<path d="M100 25 L120 80 L175 85 L130 122 L148 178 L100 148 L52 178 L70 122 L25 85 L80 80 Z" fill="#ffd479" stroke="#333" stroke-width="3"/>
+${eye(85,95,8)}${eye(115,95,8)}
+${blush(78,108,7)}${blush(122,108,7)}
+<path d="M88 113 Q100 122 112 113" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+<circle cx="60" cy="65" r="4" fill="#ff8fc7"/><circle cx="140" cy="65" r="4" fill="#ff8fc7"/><circle cx="100" cy="55" r="3" fill="#ff8fc7"/>
+</svg>`;
+
+// 9. 螃蟹（海洋）
+CARTOON_SVG.crab=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<ellipse cx="100" cy="115" rx="55" ry="38" fill="#ff6b6b" stroke="#333" stroke-width="3"/>
+<path d="M48 100 Q25 90 18 105 Q15 120 30 118" fill="#ff6b6b" stroke="#333" stroke-width="2.5"/>
+<path d="M152 100 Q175 90 182 105 Q185 120 170 118" fill="#ff6b6b" stroke="#333" stroke-width="2.5"/>
+<path d="M45 90 L25 75 M50 85 L35 65 M150 85 L165 65 M155 90 L175 75" stroke="#333" stroke-width="2" fill="none"/>
+<path d="M75 150 Q70 165 60 170 M85 155 Q82 172 75 178 M115 155 Q118 172 125 178 M125 150 Q130 165 140 170" stroke="#ff6b6b" stroke-width="5" fill="none" stroke-linecap="round"/>
+${eye(85,105,8)}${eye(115,105,8)}
+${blush(75,120,7)}${blush(125,120,7)}
+<path d="M88 120 Q100 128 112 120" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+// 10. 太阳（天气）
+CARTOON_SVG.sun=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+${Array.from({length:12},(_,i)=>{const a=i*30*Math.PI/180;const x1=100+Math.cos(a)*55,y1=100+Math.sin(a)*55,x2=100+Math.cos(a)*88,y2=100+Math.sin(a)*88;return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffa56b" stroke-width="8" stroke-linecap="round"/>`;}).join("")}
+<circle cx="100" cy="100" r="50" fill="#ffd479" stroke="#333" stroke-width="3"/>
+${eye(85,95,9)}${eye(115,95,9)}
+${blush(78,112,8)}${blush(122,112,8)}
+<path d="M88 112 Q100 124 112 112" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+// 11. 云朵（天气）
+CARTOON_SVG.cloud=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<circle cx="70" cy="105" r="32" fill="#fff" stroke="#333" stroke-width="3"/>
+<circle cx="105" cy="92" r="38" fill="#fff" stroke="#333" stroke-width="3"/>
+<circle cx="140" cy="105" r="30" fill="#fff" stroke="#333" stroke-width="3"/>
+<rect x="55" y="105" width="105" height="30" rx="15" fill="#fff" stroke="#333" stroke-width="3"/>
+${eye(85,108,7)}${eye(115,108,7)}
+${blush(78,120,6)}${blush(122,120,6)}
+<path d="M93 120 Q100 126 107 120" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+// 12. 花朵（植物）
+CARTOON_SVG.flower=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+${[0,72,144,216,288].map(a=>{const rad=a*Math.PI/180;const x=100+Math.cos(rad)*32,y=85+Math.sin(rad)*32;return `<ellipse cx="${x}" cy="${y}" rx="24" ry="32" fill="#ff8fc7" stroke="#333" stroke-width="2.5" transform="rotate(${a+90} ${x} ${y})"/>`;}).join("")}
+<circle cx="100" cy="85" r="22" fill="#ffd479" stroke="#333" stroke-width="2.5"/>
+${eye(93,80,5)}${eye(107,80,5)}
+${blush(88,92,5)}${blush(112,92,5)}
+<path d="M94 90 Q100 95 106 90" stroke="#333" stroke-width="1.5" fill="none"/>
+<path d="M100 108 L100 175" stroke="#5fb286" stroke-width="6" stroke-linecap="round"/>
+<path d="M100 145 Q80 135 65 145" stroke="#5fb286" stroke-width="5" fill="none"/>
+</svg>`;
+
+// 13. 树苗（植物）
+CARTOON_SVG.sprout=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<path d="M100 110 L100 180" stroke="#8a5a2a" stroke-width="8" stroke-linecap="round"/>
+<ellipse cx="75" cy="95" rx="28" ry="20" fill="#7bd88f" stroke="#333" stroke-width="2.5" transform="rotate(-30 75 95)"/>
+<ellipse cx="125" cy="95" rx="28" ry="20" fill="#7bd88f" stroke="#333" stroke-width="2.5" transform="rotate(30 125 95)"/>
+<circle cx="100" cy="75" r="32" fill="#5fb286" stroke="#333" stroke-width="2.5"/>
+${eye(90,72,6)}${eye(110,72,6)}
+${blush(85,84,6)}${blush(115,84,6)}
+<path d="M93 84 Q100 90 107 84" stroke="#333" stroke-width="1.5" fill="none"/>
+<ellipse cx="92" cy="170" rx="22" ry="8" fill="#a8825a" stroke="#333" stroke-width="1.5"/>
+</svg>`;
+
+// 14. 苹果（食物/植物）
+CARTOON_SVG.apple=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<path d="M100 60 Q108 50 115 45" stroke="#5a3a2a" stroke-width="5" fill="none" stroke-linecap="round"/>
+<ellipse cx="120" cy="48" rx="14" ry="8" fill="#7bd88f" stroke="#333" stroke-width="2" transform="rotate(30 120 48)"/>
+<path d="M100 65 Q60 60 50 110 Q45 165 100 178 Q155 165 150 110 Q140 60 100 65 Z" fill="#ff6b6b" stroke="#333" stroke-width="3"/>
+<path d="M100 65 Q92 75 95 85" stroke="#fff" stroke-width="2" fill="none" opacity="0.7"/>
+${eye(85,115,8)}${eye(115,115,8)}
+${blush(78,130,7)}${blush(122,130,7)}
+<path d="M90 130 Q100 140 110 130" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+// 15. 磁铁（科学）
+CARTOON_SVG.magnet=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<path d="M60 50 L60 130 Q60 165 100 165 Q140 165 140 130 L140 50" fill="none" stroke="#333" stroke-width="3"/>
+<path d="M60 50 L60 130 Q60 165 100 165 Q140 165 140 130 L140 50" fill="#ff6b6b"/>
+${rr(50,40,25,30,4,"#ff6b6b","#333",3)}
+${rr(125,40,25,30,4,"#fff","#333",3)}
+<rect x="50" y="40" width="25" height="10" fill="#999"/>
+<rect x="125" y="40" width="25" height="10" fill="#999"/>
+${eye(85,105,9)}${eye(115,105,9)}
+${blush(78,122,7)}${blush(122,122,7)}
+<path d="M88 122 Q100 130 112 122" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+<path d="M40 90 Q25 88 22 100" stroke="#5ce1ff" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M160 90 Q175 88 178 100" stroke="#5ce1ff" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+// 16. 火箭（太空）
+CARTOON_SVG.rocket=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<path d="M100 25 Q70 50 70 130 L70 150 L130 150 L130 130 Q130 50 100 25 Z" fill="#fff" stroke="#333" stroke-width="3"/>
+<circle cx="100" cy="85" r="18" fill="#5ce1ff" stroke="#333" stroke-width="2.5"/>
+<circle cx="100" cy="85" r="10" fill="#a06bff" stroke="#333" stroke-width="1.5"/>
+<polygon points="70,130 50,170 70,160" fill="#ff6b6b" stroke="#333" stroke-width="2.5"/>
+<polygon points="130,130 150,170 130,160" fill="#ff6b6b" stroke="#333" stroke-width="2.5"/>
+<path d="M85 150 L85 175 Q100 185 115 175 L115 150" fill="#ffd479" stroke="#333" stroke-width="2"/>
+<path d="M90 168 Q100 180 110 168" fill="#ff6b6b"/>
+${eye(92,115,4)}${eye(108,115,4)}
+${blush(85,125,4)}${blush(115,125,4)}
+</svg>`;
+
+// 17. 星星（通用）
+CARTOON_SVG.star=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<path d="M100 25 L122 80 L180 85 L135 122 L152 178 L100 148 L48 178 L65 122 L20 85 L78 80 Z" fill="#ffd479" stroke="#333" stroke-width="3"/>
+${eye(85,100,8)}${eye(115,100,8)}
+${blush(78,115,7)}${blush(122,115,7)}
+<path d="M88 118 Q100 128 112 118" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+// 18. 爱心（通用/家庭）
+CARTOON_SVG.heart=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<path d="M100 175 Q40 130 40 85 Q40 55 70 55 Q90 55 100 80 Q110 55 130 55 Q160 55 160 85 Q160 130 100 175 Z" fill="#ff8fc7" stroke="#333" stroke-width="3"/>
+${eye(85,95,9)}${eye(115,95,9)}
+${blush(78,110,8)}${blush(122,110,8)}
+<path d="M88 110 Q100 120 112 110" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+// 19. 蛋糕（节日）
+CARTOON_SVG.cake=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+${rr(40,115,120,55,8,"#ffd479","#333",3)}
+${rr(40,105,120,20,4,"#ff8fc7","#333",2.5)}
+<circle cx="65" cy="105" r="5" fill="#fff" stroke="#333" stroke-width="1.5"/>
+<circle cx="100" cy="105" r="5" fill="#fff" stroke="#333" stroke-width="1.5"/>
+<circle cx="135" cy="105" r="5" fill="#fff" stroke="#333" stroke-width="1.5"/>
+<rect x="97" y="65" width="6" height="40" fill="#fff" stroke="#333" stroke-width="2"/>
+<path d="M100 55 Q95 65 100 70 Q105 65 100 55" fill="#ffa56b" stroke="#333" stroke-width="1.5"/>
+<circle cx="100" cy="50" r="3" fill="#ffd479"/>
+${eye(80,140,6)}${eye(120,140,6)}
+${blush(72,150,5)}${blush(128,150,5)}
+<path d="M90 152 Q100 158 110 152" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+// 20. 音符（音乐）
+CARTOON_SVG.music=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<circle cx="65" cy="160" r="22" fill="#a06bff" stroke="#333" stroke-width="3"/>
+<circle cx="145" cy="145" r="22" fill="#5ce1ff" stroke="#333" stroke-width="3"/>
+<rect x="83" y="50" width="6" height="115" fill="#333"/>
+<rect x="163" y="35" width="6" height="115" fill="#333"/>
+<path d="M83 50 Q125 38 169 35 L169 56 Q125 60 83 70 Z" fill="#a06bff" stroke="#333" stroke-width="2.5"/>
+${eye(57,155,5)}${eye(73,155,5)}
+${blush(50,165,4)}${blush(80,165,4)}
+<path d="M58 165 Q65 170 72 165" stroke="#333" stroke-width="1.5" fill="none"/>
+</svg>`;
+
+// 主题 → SVG 主插图映射
+const THEME_SVG_MAIN={
+  insect:"butterfly", plant:"flower", ocean:"fish", animal:"rabbit",
+  bird:"star", dinosaur:"star", weather:"sun", season:"flower",
+  space:"rocket", magnet:"magnet", water:"fish", fire:"sun",
+  food:"apple", body:"heart", family:"heart", festival:"cake",
+  transport:"rocket", music:"music", art:"flower", sport:"star", general:"star"
+};
+// 主题 → 一组装饰插图 key
+const THEME_SVG_DECO={
+  insect:["butterfly","bee","star"],
+  plant:["flower","sprout","apple"],
+  ocean:["fish","starfish","crab"],
+  animal:["rabbit","cat","dog","elephant"],
+  bird:["star","cloud"],
+  dinosaur:["star"],
+  weather:["sun","cloud"],
+  season:["flower","sprout","sun"],
+  space:["rocket","star"],
+  magnet:["magnet","star"],
+  water:["fish","cloud"],
+  fire:["sun"],
+  food:["apple","cake"],
+  body:["heart"],
+  family:["heart"],
+  festival:["cake","heart"],
+  transport:["rocket"],
+  music:["music"],
+  art:["flower"],
+  sport:["star"],
+  general:["star","heart"]
+};
+
+// 返回主题主图 data URI
+function themeMainSvg(themeKey){
+  const key=THEME_SVG_MAIN[themeKey]||"star";
+  return svgDataUri(CARTOON_SVG[key]);
+}
+// 返回主题装饰图数组 data URI
+function themeDecoSvgs(themeKey){
+  const keys=THEME_SVG_DECO[themeKey]||["star"];
+  return keys.map(k=>svgDataUri(CARTOON_SVG[k]));
+}
+
+/* ============================================================
    主题智能匹配：根据教案内容自动选对应的卡通图案组合
    —— 扫描全文命中关键词最多的主题胜出，每主题配 8 个 emoji
    ============================================================ */
@@ -2349,30 +2678,30 @@ function renderSlidesPreview(slides,theme,pages,meta){
   const textColor="#2A2A2A";
   const subColor="#6B6B6B";
 
-  // ★ 用主题智能匹配的图案（而非主题色固定 emoji）
-  const themeEm = meta && meta.themeEmojis ? meta.themeEmojis : null;
-  const eCover = themeEm ? themeEm[0] : emoji;          // 封面主图
-  const eCorner = (i)=> themeEm ? themeEm[i % themeEm.length] : emoji;  // 四角装饰
+  // ★ 用主题智能匹配的 SVG 卡通插图（替代 emoji 字符）
+  const themeKey = meta && meta.themeKey ? meta.themeKey : "general";
+  const mainArt = themeMainSvg(themeKey);          // 主插图（封面/结束页用）
+  const decoArts = themeDecoSvgs(themeKey);        // 装饰插图数组
+  const decoArt = (i)=> decoArts[i % decoArts.length];
 
   return shown.map((s,i)=>{
     let inner="";
     if(s.type==="cover"){
       inner=`
         <div class="slide-cover" style="background:${bg};color:${textColor};border:3px solid ${c1};">
-          <div class="slide-deco-cloud" style="left:14px;top:14px;">${eCorner(1)}</div>
-          <div class="slide-deco-cloud" style="right:14px;top:18px;">${eCorner(2)}</div>
-          <div class="slide-deco-cloud" style="left:20px;bottom:46px;">${eCorner(3)}</div>
-          <div class="slide-deco-cloud" style="right:20px;bottom:50px;">${eCorner(4)}</div>
-          <div class="slide-cover-emoji">${eCover}</div>
+          <img class="slide-deco-art" src="${decoArt(0)}" style="left:8px;top:8px;width:32px;height:32px;opacity:.7;">
+          <img class="slide-deco-art" src="${decoArt(1)}" style="right:8px;top:8px;width:32px;height:32px;opacity:.7;">
+          <img class="slide-deco-art" src="${decoArt(2)}" style="left:12px;bottom:48px;width:28px;height:28px;opacity:.65;">
+          <img class="slide-deco-art" src="${decoArt(0)}" style="right:12px;bottom:52px;width:28px;height:28px;opacity:.65;">
+          <img class="slide-cover-art" src="${mainArt}">
           <div class="slide-cover-title" style="color:${c1};">${escapeHtml(s.title)}</div>
           <div class="slide-cover-sub">${escapeHtml(s.subtitle||"")}</div>
           <div class="slide-cover-stripe" style="background:linear-gradient(90deg,${c1},${c2});"></div>
           <div class="slide-cover-foot">${escapeHtml(s.footer||"")}</div>
         </div>`;
     } else if(s.type==="list"){
-      // 列表页图标优先用 slide 自带的（🎯/🎒/❓），保留识别度
+      // 列表页图标保留 emoji（🎯/🎒/❓ 有语义识别度）
       const listEmoji = s.emoji || (s.title.includes("目标") ? "🎯" : s.title.includes("准备") ? "🎒" : s.title.includes("提问") ? "❓" : "✨");
-      // 列表项前面的小图案用主题图案点缀
       inner=`
         <div class="slide-list" style="background:${bg};color:${textColor};border:3px solid ${c2};">
           <div class="slide-list-h" style="color:${c1};">
@@ -2384,11 +2713,11 @@ function renderSlidesPreview(slides,theme,pages,meta){
             ${s.items.map((it,idx)=>`<li><span class="slide-bullet" style="background:${c1};"></span><span>${escapeHtml(it)}</span></li>`).join("")}
           </ul>
           <div class="slide-corner-deco" style="background:${c2};"></div>
-          <div class="slide-deco-cloud" style="right:12px;bottom:14px;font-size:18px;">${eCorner(5)}</div>
+          <img class="slide-deco-art" src="${decoArt(3)}" style="right:10px;bottom:12px;width:34px;height:34px;opacity:.85;">
         </div>`;
     } else if(s.type==="process"){
-      // 过程页右上点缀星、右下用主题图案
-      const procEmoji = s.emoji || eCover;
+      // 过程页右上星、右下用主题插图
+      const procIdx = (s.stepNum-1) % decoArts.length;
       inner=`
         <div class="slide-process" style="background:${bg};color:${textColor};border:3px solid ${c2};">
           <div class="slide-process-h">
@@ -2397,17 +2726,15 @@ function renderSlidesPreview(slides,theme,pages,meta){
           </div>
           ${s.body?`<div class="slide-process-body">${escapeHtml(s.body)}</div>`:""}
           <div class="slide-deco-cloud" style="right:10px;top:10px;font-size:14px;">🌟</div>
-          <div class="slide-deco-cloud" style="right:14px;bottom:14px;font-size:16px;">${procEmoji}</div>
+          <img class="slide-deco-art" src="${decoArts[procIdx]}" style="right:12px;bottom:14px;width:36px;height:36px;opacity:.9;">
         </div>`;
     } else if(s.type==="thanks"){
-      // 结束页用主题图案替代千篇一律的气球
-      const thx1 = eCorner(6), thx2 = eCorner(7);
       inner=`
         <div class="slide-thanks" style="background:${bg};color:${textColor};border:3px dashed ${c1};">
-          <div class="slide-thanks-emoji">${eCover}</div>
+          <img class="slide-thanks-art" src="${mainArt}">
           <div class="slide-thanks-title" style="color:${c1};">${escapeHtml(s.title)}</div>
           <div class="slide-thanks-sub">${escapeHtml(s.subtitle||"")}</div>
-          <div class="slide-thanks-emoji-row">🌟${thx1}🌟${thx2}🌟</div>
+          <div class="slide-thanks-art-row">${decoArts.slice(0,3).map(src=>`<img src="${src}">`).join("")}</div>
           <div class="slide-thanks-foot">${escapeHtml(s.footer||"")}</div>
         </div>`;
     }
@@ -2420,7 +2747,7 @@ function escapeHtml(s){
 }
 
 // 生成真实 .pptx 文件并下载
-function downloadPptx(slides,theme,meta){
+async function downloadPptx(slides,theme,meta){
   if(typeof PptxGenJS==="undefined"){
     toast("PPT 库未加载，请检查网络"); return;
   }
@@ -2431,72 +2758,73 @@ function downloadPptx(slides,theme,meta){
   pptx.title=meta.title;
 
   const c1=theme.c1, c2=theme.c2, bg=theme.bg;
-  const emoji=theme.emoji||"⭐";
-  // ★ 用智能匹配的主题图案（而非主题色固定 emoji）
-  const themeEm = meta && meta.themeEmojis ? meta.themeEmojis : null;
-  const eCover = themeEm ? themeEm[0] : emoji;
-  const eAt = (i)=> themeEm ? themeEm[i % themeEm.length] : emoji;
   const textColor="2A2A2A";
   const subColor="6B6B6B";
   const cartoonFont="Microsoft YaHei";
 
+  // ★ 预先把所需 SVG 卡通插图转成 PNG（pptx 不支持 SVG）
+  const themeKey = meta && meta.themeKey ? meta.themeKey : "general";
+  const mainKey = THEME_SVG_MAIN[themeKey] || "star";
+  const decoKeys = THEME_SVG_DECO[themeKey] || ["star"];
+  const BIG=320, MID=200, SMALL=120;
+  const mainPng = await cartoonPng(mainKey, BIG);
+  const decoPngs = await Promise.all(decoKeys.map(k=>cartoonPng(k, SMALL)));
+  const decoPngAt = (i)=> decoPngs[i % decoPngs.length];
+
   slides.forEach(s=>{
     const slide=pptx.addSlide();
     if(s.type==="cover"){
-      // 卡通封面：浅底色 + 彩色装饰圆 + 大标题
+      // 卡通封面：浅底色 + 彩色装饰圆 + 大卡通插图 + 标题
       slide.background={color:hexNo(bg)};
-      // 左上、右上、左下、右下四个装饰圆
       slide.addShape(pptx.ShapeType.ellipse,{x:-0.8,y:-0.8,w:2.2,h:2.2,fill:{type:"solid",color:hexNo(c2)}});
       slide.addShape(pptx.ShapeType.ellipse,{x:8.5,y:-0.6,w:1.8,h:1.8,fill:{type:"solid",color:hexNo(c1)}});
       slide.addShape(pptx.ShapeType.ellipse,{x:-0.5,y:5.8,w:1.6,h:1.6,fill:{type:"solid",color:hexNo(c1)}});
       slide.addShape(pptx.ShapeType.ellipse,{x:8.8,y:6,w:2,h:2,fill:{type:"solid",color:hexNo(c2)}});
-      // 四角主题图案点缀
-      slide.addText(eAt(1),{x:0.2,y:0.1,w:0.8,h:0.6,fontSize:22,align:"center"});
-      slide.addText(eAt(2),{x:8.9,y:0.1,w:0.8,h:0.6,fontSize:22,align:"center"});
-      slide.addText(eAt(3),{x:0.2,y:6.5,w:0.8,h:0.6,fontSize:22,align:"center"});
-      // 大主题图案（替代固定主题色 emoji）
-      slide.addText(eCover,{x:3.8,y:1.4,w:2.4,h:1.6,fontSize:54,align:"center",fontFace:cartoonFont});
+      // ★ 大卡通插图（PNG，不再是 emoji 文字）
+      if(mainPng) slide.addImage({data:mainPng,x:3.6,y:0.9,w:2.8,h:2.8});
       // 标题彩色横条
-      slide.addShape(pptx.ShapeType.roundRect,{x:2.5,y:3.1,w:5,h:0.16,fill:{type:"solid",color:hexNo(c1)},rectRadius:0.08});
-      slide.addText(s.title,{x:1,y:3.4,w:8,h:1.2,fontSize:40,bold:true,color:hexNo(c1),align:"center",fontFace:cartoonFont});
-      slide.addText(s.subtitle||"",{x:1,y:4.7,w:8,h:0.6,fontSize:18,color:hexNo(subColor),align:"center",fontFace:cartoonFont});
-      slide.addText(s.footer||"",{x:1,y:6.5,w:8,h:0.4,fontSize:11,color:"999999",align:"center",fontFace:cartoonFont});
+      slide.addShape(pptx.ShapeType.roundRect,{x:2.5,y:3.85,w:5,h:0.16,fill:{type:"solid",color:hexNo(c1)},rectRadius:0.08});
+      slide.addText(s.title,{x:1,y:4.1,w:8,h:1,fontSize:38,bold:true,color:hexNo(c1),align:"center",fontFace:cartoonFont});
+      slide.addText(s.subtitle||"",{x:1,y:5.15,w:8,h:0.5,fontSize:18,color:hexNo(subColor),align:"center",fontFace:cartoonFont});
+      slide.addText(s.footer||"",{x:1,y:6.6,w:8,h:0.4,fontSize:11,color:"999999",align:"center",fontFace:cartoonFont});
     } else if(s.type==="list"){
       slide.background={color:hexNo(bg)};
       const listEmoji=s.emoji||(s.title.includes("目标")?"🎯":s.title.includes("准备")?"🎒":s.title.includes("提问")?"❓":"✨");
       slide.addText(`${listEmoji}  ${s.title}`,{x:0.5,y:0.35,w:9,h:0.7,fontSize:28,bold:true,color:hexNo(c1),fontFace:cartoonFont});
-      // 彩色波浪线（圆角矩形细条）
       slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:1.1,w:4,h:0.08,fill:{type:"solid",color:hexNo(c2)},rectRadius:0.04});
       if(s.subtitle) slide.addText(s.subtitle,{x:0.5,y:1.3,w:9,h:0.4,fontSize:13,color:hexNo(subColor),italic:true,fontFace:cartoonFont});
       const items=s.items.map(it=>({text:`▸  ${it}`,options:{breakLine:true,fontSize:15,color:textColor,paraSpaceAfter:8,fontFace:cartoonFont,bullet:false}}));
-      slide.addText(items,{x:0.6,y:1.9,w:8.8,h:5,fontSize:15});
-      // 右下装饰圆 + 主题图案点缀
-      slide.addShape(pptx.ShapeType.ellipse,{x:8.7,y:6.3,w:1.5,h:1.5,fill:{type:"solid",color:hexNo(c2)}});
-      slide.addText(eAt(5),{x:8.95,y:6.5,w:1,h:0.6,fontSize:20,align:"center"});
+      slide.addText(items,{x:0.6,y:1.9,w:7.8,h:5,fontSize:15});
+      // 右下装饰圆 + ★ 主题卡通插图（PNG）
+      slide.addShape(pptx.ShapeType.ellipse,{x:8.4,y:5.6,w:1.8,h:1.8,fill:{type:"solid",color:hexNo(c2)}});
+      const dp=decoPngAt(2);
+      if(dp) slide.addImage({data:dp,x:8.6,y:5.85,w:1.4,h:1.4});
     } else if(s.type==="process"){
       slide.background={color:hexNo(bg)};
-      // 步骤编号圆角矩形
       slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:0.35,w:1.5,h:0.6,fill:{type:"solid",color:hexNo(c1)},line:{color:hexNo(c1),width:1},rectRadius:0.12});
       slide.addText(`${s.stepNum}/${s.totalStep}`,{x:0.5,y:0.35,w:1.5,h:0.6,fontSize:14,bold:true,color:"FFFFFF",align:"center",valign:"middle",fontFace:cartoonFont});
       slide.addText(s.subtitle||s.title,{x:2.2,y:0.35,w:7.3,h:0.6,fontSize:22,bold:true,color:hexNo(c1),fontFace:cartoonFont,valign:"middle"});
       slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:1.15,w:5,h:0.08,fill:{type:"solid",color:hexNo(c2)},rectRadius:0.04});
       if(s.body){
         const paras=s.body.split(/\n+/).filter(Boolean).map(p=>({text:p,options:{breakLine:true,fontSize:14,color:textColor,paraSpaceAfter:6,fontFace:cartoonFont}}));
-        slide.addText(paras,{x:0.6,y:1.5,w:8.8,h:5.4});
+        slide.addText(paras,{x:0.6,y:1.5,w:8,h:4.6});
       }
-      slide.addText("🌟",{x:8.8,y:0.3,w:0.7,h:0.7,fontSize:24,align:"center"});
-      slide.addText(s.emoji || eAt(s.stepNum+1),{x:9.0,y:6.5,w:0.9,h:0.6,fontSize:22,align:"center"});  // ★ 过程页右下用主题图案
+      // ★ 右下主题卡通插图
+      const pp=decoPngAt(s.stepNum-1);
+      if(pp) slide.addImage({data:pp,x:8.5,y:5.7,w:1.5,h:1.5});
       slide.addShape(pptx.ShapeType.ellipse,{x:-0.5,y:6.2,w:1.4,h:1.4,fill:{type:"solid",color:hexNo(c2)}});
     } else if(s.type==="thanks"){
       slide.background={color:hexNo(bg)};
       slide.addShape(pptx.ShapeType.ellipse,{x:-0.8,y:-0.8,w:2.4,h:2.4,fill:{type:"solid",color:hexNo(c2)}});
       slide.addShape(pptx.ShapeType.ellipse,{x:8.4,y:5.6,w:2.4,h:2.4,fill:{type:"solid",color:hexNo(c1)}});
-      // ★ 结束页用主题主图案替代固定气球
-      slide.addText(eCover,{x:4,y:1.8,w:2,h:1.3,fontSize:48,align:"center"});
-      slide.addText(s.title,{x:1,y:3.2,w:8,h:1,fontSize:36,bold:true,color:hexNo(c1),align:"center",fontFace:cartoonFont});
-      slide.addText(s.subtitle||"",{x:1,y:4.3,w:8,h:0.8,fontSize:16,color:hexNo(subColor),align:"center",fontFace:cartoonFont});
-      slide.addText(`🌟 ${eAt(6)} 🌟 ${eAt(7)} 🌟`,{x:1,y:5.2,w:8,h:0.5,fontSize:14,align:"center",fontFace:cartoonFont});
-      slide.addText(s.footer||"",{x:1,y:6.2,w:8,h:0.5,fontSize:12,color:"999999",align:"center",fontFace:cartoonFont});
+      // ★ 结束页用主题卡通大图（PNG）
+      if(mainPng) slide.addImage({data:mainPng,x:4,y:1.5,w:2,h:2});
+      slide.addText(s.title,{x:1,y:3.7,w:8,h:1,fontSize:36,bold:true,color:hexNo(c1),align:"center",fontFace:cartoonFont});
+      slide.addText(s.subtitle||"",{x:1,y:4.7,w:8,h:0.8,fontSize:16,color:hexNo(subColor),align:"center",fontFace:cartoonFont});
+      // 装饰行：三张卡通小图
+      const row = decoPngs.slice(0,3);
+      row.forEach((p,k)=>{ if(p) slide.addImage({data:p,x:3.5+k*1.1,y:5.6,w:0.9,h:0.9}); });
+      slide.addText(s.footer||"",{x:1,y:6.6,w:8,h:0.4,fontSize:12,color:"999999",align:"center",fontFace:cartoonFont});
     }
   });
 
@@ -2518,14 +2846,46 @@ function hexNo(c){
   return s;
 }
 
+// ★ SVG → PNG data URL（pptx 不支持 SVG，需 Canvas 渲染成 PNG）
+// 返回 Promise<string>，data:image/png;base64,...
+function svgToPngDataUri(svgText,size=240){
+  return new Promise((resolve,reject)=>{
+    const svgDataUri="data:image/svg+xml;base64,"+btoa(unescape(encodeURIComponent(svgText)));
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement("canvas");
+      canvas.width=size; canvas.height=size;
+      const ctx=canvas.getContext("2d");
+      ctx.clearRect(0,0,size,size);
+      ctx.drawImage(img,0,0,size,size);
+      try{
+        resolve(canvas.toDataURL("image/png"));
+      }catch(e){reject(e);}
+    };
+    img.onerror=reject;
+    img.src=svgDataUri;
+  });
+}
+// 把 CARTOON_SVG 库里某个 key 转 PNG（同步缓存）
+const _pngCache={};
+async function cartoonPng(key,size=240){
+  if(_pngCache[key+"@"+size]) return _pngCache[key+"@"+size];
+  const svg=CARTOON_SVG[key];
+  if(!svg) return null;
+  const png=await svgToPngDataUri(svg,size);
+  _pngCache[key+"@"+size]=png;
+  return png;
+}
+
 // 主流程
 let lastCourseData=null;
 $("#courseSubmit").addEventListener("click",()=>{
-  const title=$("#cTitle").value.trim();
-  if(!title){ toast("请填写活动名称"); $("#cTitle").focus(); return; }
+  // ★ 零输入校验：缺失字段用兜底，不再提示「请填写」
+  const title=$("#cTitle").value.trim() || "幼儿园主题活动";
+  if(!$("#cTitle").value.trim()) $("#cTitle").value=title;  // 回填兜底值方便用户后续编辑
   const goals=$("#cGoals").value.trim();
   const process=$("#cProcess").value.trim();
-  if(!goals && !process){ toast("请至少填写活动目标或活动过程"); return; }
+  // 字段全空也不再拦截 —— OCR 可能识别不全，但仍可生成框架页
 
   const btn=$("#courseSubmit");
   btn.disabled=true; btn.innerHTML=`<span class="spinner" style="width:13px;height:13px;margin:0;"></span>正在生成…`;
