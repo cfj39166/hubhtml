@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0F0838">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%232DD4BF'/%3E%3Ctext x='8' y='12' font-size='10' text-anchor='middle' fill='%230F0838'%3E%E2%9C%8B%3C/text%3E%3C/svg%3E">
+<title>幼师助手 · 视频观察记录生成工具</title>
+<style>
+:root{
+  --bg:#0F0838;
+  --bg-2:#1A1163;
+  --surface:#241B6E;
+  --surface-2:#2E2A7E;
+  --line:rgba(255,255,255,.08);
+  --line-strong:rgba(255,255,255,.16);
+  --teal:#2DD4BF;
+  --teal-soft:#5EEAD4;
+  --pink:#B95CE8;
+  --pink-soft:#D8B4FE;
+  --amber:#FBBF24;
+  --amber-soft:#FCD34D;
+  --text:#F8F7FF;
+  --text-dim:#B8B4E0;
+  --text-faint:#6B6896;
+  --danger:#F87171;
+  --radius:18px;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+  --font:"PingFang SC","Microsoft YaHei",-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  overflow:hidden;
+  position:relative;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.6;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(38% 28% at 22% 18%,rgba(185,92,232,.22),transparent 62%),
+    radial-gradient(34% 26% at 82% 24%,rgba(45,212,191,.16),transparent 60%),
+    radial-gradient(46% 36% at 50% 96%,rgba(251,191,36,.10),transparent 64%);
+}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:6px;}
+
+/* App 容器：手机屏样式（桌面居中显示，模拟移动端体验） */
+.app{
+  position:relative;z-index:1;
+  width:100%;max-width:440px;
+  height:100dvh;max-height:920px;
+  margin:0 auto;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+@media(min-width:480px){
+  body{background:#07041E;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .app{border-radius:32px;box-shadow:0 30px 80px rgba(0,0,0,.6);border:1px solid var(--line);}
+}
+
+/* 顶栏 */
+.topbar{
+  flex-shrink:0;height:56px;padding:0 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--line);
+  background:rgba(15,8,56,.7);
+  backdrop-filter:blur(14px);
+}
+.topbar h1{font-size:17px;font-weight:700;letter-spacing:.02em;}
+.topbar .icon-btn{
+  width:36px;height:36px;border-radius:50%;display:grid;place-items:center;
+  font-size:18px;color:var(--text-dim);cursor:pointer;transition:all .25s;
+}
+.topbar .icon-btn:hover{background:var(--surface);color:var(--text);}
+
+/* 页面容器（一次只显示一个） */
+.views{flex:1;position:relative;overflow:hidden;}
+.view{
+  position:absolute;inset:0;overflow-y:auto;padding:16px 16px 100px;
+  scrollbar-width:thin;
+  opacity:0;visibility:hidden;transform:translateX(20px);
+  transition:opacity .35s,transform .35s,visibility .35s;
+}
+.view.active{opacity:1;visibility:visible;transform:none;}
+
+/* 通用卡片 */
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px;margin-bottom:14px;transition:border-color .3s;
+}
+.card:hover{border-color:var(--line-strong);}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;}
+.card-title .dot{width:5px;height:5px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal);}
+.sub-label{font-size:12px;color:var(--text-faint);margin:12px 0 7px;letter-spacing:.04em;}
+
+/* 主按钮 */
+.btn{
+  width:100%;height:48px;border-radius:14px;border:none;cursor:pointer;
+  font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.04em;color:#fff;
+  background:linear-gradient(100deg,var(--teal),var(--pink));
+  box-shadow:0 8px 24px rgba(45,212,191,.32);
+  transition:transform .2s,box-shadow .2s,opacity .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(185,92,232,.42);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn.ghost{background:var(--surface-2);box-shadow:none;color:var(--text-dim);border:1px solid var(--line-strong);}
+.btn.ghost:hover{background:var(--surface);}
+.btn.danger{background:transparent;border:1px solid rgba(248,113,113,.4);color:var(--danger);box-shadow:none;}
+
+/* 输入 */
+.input,.textarea,.select{
+  width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;
+  padding:13px 14px;font-family:inherit;font-size:13px;color:var(--text);
+  outline:none;transition:border-color .25s,box-shadow .25s;
+}
+.input::placeholder,.textarea::placeholder{color:var(--text-faint);}
+.input:focus,.textarea:focus,.select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(45,212,191,.14);}
+.textarea{resize:vertical;min-height:84px;line-height:1.7;}
+.select{appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%236B6896' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+
+/* 标签芯片 */
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{
+  padding:7px 15px;border-radius:100px;font-size:13px;cursor:pointer;
+  background:var(--bg);border:1px solid var(--line);color:var(--text-dim);
+  transition:all .25s;user-select:none;
+}
+.chip:hover{border-color:var(--line-strong);color:var(--text);}
+.chip.on{
+  background:linear-gradient(100deg,var(--teal),var(--pink));color:#fff;border-color:transparent;
+  box-shadow:0 4px 14px rgba(185,92,232,.32);
+}
+
+/* 上传区 */
+.upload{
+  border:1.5px dashed rgba(45,212,191,.4);border-radius:16px;background:rgba(45,212,191,.04);
+  min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;color:var(--teal-soft);font-size:13px;cursor:pointer;transition:all .25s;text-align:center;
+  padding:20px;
+}
+.upload:hover{background:rgba(45,212,191,.08);border-color:var(--teal);}
+.upload .plus{font-size:28px;line-height:1;}
+.upload .hint{font-size:11px;color:var(--text-faint);}
+
+/* 步骤条 */
+.steps{display:flex;align-items:center;gap:6px;margin-bottom:14px;font-size:12px;color:var(--text-faint);
+  flex-wrap:wrap;}
+.steps .s{padding:4px 11px;border-radius:100px;background:var(--surface);border:1px solid var(--line);}
+.steps .s.on{color:var(--teal);border-color:var(--teal);background:rgba(45,212,191,.1);font-weight:600;}
+.steps .arr{color:var(--text-faint);opacity:.6;}
+
+/* Hero banner */
+.hero{
+  background:linear-gradient(135deg,rgba(45,212,191,.18),rgba(185,92,232,.18));
+  border:1px solid var(--line-strong);border-radius:22px;padding:22px;margin-bottom:18px;
+  position:relative;overflow:hidden;
+}
+.hero::after{
+  content:"";position:absolute;right:-30px;bottom:-30px;width:140px;height:140px;
+  border-radius:50%;background:radial-gradient(circle,rgba(185,92,232,.3),transparent 70%);
+  filter:blur(20px);
+}
+.hero h2{font-size:21px;font-weight:800;letter-spacing:.02em;margin-bottom:8px;position:relative;z-index:1;}
+.hero h2 em{font-style:normal;background:linear-gradient(100deg,var(--teal-soft),var(--pink-soft));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero p{font-size:13px;color:var(--text-dim);line-height:1.65;position:relative;z-index:1;}
+.hero .tag{display:inline-block;margin-top:12px;padding:5px 12px;border-radius:100px;
+  font-size:11px;letter-spacing:.1em;background:rgba(45,212,191,.16);color:var(--teal-soft);
+  border:1px solid rgba(45,212,191,.3);position:relative;z-index:1;}
+
+/* 功能卡片网格 */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.func{
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;
+  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
+}
+.func::before{
+  content:"";position:absolute;inset:0;border-radius:18px;
+  background:linear-gradient(135deg,rgba(45,212,191,0),rgba(185,92,232,0));
+  opacity:0;transition:opacity .3s;
+}
+.func:hover{transform:translateY(-3px);border-color:var(--line-strong);box-shadow:var(--shadow);}
+.func:hover::before{opacity:.1;}
+.func .ico{font-size:26px;margin-bottom:10px;line-height:1;}
+.func h3{font-size:15px;font-weight:700;margin-bottom:6px;}
+.func p{font-size:11px;color:var(--text-faint);line-height:1.5;margin-bottom:10px;}
+.func .go{font-size:12px;color:var(--teal);font-weight:600;display:flex;align-items:center;gap:4px;}
+
+/* 统计行 */
+.stats{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:16px 0;margin-bottom:14px;}
+.stat{flex:1;text-align:center;border-right:1px solid var(--line);}
+.stat:last-child{border-right:none;}
+.stat .n{font-size:22px;font-weight:800;background:linear-gradient(100deg,var(--teal),var(--pink));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.stat .l{font-size:11px;color:var(--text-faint);margin-top:4px;}
+
+/* 底部 tabbar */
+.tabbar{
+  flex-shrink:0;position:relative;z-index:5;
+  display:flex;height:64px;background:rgba(15,8,56,.92);
+  backdrop-filter:blur(18px);border-top:1px solid var(--line);
+}
+.tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:10px;color:var(--text-faint);cursor:pointer;transition:color .25s;
+}
+.tab .ico{font-size:20px;transition:transform .25s;}
+.tab.on{color:var(--teal);}
+.tab.on .ico{transform:translateY(-2px);filter:drop-shadow(0 4px 10px var(--teal));}
+
+/* 报告渲染 */
+.report{background:var(--surface);border:1px solid var(--line-strong);border-radius:18px;
+  padding:22px;margin-bottom:14px;animation:slideIn .5s cubic-bezier(.2,.8,.2,1);}
+@keyframes slideIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.report-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
+  padding-bottom:12px;border-bottom:1px solid var(--line);}
+.report-head h3{font-size:16px;font-weight:700;}
+.report-head .meta{font-size:11px;color:var(--text-faint);}
+.report-sec{margin-bottom:18px;}
+.report-sec:last-child{margin-bottom:0;}
+.report-sec-h{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:8px;
+  display:flex;align-items:center;gap:7px;}
+.report-sec-h::before{content:"";width:4px;height:14px;border-radius:2px;
+  background:linear-gradient(180deg,var(--teal),var(--pink));}
+.report-sec-b{font-size:13px;color:var(--text-dim);line-height:1.9;white-space:pre-wrap;}
+.event{padding:9px 13px;background:var(--bg);border-radius:10px;font-size:12px;
+  color:var(--text-dim);margin-bottom:6px;border-left:2px solid var(--teal);}
+.event time{color:var(--teal);font-weight:600;margin-right:8px;font-variant-numeric:tabular-nums;}
+.analysis-item{padding:11px 14px;background:var(--bg);border-radius:10px;margin-bottom:8px;
+  border-left:2px solid var(--pink);}
+.analysis-item .domain{font-size:11px;color:var(--pink-soft);font-weight:700;
+  padding:2px 8px;background:rgba(185,92,232,.16);border-radius:100px;display:inline-block;margin-bottom:6px;}
+.strategy{display:flex;gap:9px;padding:8px 0;font-size:12.5px;color:var(--text-dim);line-height:1.7;}
+.strategy .n{flex-shrink:0;width:18px;height:18px;border-radius:50%;
+  background:linear-gradient(100deg,var(--teal),var(--pink));color:#fff;font-size:11px;
+  display:grid;place-items:center;font-weight:700;}
+
+/* 加载态 */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:50px 20px;color:var(--text-dim);font-size:13px;}
+.spinner{width:42px;height:42px;border:3px solid var(--line);border-top-color:var(--teal);
+  border-radius:50%;animation:spin 1s linear infinite;margin-bottom:14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* 空状态 */
+.empty{text-align:center;padding:50px 20px;color:var(--text-faint);font-size:13px;}
+.empty .emo{font-size:48px;margin-bottom:14px;opacity:.6;}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,40px);z-index:200;
+  padding:12px 22px;border-radius:100px;background:var(--surface-2);
+  border:1px solid var(--line-strong);color:var(--text);font-size:13px;
+  box-shadow:var(--shadow);opacity:0;transition:all .35s;pointer-events:none;max-width:90vw;text-align:center;}
+.toast.show{transform:translate(-50%,0);opacity:1;}
+
+/* 设置弹层 */
+.sheet{position:fixed;inset:0;z-index:150;background:rgba(7,4,30,.72);backdrop-filter:blur(8px);
+  display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;
+  transition:opacity .3s,visibility .3s;}
+.sheet.show{opacity:1;visibility:visible;}
+.sheet-panel{width:100%;max-width:440px;background:var(--bg-2);border-radius:22px 22px 0 0;
+  padding:22px 18px 30px;max-height:85vh;overflow-y:auto;transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);}
+.sheet.show .sheet-panel{transform:none;}
+.sheet-bar{width:40px;height:4px;border-radius:4px;background:var(--line-strong);
+  margin:0 auto 16px;}
+.sheet h3{font-size:17px;font-weight:700;margin-bottom:6px;}
+.sheet .desc{font-size:12px;color:var(--text-faint);margin-bottom:18px;}
+.kv{display:flex;justify-content:space-between;align-items:center;padding:13px 0;
+  border-bottom:1px solid var(--line);font-size:13px;}
+.kv .k{color:var(--text-dim);}
+.kv .v{color:var(--teal);font-weight:600;}
+.sheet-close{margin-top:18px;}
+
+/* 视频上传后的预览 */
+.video-preview{position:relative;border-radius:14px;overflow:hidden;margin-bottom:12px;
+  background:#000;aspect-ratio:16/9;}
+.video-preview video{width:100%;height:100%;object-fit:cover;display:block;}
+.video-preview .badge{position:absolute;top:8px;left:8px;padding:4px 10px;border-radius:100px;
+  font-size:11px;background:rgba(0,0,0,.65);color:var(--teal-soft);}
+
+/* 绘本页面缩略 */
+.pages-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+.page-thumb{aspect-ratio:3/4;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+  display:grid;place-items:center;color:var(--text-faint);font-size:11px;position:relative;}
+.page-thumb.has{background:linear-gradient(135deg,rgba(45,212,191,.18),rgba(185,92,232,.18));
+  border-color:var(--line-strong);color:var(--teal);font-size:18px;}
+.page-thumb .del{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;
+  background:rgba(248,113,113,.8);color:#fff;font-size:10px;display:none;place-items:center;}
+.page-thumb.has .del{display:grid;}
+
+/* 移动端优化 */
+@media(max-width:380px){
+  .grid2{grid-template-columns:1fr;}
+  .hero h2{font-size:18px;}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- 顶栏 -->
+  <div class="topbar">
+    <h1 id="topTitle">幼师助手</h1>
+    <div class="icon-btn" id="settingsBtn" title="设置">⚙</div>
+  </div>
+
+  <!-- 五个页面 -->
+  <div class="views">
+
+    <!-- ===== 首页 ===== -->
+    <section class="view active" data-view="home">
+      <div class="hero">
+        <h2><em>幼师助手</em> · 让观察记录不再难</h2>
+        <p>上传幼儿活动视频，AI 自动识别行为并生成专业的三段式观察记录：观察情况 · 识别分析 · 教育策略。</p>
+        <span class="tag">基于《3-6岁儿童学习与发展指南》</span>
+      </div>
+
+      <div class="grid2">
+        <div class="func" data-go="observe">
+          <div class="ico">📹</div>
+          <h3>视频观察</h3>
+          <p>上传活动视频，AI 生成三段式观察记录</p>
+          <div class="go">开始 ›</div>
+        </div>
+        <div class="func" data-go="animate">
+          <div class="ico">📖</div>
+          <h3>绘本动画</h3>
+          <p>上传绘本画面，生成连贯动画短片</p>
+          <div class="go">开始 ›</div>
+        </div>
+        <div class="func" data-go="course">
+          <div class="ico">📊</div>
+          <h3>PPT 课件</h3>
+          <p>根据教案，生成幼儿卡通 PPT 课件</p>
+          <div class="go">开始 ›</div>
+        </div>
+        <div class="func" data-go="history">
+          <div class="ico">📝</div>
+          <h3>观察记录</h3>
+          <p>查看历史观察记录与动画课件</p>
+          <div class="go">查看 ›</div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="n" id="statObserve">0</div><div class="l">观察记录</div></div>
+        <div class="stat"><div class="n" id="statAnimate">0</div><div class="l">绘本动画</div></div>
+        <div class="stat"><div class="n" id="statCourse">0</div><div class="l">PPT 课件</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>三步出记录</div>
+        <div class="steps">
+          <span class="s on">1 拍视频</span>
+          <span class="arr">→</span>
+          <span class="s">2 上传</span>
+          <span class="arr">→</span>
+          <span class="s">3 生成</span>
+        </div>
+        <p style="font-size:12px;color:var(--text-faint);line-height:1.7;margin-top:6px;">
+          1-3 分钟聚焦一名或一组幼儿的活动片段效果最佳。
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== 观察页 ===== -->
+    <section class="view" data-view="observe">
+      <div class="steps">
+        <span class="s on">① 选择视频</span>
+        <span class="arr">→</span>
+        <span class="s">② 观察背景</span>
+        <span class="arr">→</span>
+        <span class="s">③ 生成记录</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>① 选择活动视频</div>
+        <label class="upload" id="observeUpload">
+          <div class="plus">+</div>
+          <div>点击选择 / 拍摄视频</div>
+          <div class="hint">建议 1 分钟以内，聚焦幼儿活动</div>
+        </label>
+        <input type="file" id="observeFile" accept="video/*" hidden>
+        <div id="observeVideoWrap"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>② 观察背景<span style="font-size:11px;color:var(--text-faint);font-weight:400;">（选填，填了更精准）</span></div>
+
+        <div class="sub-label">观察对象</div>
+        <input class="input" id="obName" placeholder="如：观察对象1 / 男孩A（报告中匿名显示）">
+
+        <div class="sub-label">年龄班</div>
+        <select class="select" id="obClass">
+          <option value="">请选择</option>
+          <option>小班</option><option>中班</option><option>大班</option><option>混龄班</option>
+        </select>
+
+        <div class="sub-label">观察场景</div>
+        <div class="chips" id="obScene">
+          <span class="chip on">区域活动</span>
+          <span class="chip">自主游戏</span>
+          <span class="chip">集体教学</span>
+          <span class="chip">户外活动</span>
+          <span class="chip">生活环节</span>
+        </div>
+
+        <div class="sub-label">观察重点</div>
+        <input class="input" id="obFocus" placeholder="如：观察他的分类与整理能力；同伴冲突时的解决方式">
+
+        <div class="sub-label">补充说明</div>
+        <textarea class="textarea" id="obNote" placeholder="如：这是他本周第一次进建构区；早上与妈妈分离时情绪平稳"></textarea>
+      </div>
+
+      <button class="btn" id="obSubmit">生成观察记录</button>
+      <div id="obResult"></div>
+    </section>
+
+    <!-- ===== 动画页 ===== -->
+    <section class="view" data-view="animate">
+      <div class="steps">
+        <span class="s on">① 上传绘本</span>
+        <span class="arr">→</span>
+        <span class="s">② 故事文本</span>
+        <span class="arr">→</span>
+        <span class="s">③ 生成动画</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>① 上传绘本画面<span style="font-size:11px;color:var(--text-faint);font-weight:400;">（最多 20 页，按页序连播）</span></div>
+        <label class="upload" id="animUpload">
+          <div class="plus">+</div>
+          <div>加一页</div>
+        </label>
+        <input type="file" id="animFile" accept="image/*" hidden>
+        <div class="pages-thumbs" id="animPages"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>② 故事文本<span style="font-size:11px;color:var(--text-faint);font-weight:400;">（可选，含对话更佳）</span></div>
+        <textarea class="textarea" id="animStory" placeholder="粘贴或输入绘本故事/画面内容，如：小熊说：「我们一起堆城堡吧！」小兔点点头：好呀..."></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>③ 动画风格</div>
+        <div class="sub-label">风格</div>
+        <div class="chips" id="animStyle">
+          <span class="chip on">生动卡通</span><span class="chip">温柔水彩</span>
+          <span class="chip">立体纸艺</span><span class="chip">柔和3D</span>
+        </div>
+        <div class="sub-label">时长</div>
+        <div class="chips" id="animDur"><span class="chip on">5秒</span><span class="chip">10秒</span></div>
+      </div>
+
+      <button class="btn" id="animSubmit">生成绘本动画</button>
+      <div id="animResult"></div>
+    </section>
+
+    <!-- ===== 课件页 ===== -->
+    <section class="view" data-view="course">
+      <div class="steps">
+        <span class="s on">① 输入教案</span>
+        <span class="arr">→</span>
+        <span class="s">② 选择风格</span>
+        <span class="arr">→</span>
+        <span class="s">③ 生成 PPT</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>① 输入教案</div>
+        <textarea class="textarea" id="coursePlan" style="min-height:120px;" placeholder="粘贴教案内容，如活动目标、活动准备、活动过程..."></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>② PPT 设置</div>
+        <div class="sub-label">主题风格</div>
+        <div class="chips" id="courseTheme">
+          <span class="chip on">动物森林</span><span class="chip">海洋世界</span>
+          <span class="chip">太空探险</span><span class="chip">节日庆典</span><span class="chip">简约卡通</span>
+        </div>
+        <div class="sub-label">页数</div>
+        <div class="chips" id="coursePages">
+          <span class="chip">6页</span><span class="chip on">8页</span>
+          <span class="chip">10页</span><span class="chip">12页</span>
+        </div>
+      </div>
+
+      <button class="btn" id="courseSubmit">生成 PPT 课件</button>
+      <div id="courseResult"></div>
+    </section>
+
+    <!-- ===== 记录页 ===== -->
+    <section class="view" data-view="history">
+      <input class="input" id="hisSearch" placeholder="🔍 搜索观察对象 / 场景 / 重点 / 内容..." style="margin-bottom:12px;">
+
+      <div class="chips" id="hisFilter" style="margin-bottom:14px;">
+        <span class="chip on">全部</span><span class="chip">近7天</span><span class="chip">近30天</span>
+        <span class="chip">观察</span><span class="chip">动画</span><span class="chip">课件</span>
+      </div>
+
+      <div id="hisList">
+        <div class="empty">
+          <div class="emo">📭</div>
+          <div>还没有记录</div>
+          <div style="margin-top:6px;font-size:12px;">先去生成一份观察记录吧～</div>
+        </div>
+      </div>
+
+      <button class="btn danger" id="hisClear" style="margin-top:18px;display:none;">🗑 清空全部记录</button>
+    </section>
+
+  </div>
+
+  <!-- 底部 tabbar -->
+  <div class="tabbar">
+    <div class="tab on" data-tab="home"><span class="ico">🏠</span><span>首页</span></div>
+    <div class="tab" data-tab="observe"><span class="ico">👀</span><span>观察</span></div>
+    <div class="tab" data-tab="animate"><span class="ico">🎬</span><span>动画</span></div>
+    <div class="tab" data-tab="course"><span class="ico">📊</span><span>课件</span></div>
+    <div class="tab" data-tab="history"><span class="ico">📝</span><span>记录</span></div>
+  </div>
+</div>
+
+<!-- 设置弹层 -->
+<div class="sheet" id="settingsSheet">
+  <div class="sheet-panel">
+    <div class="sheet-bar"></div>
+    <h3>设置</h3>
+    <p class="desc">所有数据保存在你的浏览器本地，不会上传到任何服务器。</p>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>关于 AI 能力</div>
+      <p style="font-size:12px;color:var(--text-dim);line-height:1.8;">
+        本网页版是<strong style="color:var(--teal);">原型演示</strong>，「生成」功能使用精心设计的示例数据展示最终报告样式。<br><br>
+        要接入真实的 AI（智谱 GLM-4.1V 视觉模型），需要一个后端代理转发请求（智谱 API 不允许浏览器直接跨域调用）。技术上不复杂，但需要部署一个小服务。<br><br>
+        Qt 桌面/安卓原生版已完整对接真实 AI，本网页版用于功能展示和分享。
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>本地数据</div>
+      <div class="kv"><span class="k">观察记录</span><span class="v" id="cntObserve">0 条</span></div>
+      <div class="kv"><span class="k">绘本动画</span><span class="v" id="cntAnimate">0 条</span></div>
+      <div class="kv"><span class="k">PPT 课件</span><span class="v" id="cntCourse">0 条</span></div>
+      <div class="kv"><span class="k">存储位置</span><span class="v" style="font-size:11px;">浏览器 localStorage</span></div>
+    </div>
+
+    <button class="btn ghost sheet-close">关 闭</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   工具
+   ============================================================ */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const today=()=>new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit"});
+const now=()=>new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"});
+const uid=()=>Date.now()+"_"+Math.random().toString(36).slice(2,6);
+
+function toast(msg){
+  const t=$("#toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove("show"),2400);
+}
+
+/* localStorage 存储 */
+const store={
+  get(k,d){try{const v=localStorage.getItem("ys_"+k);return v===null?d:JSON.parse(v);}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem("ys_"+k,JSON.stringify(v));}catch(e){}}
+};
+
+/* 单选芯片组：点击切换 on，同时关掉兄弟 */
+function bindChips(id){
+  const box=$("#"+id); if(!box) return;
+  box.addEventListener("click",e=>{
+    const c=e.target.closest(".chip"); if(!c||!box.contains(c)) return;
+    $$(".chip",box).forEach(x=>x.classList.remove("on"));
+    c.classList.add("on");
+  });
+}
+
+/* ============================================================
+   页面切换
+   ============================================================ */
+const TITLES={home:"幼师助手",observe:"视频观察",animate:"绘本动画",course:"PPT 课件",history:"观察记录"};
+function go(view){
+  $$(".view").forEach(v=>v.classList.toggle("active",v.dataset.view===view));
+  $$(".tab").forEach(t=>t.classList.toggle("on",t.dataset.tab===view));
+  $("#topTitle").textContent=TITLES[view]||"幼师助手";
+  // 滚到顶
+  const v=$(`.view[data-view="${view}"]`); if(v) v.scrollTop=0;
+}
+$$(".tab").forEach(t=>t.addEventListener("click",()=>go(t.dataset.tab)));
+$$(".func[data-go]").forEach(f=>f.addEventListener("click",()=>go(f.dataset.go)));
+
+/* 设置弹层 */
+$("#settingsBtn").addEventListener("click",()=>{
+  $("#cntObserve").textContent=records.observe.length+" 条";
+  $("#cntAnimate").textContent=records.animate.length+" 条";
+  $("#cntCourse").textContent=records.course.length+" 条";
+  $("#settingsSheet").classList.add("show");
+});
+$$(".sheet-close").forEach(b=>b.addEventListener("click",()=>$("#settingsSheet").classList.remove("show")));
+$("#settingsSheet").addEventListener("click",e=>{if(e.target.id==="settingsSheet") $("#settingsSheet").classList.remove("show");});
+
+/* ============================================================
+   记录存储（localStorage）
+   ============================================================ */
+const records={
+  observe:store.get("records_observe",[]),
+  animate:store.get("records_animate",[]),
+  course:store.get("records_course",[])
+};
+function saveRecords(){
+  store.set("records_observe",records.observe);
+  store.set("records_animate",records.animate);
+  store.set("records_course",records.course);
+  updateStats();
+}
+function updateStats(){
+  $("#statObserve").textContent=records.observe.length;
+  $("#statAnimate").textContent=records.animate.length;
+  $("#statCourse").textContent=records.course.length;
+}
+
+/* ============================================================
+   视频上传
+   ============================================================ */
+let observeVideo=null;
+$("#observeUpload").addEventListener("click",()=>$("#observeFile").click());
+$("#observeFile").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f) return;
+  observeVideo=f;
+  const url=URL.createObjectURL(f);
+  $("#observeVideoWrap").innerHTML=`
+    <div class="video-preview">
+      <span class="badge">已选择</span>
+      <video src="${url}" controls muted></video>
+    </div>
+    <button class="btn ghost" style="margin-top:8px;height:38px;font-size:13px;" onclick="document.getElementById('observeFile').click()">重新选择</button>`;
+  toast("视频已加载，请填写观察背景后生成");
+  e.target.value="";
+});
+
+/* ============================================================
+   观察：生成（示例数据）
+   ============================================================ */
+bindChips("obScene");
+$("#obSubmit").addEventListener("click",()=>{
+  if(!observeVideo){ toast("请先选择一段视频"); return; }
+  const btn=$("#obSubmit");
+  btn.disabled=true; btn.textContent="正在生成…";
+  $("#obResult").innerHTML=`<div class="loading"><div class="spinner"></div>AI 正在分析视频并生成观察记录…</div>`;
+
+  // 模拟生成延迟
+  setTimeout(()=>{
+    const r=buildSampleObserve({
+      name:$("#obName").value.trim(),
+      cls:$("#obClass").value,
+      scene:$$("#obScene .chip.on")[0]?.textContent||"",
+      focus:$("#obFocus").value.trim(),
+      note:$("#obNote").value.trim()
+    });
+    records.observe.unshift(r); saveRecords();
+    $("#obResult").innerHTML=renderReport(r);
+    btn.disabled=false; btn.textContent="重新生成";
+    btn.scrollIntoView({behavior:"smooth",block:"center"});
+    toast("观察记录已生成 ✓");
+  },1800);
+});
+
+/* 示例观察记录生成器 */
+function buildSampleObserve(info){
+  const scene=info.scene||"室内建构区";
+  const cls=info.cls||"中班";
+  const name=info.name||"该幼儿";
+  const focus=info.focus||"分类整理能力与同伴互动";
+  return {
+    id:uid(), type:"observe", date:today(), time:now(),
+    info,
+    basic:{scene,activity:"建构区自由游戏中积木分类与搭建",children:"画面中 1 名主角（"+name+"），约 4-5 岁，旁边有 2 名同伴"},
+    events:[
+      {t:"00:05",e:name+"独自走向建构区，蹲下查看筐里的积木"},
+      {t:"00:12",e:"拿起两块长方形积木，对比大小后放回一块"},
+      {t:"00:23",e:"开始将积木按形状分类摆放，圆形、方形、三角形各放一堆"},
+      {t:"00:38",e:"旁边同伴询问「能一起玩吗」，"+name+"点头并把方形积木递过去"},
+      {t:"00:55",e:"两人合作搭建，"+name+"负责选材，同伴负责堆叠"},
+      {t:"01:10",e:"搭到第六层时积木倒塌，"+name+"愣了一下说「没关系再来一次」"},
+      {t:"01:24",e:"调整策略，把大积木放底层，重新开始搭建"},
+      {t:"01:42",e:"成功搭到 8 层，"+name+"拍手并向教师展示"}
+    ],
+    observation:name+"在建构区进行了约 2 分钟的自主分类与搭建活动。进入区域后，先蹲下观察筐内材料，用手逐一比对积木的形状与大小，随后自发按几何形状分类摆放（圆形、方形、三角形各成一堆），分类标准清晰、动作从容。搭建过程中，当同伴提出加入请求时，"+name+"以点头和递材料的方式表示同意，并能根据搭建需要分工协作（自己选材、同伴堆叠）。搭建倒塌后没有出现沮丧情绪，而是用「没关系再来一次」自我安抚，并主动调整策略（大块放底），表现出较强的情绪调节和问题解决能力。最终完成 8 层搭建后向教师寻求关注与肯定。",
+    analysis:[
+      {domain:"科学",text:"《指南》科学领域-数学认知-目标1：感知形状与空间关系。"+name+"能按积木的几何形状自发分类（圆/方/三角），分类标准一致、操作熟练，表明其已稳定掌握二维基本形状的辨识，并能在真实情境中运用，达到中班末期水平。"},
+      {domain:"社会",text:"《指南》社会领域-人际交往-目标2：能与同伴友好相处。面对同伴加入请求能以非语言方式接纳并主动分享材料，搭建中能进行简单分工，表现出初步的合作意识。建议后续创设需要更紧密合作的任务（如共同搭建指定主题），推动协同能力发展。"},
+      {domain:"学习品质",text:"《指南》说明：具有不屈不挠的学习品质。搭建倒塌后能自我调节情绪并立即调整策略重做，未寻求成人帮助即独立解决问题，表现出良好的抗挫折能力和主动性。"}
+    ],
+    strategies:[
+      "环境与材料：在建构区投放形状更丰富（梯形、半圆、不规则）的积木，并增加分类托盘，鼓励更复杂的分类维度（按颜色+形状双维度）",
+      "师幼互动：用开放式提问深化思维，如「你是怎么决定哪块放下面的？」「如果再高一点，你觉得会怎样？」",
+      "延伸活动：开展「我们的城堡」主题建构周，引导"+name+"与同伴商量设计图后再搭建，发展表征与计划能力",
+      "家园共育：向家长反馈本次观察中"+name+"表现出的分类能力和情绪调节优势，建议在家中让孩子参与衣物分类、餐具摆放等真实任务"
+    ],
+    summary:name+"在建构区表现出稳定的形状分类能力、初步的合作意识和良好的抗挫折品质，发展水平符合中班年龄段，建议提供更复杂的分类与合作任务持续支持。"
+  };
+}
+
+function renderReport(r){
+  return `
+    <div class="report">
+      <div class="report-head">
+        <h3>📋 观察记录</h3>
+        <div class="meta">${r.date} ${r.time} · ${r.info.cls||"未填年龄班"} · ${r.info.scene||"区域活动"}</div>
+      </div>
+      <div class="report-sec">
+        <div class="report-sec-h">基本信息</div>
+        <div class="report-sec-b">场景：${r.basic.scene}<br>活动：${r.basic.activity}<br>幼儿：${r.basic.children}</div>
+      </div>
+      <div class="report-sec">
+        <div class="report-sec-h">行为事件</div>
+        ${r.events.map(e=>`<div class="event"><time>${e.t}</time>${e.e}</div>`).join("")}
+      </div>
+      <div class="report-sec">
+        <div class="report-sec-h">观察情况</div>
+        <div class="report-sec-b">${r.observation}</div>
+      </div>
+      <div class="report-sec">
+        <div class="report-sec-h">识别分析</div>
+        ${r.analysis.map(a=>`<div class="analysis-item"><div class="domain">${a.domain}</div>${a.text}</div>`).join("")}
+      </div>
+      <div class="report-sec">
+        <div class="report-sec-h">教育策略</div>
+        ${r.strategies.map((s,i)=>`<div class="strategy"><div class="n">${i+1}</div><div>${s}</div></div>`).join("")}
+      </div>
+      <div class="report-sec">
+        <div class="report-sec-h">专业总评</div>
+        <div class="report-sec-b" style="font-style:italic;color:var(--pink-soft);">${r.summary}</div>
+      </div>
+    </div>`;
+}
+
+/* ============================================================
+   绘本动画
+   ============================================================ */
+let animPages=[];
+$("#animUpload").addEventListener("click",()=>$("#animFile").click());
+$("#animFile").addEventListener("change",e=>{
+  const f=e.target.files[0];
+  if(f && animPages.length<20){
+    animPages.push({name:f.name,url:URL.createObjectURL(f)});
+    renderAnimPages();
+    toast("已添加第 "+animPages.length+" 页");
+  } else if(animPages.length>=20){
+    toast("最多 20 页");
+  }
+  e.target.value="";
+});
+function renderAnimPages(){
+  const box=$("#animPages");
+  box.innerHTML=animPages.map((p,i)=>`
+    <div class="page-thumb has" style="background-image:url('${p.url}');background-size:cover;background-position:center;">
+      <span style="position:absolute;bottom:3px;left:3px;background:rgba(0,0,0,.65);color:#fff;font-size:10px;padding:1px 5px;border-radius:3px;">P${i+1}</span>
+      <div class="del" onclick="event.stopPropagation();animPages.splice(${i},1);renderAnimPages();">✕</div>
+    </div>`).join("") +
+    (animPages.length<20?`<div class="page-thumb" onclick="document.getElementById('animFile').click()">+</div>`:"");
+}
+bindChips("animStyle"); bindChips("animDur");
+
+$("#animSubmit").addEventListener("click",()=>{
+  if(!animPages.length){ toast("请先上传至少 1 页绘本画面"); return; }
+  const btn=$("#animSubmit");
+  btn.disabled=true; btn.textContent="正在生成动画…";
+  $("#animResult").innerHTML=`<div class="loading"><div class="spinner"></div>正在为 ${animPages.length} 页绘本生成连贯动画…</div>`;
+
+  setTimeout(()=>{
+    const style=$$("#animStyle .chip.on")[0]?.textContent||"生动卡通";
+    const dur=$$("#animDur .chip.on")[0]?.textContent||"5秒";
+    const r={
+      id:uid(),type:"animate",date:today(),time:now(),
+      pages:animPages.length,style,dur,
+      story:$("#animStory").value.trim(),
+      status:"已完成",
+      videoUrl:animPages[0]?.url  // 示例：用第一页当预览
+    };
+    records.animate.unshift(r); saveRecords();
+    $("#animResult").innerHTML=`
+      <div class="report">
+        <div class="report-head"><h3>🎬 绘本动画</h3><div class="meta">${r.date} ${r.time} · ${r.pages} 页 · ${r.style} · ${r.dur}</div></div>
+        <div class="video-preview" style="margin-bottom:14px;">
+          <span class="badge">示例预览</span>
+          <video src="${r.videoUrl}" controls muted loop></video>
+        </div>
+        <p style="font-size:12px;color:var(--text-faint);line-height:1.8;">
+          已按「${r.style}」风格、${r.dur}时长生成 ${r.pages} 页连播动画。本预览使用第一页画面作为示例；
+          接入真实 AI 后此处将显示 AI 生成的连贯动画短片。
+        </p>
+      </div>`;
+    btn.disabled=false; btn.textContent="重新生成";
+    toast("绘本动画已生成 ✓");
+  },1500);
+});
+
+/* ============================================================
+   PPT 课件
+   ============================================================ */
+bindChips("courseTheme"); bindChips("coursePages");
+$("#courseSubmit").addEventListener("click",()=>{
+  const plan=$("#coursePlan").value.trim();
+  if(!plan){ toast("请先输入教案内容"); return; }
+  const btn=$("#courseSubmit");
+  btn.disabled=true; btn.textContent="正在生成课件…";
+  $("#courseResult").innerHTML=`<div class="loading"><div class="spinner"></div>正在按教案生成 PPT 大纲…</div>`;
+
+  setTimeout(()=>{
+    const theme=$$("#courseTheme .chip.on")[0]?.textContent||"动物森林";
+    const pages=parseInt(($$("#coursePages .chip.on")[0]?.textContent||"8页").replace("页",""));
+    const outline=["封面","活动目标","活动准备","活动导入","活动过程（一）","活动过程（二）","互动提问","总结延伸"].slice(0,pages);
+    const r={
+      id:uid(),type:"course",date:today(),time:now(),
+      theme,pages,plan:plan.slice(0,80),outline,
+      status:"已完成"
+    };
+    records.course.unshift(r); saveRecords();
+    $("#courseResult").innerHTML=`
+      <div class="report">
+        <div class="report-head"><h3>📊 PPT 课件</h3><div class="meta">${r.date} ${r.time} · ${r.theme} · ${r.pages} 页</div></div>
+        <div class="report-sec">
+          <div class="report-sec-h">课件大纲</div>
+          ${outline.map((t,i)=>`<div class="event"><time>P${i+1}</time>${t}</div>`).join("")}
+        </div>
+        <p style="font-size:12px;color:var(--text-faint);line-height:1.8;">
+          已按「${theme}」主题生成 ${pages} 页课件大纲。接入真实 AI 后此处可直接下载完整 .pptx 文件。
+        </p>
+      </div>`;
+    btn.disabled=false; btn.textContent="重新生成";
+    toast("PPT 课件已生成 ✓");
+  },1400);
+});
+
+/* ============================================================
+   历史记录
+   ============================================================ */
+function renderHistory(){
+  const filter=$$("#hisFilter .chip.on")[0]?.textContent||"全部";
+  const kw=$("#hisSearch").value.trim().toLowerCase();
+  const now=Date.now();
+  const all=[
+    ...records.observe.map(r=>({...r,_type:"observe"})),
+    ...records.animate.map(r=>({...r,_type:"animate"})),
+    ...records.course.map(r=>({...r,_type:"course"}))
+  ].sort((a,b)=>(b.id> a.id?1:-1));
+
+  let list=all.filter(r=>{
+    if(filter==="近7天" && now-r._t>7*86400000) return false;  // 简化：用不到，演示用
+    if(filter==="近30天" && now-r._t>30*86400000) return false;
+    if(["观察","动画","课件"].includes(filter)){
+      const mp={observe:"观察",animate:"动画",course:"课件"};
+      if(mp[r._type]!==filter) return false;
+    }
+    if(kw){
+      const text=JSON.stringify(r).toLowerCase();
+      if(!text.includes(kw)) return false;
+    }
+    return true;
+  });
+
+  const box=$("#hisList");
+  if(!list.length){
+    box.innerHTML=`<div class="empty"><div class="emo">📭</div><div>没有匹配的记录</div></div>`;
+    $("#hisClear").style.display="none";
+    return;
+  }
+  $("#hisClear").style.display="flex";
+
+  box.innerHTML=list.map(r=>{
+    const typeMap={observe:["📹","观察记录"],animate:["🎬","绘本动画"],course:["📊","PPT 课件"]};
+    const [icon,label]=typeMap[r._type];
+    let preview="";
+    if(r._type==="observe") preview=r.observation.slice(0,60)+"…";
+    else if(r._type==="animate") preview=`${r.pages} 页 · ${r.style} · ${r.dur}`;
+    else if(r._type==="course") preview=`${r.theme} · ${r.pages} 页课件`;
+
+    return `
+      <div class="card" style="cursor:pointer;" onclick="showHistoryDetail('${r._type}','${r.id}')">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:18px;">${icon}</span>
+            <strong style="font-size:13px;">${label}</strong>
+          </div>
+          <span style="font-size:11px;color:var(--text-faint);">${r.date}</span>
+        </div>
+        <p style="font-size:12px;color:var(--text-dim);line-height:1.7;">${preview}</p>
+      </div>`;
+  }).join("");
+}
+window.showHistoryDetail=function(type,id){
+  const arr=records[type]; const r=arr.find(x=>x.id===id); if(!r) return;
+  let html="";
+  if(type==="observe") html=renderReport(r);
+  else if(type==="animate"){
+    html=`<div class="report">
+      <div class="report-head"><h3>🎬 绘本动画</h3><div class="meta">${r.date} ${r.time} · ${r.pages} 页 · ${r.style} · ${r.dur}</div></div>
+      <div class="video-preview" style="margin-bottom:14px;"><span class="badge">示例</span><video src="${r.videoUrl}" controls muted loop></video></div>
+      ${r.story?`<div class="report-sec"><div class="report-sec-h">故事文本</div><div class="report-sec-b">${r.story}</div></div>`:""}
+    </div>`;
+  } else if(type==="course"){
+    html=`<div class="report">
+      <div class="report-head"><h3>📊 PPT 课件</h3><div class="meta">${r.date} ${r.time} · ${r.theme} · ${r.pages} 页</div></div>
+      <div class="report-sec"><div class="report-sec-h">课件大纲</div>${r.outline.map((t,i)=>`<div class="event"><time>P${i+1}</time>${t}</div>`).join("")}</div>
+      <div class="report-sec"><div class="report-sec-h">教案摘录</div><div class="report-sec-b">${r.plan}…</div></div>
+    </div>`;
+  }
+  $("#hisList").innerHTML=html+`<button class="btn ghost" onclick="renderHistory()">‹ 返回列表</button>`;
+};
+
+$("#hisSearch").addEventListener("input",renderHistory);
+bindChips("hisFilter");
+$("#hisFilter").addEventListener("click",renderHistory);
+$("#hisClear").addEventListener("click",()=>{
+  if(!confirm("确认清空全部记录？此操作不可撤销。")) return;
+  records.observe=[]; records.animate=[]; records.course=[];
+  saveRecords(); renderHistory(); toast("已清空全部记录");
+});
+
+/* ============================================================
+   初始化
+   ============================================================ */
+updateStats();
+renderHistory();
+// 从 hub 跳进来时显示返回按钮
+(function(){
+  const params=new URLSearchParams(location.search);
+  if(params.get("from")==="hub"){
+    const btn=document.createElement("a");
+    btn.href="../hub.html";
+    btn.innerHTML="‹ 返回合集";
+    btn.style.cssText="position:fixed;top:18px;right:18px;z-index:75;display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:100px;background:rgba(15,8,56,.92);border:1px solid rgba(45,212,191,.45);color:#5EEAD4;font-size:12px;text-decoration:none;backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,.5);";
+    document.body.appendChild(btn);
+  }
+})();
+</script>
+</body>
+</html>
