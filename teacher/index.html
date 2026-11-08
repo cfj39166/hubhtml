@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#0B0F1A">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230B0F1A'/%3E%3Cpath d='M8 12.5L3 7.8C1.7 6.5 2.2 4 4.2 4c1 0 1.7.6 2 .9l1.8 1.8 1.8-1.8c.3-.3 1-.9 2-.9 2 0 2.5 2.5 1.2 3.8L8 12.5z' fill='%2314B8A6'/%3E%3C/svg%3E">
 <title>幼师工作台 · 观察记录生成工具</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 <style>
 :root{
   --bg:#0B0F1A;
@@ -370,6 +371,100 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
 .outline-item:last-child{border-bottom:none;}
 .outline-item .pn{font-size:10px;color:var(--text-faint);font-variant-numeric:tabular-nums;width:24px;}
 .outline-item .pt{color:var(--text-dim);}
+
+/* ===== PPT 课件预览 ===== */
+.course-result{
+  background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius);
+  padding:18px;margin-top:14px;animation:fade .35s ease;
+}
+.course-result-h{
+  display:flex;align-items:start;justify-content:space-between;gap:14px;
+  padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap;
+}
+.course-result-h h3{font-size:15px;font-weight:600;margin-bottom:3px;}
+.course-result-h .meta{font-size:11px;color:var(--text-faint);}
+.course-actions{display:flex;gap:6px;flex-shrink:0;}
+.slides-scroll{
+  display:flex;gap:12px;overflow-x:auto;padding:6px 2px 12px;
+  scroll-snap-type:x mandatory;scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+}
+.slides-scroll::-webkit-scrollbar{height:6px;}
+.slides-scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px;}
+
+.slide-card{
+  flex:0 0 auto;width:320px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;
+  position:relative;border:1px solid var(--line);scroll-snap-align:center;
+  transition:transform .2s,border-color .2s;cursor:pointer;background:#fff;
+}
+.slide-card.on{transform:translateY(-2px);border-color:var(--teal);box-shadow:0 6px 18px rgba(20,184,166,.2);}
+.slide-card-num{
+  position:absolute;top:6px;right:6px;z-index:3;
+  font-size:10px;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.55);
+  color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.04em;
+}
+.slide-card .slide-cover,.slide-card .slide-list,.slide-card .slide-process,.slide-card .slide-thanks{
+  width:100%;height:100%;padding:18px 20px;display:flex;flex-direction:column;
+  font-family:var(--font);overflow:hidden;position:relative;
+}
+/* 封面 */
+.slide-cover{justify-content:center;align-items:center;text-align:center;}
+.slide-cover-mark{font-size:9px;letter-spacing:.16em;opacity:.85;margin-bottom:8px;text-transform:uppercase;}
+.slide-cover-title{font-size:24px;font-weight:800;letter-spacing:-.01em;line-height:1.2;margin-bottom:6px;}
+.slide-cover-sub{font-size:11px;opacity:.9;}
+.slide-cover-foot{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:9px;opacity:.7;}
+/* 列表页 */
+.slide-list{justify-content:flex-start;}
+.slide-list-h{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;margin-bottom:4px;}
+.slide-emoji{font-size:14px;}
+.slide-list-sub{font-size:9.5px;opacity:.7;margin-bottom:8px;}
+.slide-list-items{list-style:none;display:flex;flex-direction:column;gap:4px;font-size:10px;line-height:1.45;}
+.slide-list-items li{display:flex;gap:5px;align-items:flex-start;}
+.slide-bullet{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+/* 过程页 */
+.slide-process{justify-content:flex-start;}
+.slide-process-h{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:8px;}
+.slide-step-num{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;letter-spacing:.04em;}
+.slide-process-body{font-size:10px;line-height:1.6;white-space:pre-wrap;opacity:.85;}
+.slide-process-deco{position:absolute;right:-20px;bottom:-20px;width:80px;height:80px;border-radius:50%;}
+/* 结束页 */
+.slide-thanks{justify-content:center;align-items:center;text-align:center;}
+.slide-thanks-title{font-size:22px;font-weight:700;margin-bottom:6px;}
+.slide-thanks-sub{font-size:11px;opacity:.9;}
+.slide-thanks-foot{position:absolute;bottom:14px;font-size:9px;opacity:.7;}
+
+.slides-nav{
+  display:flex;align-items:center;justify-content:center;gap:16px;margin-top:14px;
+}
+.slides-nav-btn{
+  width:32px;height:32px;border-radius:50%;background:var(--panel-2);color:var(--text);
+  display:grid;place-items:center;font-size:18px;transition:all .15s;line-height:1;
+}
+.slides-nav-btn:hover{background:var(--teal);color:#0B0F1A;}
+.slides-nav-info{font-size:12px;color:var(--text-dim);font-variant-numeric:tabular-nums;letter-spacing:.04em;}
+
+.course-tip{
+  margin-top:14px;padding:11px 14px;border-radius:var(--radius-sm);font-size:11.5px;
+  background:rgba(20,184,166,.06);border-left:3px solid var(--teal);color:var(--text-dim);
+  line-height:1.7;
+}
+
+@media(max-width:768px){
+  .slide-card{width:260px;}
+  .slide-cover-title{font-size:20px;}
+  .slide-list-h{font-size:14px;}
+  .slide-list-items{font-size:11px;}
+  .slide-process-body{font-size:11px;}
+  .course-result{padding:14px;}
+  .course-result-h{flex-direction:column;gap:8px;}
+  .course-actions{width:100%;}
+  .course-actions .btn{flex:1;}
+  .course-tip{font-size:12px;}
+}
+@media(max-width:380px){
+  .slide-card{width:230px;}
+  .slide-cover-title{font-size:17px;}
+}
 
 /* Toast */
 .toast{
@@ -784,33 +879,85 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
         <section class="view" data-view="course">
           <div class="welcome" style="margin-bottom:18px;">
             <h1>PPT 课件生成</h1>
-            <p>粘贴教案或活动设计文本，自动按主题风格生成课件大纲。</p>
+            <p>填写活动信息，自动生成可下载的 PPT 课件（含主题封面、活动目标、活动过程、互动提问等）。</p>
           </div>
 
           <div class="steps">
-            <span class="step on"><span class="n">1</span>输入教案</span>
+            <span class="step on" id="cStep1"><span class="n">1</span>填写信息</span>
             <span class="step-arrow">›</span>
-            <span class="step"><span class="n">2</span>选择风格</span>
+            <span class="step" id="cStep2"><span class="n">2</span>主题风格</span>
             <span class="step-arrow">›</span>
-            <span class="step"><span class="n">3</span>生成课件</span>
+            <span class="step" id="cStep3"><span class="n">3</span>预览下载</span>
           </div>
 
           <div class="card">
-            <div class="card-h"><h3>教案内容</h3></div>
-            <textarea class="textarea" id="coursePlan" style="min-height:140px;" placeholder="粘贴教案内容，建议包含：活动目标、活动准备、活动过程、互动提问等部分..."></textarea>
-          </div>
-
-          <div class="card">
-            <div class="card-h"><h3>课件设置</h3></div>
+            <div class="card-h">
+              <h3>活动信息</h3>
+              <button class="btn ghost sm" id="courseTemplate" type="button">
+                <svg><use href="#i-sparkles"/></svg>示例
+              </button>
+            </div>
 
             <div class="field">
-              <label class="field-label">主题风格</label>
+              <label class="field-label">活动名称 <span class="opt">必填</span></label>
+              <input class="input" id="cTitle" placeholder="如：认识常见的昆虫 / 有趣的磁铁游戏">
+            </div>
+
+            <div class="field">
+              <label class="field-label">年龄班</label>
+              <select class="select" id="cAge">
+                <option value="">请选择</option>
+                <option>小班</option>
+                <option selected>中班</option>
+                <option>大班</option>
+                <option>混龄班</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label">活动领域</label>
+              <div class="chips" id="cDomain">
+                <span class="chip on">科学</span>
+                <span class="chip">语言</span>
+                <span class="chip">社会</span>
+                <span class="chip">健康</span>
+                <span class="chip">艺术</span>
+                <span class="chip">综合</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">活动目标 <span class="opt">每行一条</span></label>
+              <textarea class="textarea" id="cGoals" style="min-height:96px;" placeholder="如：&#10;1. 初步认识 3-4 种常见昆虫，了解其外形特征。&#10;2. 能用简单的语言描述昆虫的生活习性。&#10;3. 培养观察自然的兴趣，懂得爱护小动物。"></textarea>
+            </div>
+
+            <div class="field">
+              <label class="field-label">活动准备</label>
+              <textarea class="textarea" id="cPrep" style="min-height:72px;" placeholder="物质准备 + 经验准备，如：&#10;昆虫 PPT、放大镜、昆虫标本、记录表&#10;幼儿已有户外观察经验"></textarea>
+            </div>
+
+            <div class="field">
+              <label class="field-label">活动过程 <span class="opt">每段一个环节</span></label>
+              <textarea class="textarea" id="cProcess" style="min-height:120px;" placeholder="按环节分自然段书写：&#10;一、导入：出示蝴蝶标本，提问「你认识它吗？」引出主题。&#10;二、基本：观察三种昆虫图片，分组讨论外形特征。&#10;三、游戏：「昆虫找家」配对游戏。&#10;四、延伸：户外寻找小昆虫，记录所见。"></textarea>
+            </div>
+
+            <div class="field">
+              <label class="field-label">互动提问 <span class="opt">可选</span></label>
+              <textarea class="textarea" id="cQuestions" style="min-height:72px;" placeholder="如：&#10;1. 蝴蝶和蜜蜂有什么不一样？&#10;2. 蚂蚁是怎么搬家的？&#10;3. 你最喜欢的昆虫是什么，为什么？"></textarea>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><h3>课件风格</h3></div>
+            <div class="field">
+              <label class="field-label">主题配色</label>
               <div class="chips" id="courseTheme">
-                <span class="chip on">动物森林</span>
-                <span class="chip">海洋世界</span>
-                <span class="chip">太空探险</span>
-                <span class="chip">节日庆典</span>
-                <span class="chip">简约卡通</span>
+                <span class="chip on" data-theme="forest" data-c1="#2D7A4A" data-c2="#7BD8A0" data-bg="#F0F7F1">森林动物</span>
+                <span class="chip" data-theme="ocean" data-c1="#1F6FB2" data-c2="#7CC5E8" data-bg="#EAF4FB">海洋世界</span>
+                <span class="chip" data-theme="space" data-c1="#3B2A8C" data-c2="#B5A6F0" data-bg="#1A1538">太空探险</span>
+                <span class="chip" data-theme="warm" data-c1="#E0702A" data-c2="#FFC078" data-bg="#FFF6E8">节日庆典</span>
+                <span class="chip" data-theme="simple" data-c1="#2C3E50" data-c2="#95A5A6" data-bg="#FFFFFF">简约卡通</span>
+                <span class="chip" data-theme="pink" data-c1="#D63384" data-c2="#FFB3D9" data-bg="#FFF0F7">温柔粉调</span>
               </div>
             </div>
             <div class="field">
@@ -824,8 +971,8 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
             </div>
           </div>
 
-          <button class="btn block" id="courseSubmit">
-            <svg><use href="#i-slides"/></svg>
+          <button class="btn block" id="courseSubmit" type="button">
+            <svg><use href="#i-sparkles"/></svg>
             生成 PPT 课件
           </button>
           <div id="courseResult"></div>
@@ -1279,42 +1426,325 @@ $("#animSubmit").addEventListener("click",()=>{
 /* ============================================================
    PPT 课件
    ============================================================ */
-bindChips("courseTheme"); bindChips("coursePages");
+bindChips("courseTheme"); bindChips("coursePages"); bindChips("cDomain");
+
+// 示例模板一键填充
+$("#courseTemplate").addEventListener("click",()=>{
+  $("#cTitle").value="认识常见的昆虫";
+  $("#cAge").value="中班";
+  $$("#cDomain .chip").forEach(c=>c.classList.toggle("on",c.textContent==="科学"));
+  $("#cGoals").value="1. 初步认识 3-4 种常见昆虫，了解外形特征。\n2. 能用简单语言描述昆虫的生活习性。\n3. 培养观察自然的兴趣，懂得爱护小动物。";
+  $("#cPrep").value="物质准备：昆虫标本、放大镜、PPT、记录表\n经验准备：幼儿已有户外观察经验";
+  $("#cProcess").value="一、导入（5 分钟）：出示蝴蝶标本，提问「你认识它吗？」，激发兴趣。\n\n二、基本（15 分钟）：\n1. 观察：出示蜜蜂、蝴蝶、蚂蚁图片，引导幼儿观察外形。\n2. 讨论：分组讨论它们的家在哪里、吃什么。\n3. 游戏：「昆虫找家」配对游戏。\n\n三、延伸（5 分钟）：到户外寻找小昆虫，用图画记录所见。";
+  $("#cQuestions").value="1. 蝴蝶和蜜蜂有什么不一样？\n2. 蚂蚁是怎么搬家的？\n3. 你最喜欢哪种昆虫，为什么？";
+  toast("已填入示例教案");
+});
+
+// 智能解析教案 → 幻灯片结构数组
+function parseCourseSlides(){
+  const title=$("#cTitle").value.trim()||"活动课件";
+  const age=$("#cAge").value||"幼儿园";
+  const domain=$$("#cDomain .chip.on")[0]?.textContent||"综合";
+  const goalsRaw=$("#cGoals").value.trim();
+  const prepRaw=$("#cPrep").value.trim();
+  const processRaw=$("#cProcess").value.trim();
+  const qRaw=$("#cQuestions").value.trim();
+
+  // 拆分函数：按数字标号 / 序号 / 段落
+  function splitItems(text){
+    if(!text) return [];
+    // 按 1. 2. 或 ① ② 或 「一、二、」分
+    let arr=text.split(/\n+/).map(s=>s.replace(/^[\s]*[\d①②③④⑤⑥⑦⑧⑨⑩][\.\、\)）]?\s*/,"").trim()).filter(Boolean);
+    if(arr.length<=1){
+      // 按「；」「。」长句拆
+      arr=text.split(/[；;]+/).map(s=>s.trim()).filter(Boolean);
+    }
+    return arr;
+  }
+  const goals=splitItems(goalsRaw);
+  const preps=splitItems(prepRaw);
+  const qs=splitItems(qRaw);
+  // 过程按「一、二、」或数字标号分段
+  let steps=[];
+  if(processRaw){
+    const m=processRaw.match(/(一|二|三|四|五|六|七|八|九|十)[、.][\s\S]*?(?=(?:一|二|三|四|五|六|七|八|九|十)[、.]|$)/g);
+    if(m && m.length>=2){
+      steps=m.map(s=>s.trim());
+    } else {
+      steps=processRaw.split(/\n\n+/).map(s=>s.trim()).filter(Boolean);
+      if(steps.length<=1) steps=processRaw.split(/\n/).map(s=>s.trim()).filter(Boolean);
+    }
+  }
+
+  const slides=[];
+  // 1. 封面
+  slides.push({type:"cover",title,subtitle:`${age} · ${domain}领域`,footer:"幼师工作台 · 生成"});
+
+  // 2. 活动目标
+  if(goals.length){
+    slides.push({type:"list",title:"活动目标",subtitle:"通过本次活动，幼儿将达到以下目标：",items:goals,icon:"🎯"});
+  }
+
+  // 3. 活动准备
+  if(prepRaw){
+    slides.push({type:"list",title:"活动准备",subtitle:"物质准备 + 经验准备",items:preps.length?preps:[prepRaw],icon:"📦"});
+  }
+
+  // 4-N. 活动过程（每个环节一页，避免文字过密）
+  if(steps.length===0 && processRaw){
+    steps=["活动过程",processRaw];
+  }
+  steps.forEach((s,i)=>{
+    const firstLine=s.split(/\n/)[0].slice(0,40);
+    const body=s.length>40?s:"";
+    slides.push({
+      type:"process",
+      title:`活动过程（${i+1}）`,
+      subtitle:firstLine.replace(/^(一|二|三|四|五|六|七|八|九|十)[、.]\s*/,""),
+      body,
+      stepNum:i+1,
+      totalStep:steps.length,
+      icon:"🏃"
+    });
+  });
+
+  // 互动提问
+  if(qs.length){
+    slides.push({type:"list",title:"互动提问",subtitle:"引导幼儿深度思考：",items:qs,icon:"❓"});
+  }
+
+  // 结束页
+  slides.push({type:"thanks",title:"活动延伸",subtitle:"把今天学到的本领带回家，讲给爸爸妈妈听 🌟",footer:"谢谢小朋友们"});
+
+  return {slides, meta:{title,age,domain,goals,preps,steps,qs,raw:{goalsRaw,prepRaw,processRaw,qRaw}}};
+}
+
+// 卡片预览渲染（移动端横滑、桌面端网格）
+function renderSlidesPreview(slides,theme,pages){
+  const total=Math.min(slides.length,pages);
+  const shown=slides.slice(0,total);
+  const c1=theme.c1,c2=theme.c2,bg=theme.bg;
+  const isDark=bg.toLowerCase()==="#1a1538";
+
+  return shown.map((s,i)=>{
+    let inner="";
+    if(s.type==="cover"){
+      inner=`
+        <div class="slide-cover" style="background:linear-gradient(135deg,${c1},${c2});color:#fff;">
+          <div class="slide-cover-mark">${s.domain||""}课</div>
+          <div class="slide-cover-title">${escapeHtml(s.title)}</div>
+          <div class="slide-cover-sub">${escapeHtml(s.subtitle||"")}</div>
+          <div class="slide-cover-foot">${escapeHtml(s.footer||"")}</div>
+        </div>`;
+    } else if(s.type==="list"){
+      inner=`
+        <div class="slide-list" style="background:${bg};color:${isDark?"#fff":"#1a1a1a"};">
+          <div class="slide-list-h"><span class="slide-emoji">${s.icon||""}</span><span>${escapeHtml(s.title)}</span></div>
+          <div class="slide-list-sub">${escapeHtml(s.subtitle||"")}</div>
+          <ul class="slide-list-items">
+            ${s.items.map((it,idx)=>`<li><span class="slide-bullet" style="background:${c1};"></span><span>${escapeHtml(it)}</span></li>`).join("")}
+          </ul>
+        </div>`;
+    } else if(s.type==="process"){
+      inner=`
+        <div class="slide-process" style="background:${bg};color:${isDark?"#fff":"#1a1a1a"};">
+          <div class="slide-process-h">
+            <span class="slide-step-num" style="background:${c1};color:#fff;">${s.stepNum}/${s.totalStep}</span>
+            <span>${escapeHtml(s.subtitle||s.title)}</span>
+          </div>
+          ${s.body?`<div class="slide-process-body">${escapeHtml(s.body)}</div>`:""}
+          <div class="slide-process-deco" style="background:${c2};opacity:.25;"></div>
+        </div>`;
+    } else if(s.type==="thanks"){
+      inner=`
+        <div class="slide-thanks" style="background:linear-gradient(135deg,${c2},${c1});color:#fff;">
+          <div class="slide-thanks-title">${escapeHtml(s.title)}</div>
+          <div class="slide-thanks-sub">${escapeHtml(s.subtitle||"")}</div>
+          <div class="slide-thanks-foot">${escapeHtml(s.footer||"")}</div>
+        </div>`;
+    }
+    return `<div class="slide-card" data-idx="${i}"><div class="slide-card-num">P${i+1}</div>${inner}</div>`;
+  }).join("");
+}
+
+function escapeHtml(s){
+  return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+}
+
+// 生成真实 .pptx 文件并下载
+function downloadPptx(slides,theme,meta){
+  if(typeof PptxGenJS==="undefined"){
+    toast("PPT 库未加载，请检查网络"); return;
+  }
+  const pptx=new PptxGenJS();
+  pptx.defineLayout({name:"KINDER",width:10,height:7.5});
+  pptx.layout="LAYOUT_WIDE";
+  pptx.author="幼师工作台";
+  pptx.title=meta.title;
+
+  const c1=theme.c1, c2=theme.c2, bg=theme.bg;
+  const isDark=bg.toLowerCase()==="#1a1538";
+  const textColor=isDark?"FFFFFF":"222222";
+  const subColor=isDark?"DDDDDD":"666666";
+
+  slides.forEach(s=>{
+    const slide=pptx.addSlide();
+    if(s.type==="cover"){
+      slide.background={color:hexNo(c1)};
+      slide.addShape(pptx.ShapeType.rect,{x:0,y:0,w:"100%",h:"100%",fill:{type:"solid",color:hexNo(c1)}});
+      // 渐变模拟：叠加深色块
+      slide.addShape(pptx.ShapeType.rect,{x:3.5,y:0,w:6.5,h:"100%",fill:{type:"solid",color:hexNo(c2)}});
+      slide.addText(s.title,{x:0.5,y:2.4,w:9,h:1.2,fontSize:40,bold:true,color:"FFFFFF",align:"center",fontFace:"Microsoft YaHei"});
+      slide.addText(s.subtitle||"",{x:0.5,y:3.7,w:9,h:0.6,fontSize:18,color:"FFFFFF",align:"center"});
+      slide.addText(s.footer||"",{x:0.5,y:6.5,w:9,h:0.4,fontSize:11,color:"EEEEEE",align:"center"});
+    } else if(s.type==="list"){
+      slide.background={color:hexNo(bg)};
+      slide.addText(`${s.icon||""} ${s.title}`,{x:0.5,y:0.35,w:9,h:0.6,fontSize:26,bold:true,color:hexNo(c1),fontFace:"Microsoft YaHei"});
+      slide.addShape(pptx.ShapeType.line,{x:0.5,y:1.05,w:9,h:0,line:{color:hexNo(c2),width:2}});
+      if(s.subtitle) slide.addText(s.subtitle,{x:0.5,y:1.2,w:9,h:0.4,fontSize:13,color:hexNo(subColor),italic:true});
+      const items=s.items.map((it,i)=>({text:`${i+1}. ${it}`,options:{breakLine:true,fontSize:15,color:hexNo(textColor),bullet:false,paraSpaceAfter:8,fontFace:"Microsoft YaHei"}}));
+      slide.addText(items,{x:0.6,y:1.8,w:8.8,h:5,fontSize:15});
+    } else if(s.type==="process"){
+      slide.background={color:hexNo(bg)};
+      // 步骤编号圆角矩形
+      slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:0.35,w:1.4,h:0.55,fill:{type:"solid",color:hexNo(c1)},line:{color:hexNo(c1),width:1},rectRadius:0.1});
+      slide.addText(`${s.stepNum}/${s.totalStep}`,{x:0.5,y:0.35,w:1.4,h:0.55,fontSize:14,bold:true,color:"FFFFFF",align:"center",valign:"middle"});
+      slide.addText(s.subtitle||s.title,{x:2.1,y:0.35,w:7.4,h:0.55,fontSize:22,bold:true,color:hexNo(c1),fontFace:"Microsoft YaHei",valign:"middle"});
+      slide.addShape(pptx.ShapeType.line,{x:0.5,y:1.1,w:9,h:0,line:{color:hexNo(c2),width:2}});
+      if(s.body){
+        const paras=s.body.split(/\n+/).filter(Boolean).map(p=>({text:p,options:{breakLine:true,fontSize:14,color:hexNo(textColor),paraSpaceAfter:6,fontFace:"Microsoft YaHei"}}));
+        slide.addText(paras,{x:0.6,y:1.4,w:8.8,h:5.4});
+      }
+    } else if(s.type==="thanks"){
+      slide.background={color:hexNo(c1)};
+      slide.addText(s.title,{x:0.5,y:2.6,w:9,h:1,fontSize:36,bold:true,color:"FFFFFF",align:"center",fontFace:"Microsoft YaHei"});
+      slide.addText(s.subtitle||"",{x:0.5,y:3.7,w:9,h:0.8,fontSize:16,color:"EEEEEE",align:"center"});
+      slide.addText(s.footer||"",{x:0.5,y:6,h:9,h:0.5,fontSize:13,color:"FFFFFF",align:"center"});
+    }
+  });
+
+  // 文件名：活动名称_页数.pptx
+  const fname=`${meta.title||"课件"}_${slides.length}页.pptx`.replace(/[\\/:*?"<>|]/g,"_");
+  pptx.writeFile({fileName:fname}).then(()=>{
+    toast(`已下载：${fname}`);
+  }).catch(err=>{
+    console.error(err);
+    toast("下载失败："+(err.message||err));
+  });
+}
+
+// hex → pptxgen 需要 6 位无 # 大写
+function hexNo(c){
+  if(!c) return "FFFFFF";
+  let s=String(c).replace("#","").toUpperCase();
+  if(s.length===3) s=s.split("").map(x=>x+x).join("");
+  return s;
+}
+
+// 主流程
+let lastCourseData=null;
 $("#courseSubmit").addEventListener("click",()=>{
-  const plan=$("#coursePlan").value.trim();
-  if(!plan){ toast("请先输入教案内容"); return; }
+  const title=$("#cTitle").value.trim();
+  if(!title){ toast("请填写活动名称"); $("#cTitle").focus(); return; }
+  const goals=$("#cGoals").value.trim();
+  const process=$("#cProcess").value.trim();
+  if(!goals && !process){ toast("请至少填写活动目标或活动过程"); return; }
+
   const btn=$("#courseSubmit");
   btn.disabled=true; btn.innerHTML=`<span class="spinner" style="width:13px;height:13px;margin:0;"></span>正在生成…`;
-  $("#courseResult").innerHTML=`<div class="loading"><div class="spinner"></div><div>正在按教案生成 PPT 大纲…</div></div>`;
+  $("#courseResult").innerHTML=`<div class="loading"><div class="spinner"></div><div>正在智能解析教案并生成课件…</div></div>`;
+  $("#cStep1").classList.add("done");
+  $("#cStep2").classList.add("done");
+
   setTimeout(()=>{
-    const theme=$$("#courseTheme .chip.on")[0]?.textContent||"动物森林";
+    const {slides,meta}=parseCourseSlides();
+    const themeChip=$$("#courseTheme .chip.on")[0];
+    const theme={
+      key:themeChip?.dataset.theme||"forest",
+      c1:themeChip?.dataset.c1||"#2D7A4A",
+      c2:themeChip?.dataset.c2||"#7BD8A0",
+      bg:themeChip?.dataset.bg||"#F0F7F1"
+    };
     const pages=parseInt(($$("#coursePages .chip.on")[0]?.textContent||"8 页").replace(" 页",""));
-    const outline=["封面","活动目标","活动准备","活动导入","活动过程（一）","活动过程（二）","互动提问","总结延伸"].slice(0,pages);
-    const r={id:uid(),type:"course",date:today(),time:now(),theme,pages,plan:plan.slice(0,80),outline};
-    records.course.unshift(r); saveRecords();
+    const finalSlides=slides.slice(0,pages);
+
+    lastCourseData={slides:finalSlides,theme,meta};
+    records.course.unshift({
+      id:uid(),type:"course",date:today(),time:now(),
+      title:meta.title,age:meta.age,domain:meta.domain,
+      pages:finalSlides.length,theme:theme.key,
+      outline:finalSlides.map(s=>s.title||s.subtitle||""),
+      slides:finalSlides,themeColors:theme
+    });
+    saveRecords();
+
+    const previewHTML=renderSlidesPreview(slides,theme,99999);
     $("#courseResult").innerHTML=`
-      <div class="report">
-        <div class="report-h">
-          <div><h3>PPT 课件</h3><div class="meta">${r.date} ${r.time||""} · ${r.theme} · ${r.pages} 页</div></div>
-        </div>
-        <div class="report-sec">
-          <div class="report-sec-h">课件大纲</div>
-          <div class="outline-list">
-            ${outline.map((t,i)=>`<div class="outline-item"><span class="pn">P${i+1}</span><span class="pt">${t}</span></div>`).join("")}
+      <div class="course-result">
+        <div class="course-result-h">
+          <div>
+            <h3>${escapeHtml(meta.title)}</h3>
+            <div class="meta">${meta.age} · ${meta.domain} · 共 ${finalSlides.length} 页</div>
+          </div>
+          <div class="course-actions">
+            <button class="btn sm" id="courseDownload" type="button">
+              <svg><use href="#i-upload"/></svg>下载 .pptx
+            </button>
+            <button class="btn ghost sm" id="courseCopy" type="button">
+              <svg><use href="#i-copy"/></svg>复制大纲
+            </button>
           </div>
         </div>
-        <div class="report-sec">
-          <div class="report-sec-h">教案摘录</div>
-          <div class="report-sec-b">${r.plan}…</div>
+        <div class="slides-scroll" id="slidesScroll">
+          ${previewHTML}
         </div>
-        <div style="font-size:11px;color:var(--text-faint);line-height:1.7;margin-top:8px;">
-          接入真实 AI 后此处可直接下载 .pptx 文件。
+        <div class="slides-nav">
+          <button class="slides-nav-btn" id="slidesPrev" type="button" aria-label="上一页">‹</button>
+          <span class="slides-nav-info" id="slidesInfo">P1 / ${finalSlides.length}</span>
+          <button class="slides-nav-btn" id="slidesNext" type="button" aria-label="下一页">›</button>
         </div>
+        <div class="course-tip">已生成可直接用 PowerPoint / WPS / Keynote 打开的 .pptx 文件。点击上方「下载 .pptx」即可保存到手机或电脑。</div>
       </div>`;
-    btn.disabled=false; btn.innerHTML=`<svg><use href="#i-slides"/></svg>重新生成`;
-    toast("PPT 课件已生成");
-  },1400);
+
+    btn.disabled=false; btn.innerHTML=`<svg><use href="#i-sparkles"/></svg>重新生成`;
+    $("#cStep3").classList.add("done");
+    bindSlidesScroll();
+    $("#courseDownload").addEventListener("click",()=>downloadPptx(finalSlides,theme,meta));
+    $("#courseCopy").addEventListener("click",()=>{
+      const txt=finalSlides.map((s,i)=>`P${i+1} ${s.title||""}${s.subtitle?"："+s.subtitle:""}${s.items?("\n"+s.items.map(it=>"  · "+it).join("\n")):""}${s.body?("\n"+s.body):""}`).join("\n\n");
+      navigator.clipboard?.writeText(txt).then(()=>toast("大纲已复制")).catch(()=>toast("复制失败"));
+    });
+    toast("课件已生成，可下载 .pptx");
+  },1100);
 });
+
+// 卡片预览横滑逻辑
+function bindSlidesScroll(){
+  const sc=$("#slidesScroll");
+  if(!sc) return;
+  const cards=sc.querySelectorAll(".slide-card");
+  const info=$("#slidesInfo");
+  let curIdx=0;
+  function update(){
+    const target=cards[curIdx];
+    if(target) sc.scrollTo({left:target.offsetLeft-sc.offsetLeft-12,behavior:"smooth"});
+    if(info) info.textContent=`P${curIdx+1} / ${cards.length}`;
+    cards.forEach((c,i)=>c.classList.toggle("on",i===curIdx));
+  }
+  $("#slidesPrev")?.addEventListener("click",()=>{ curIdx=Math.max(0,curIdx-1); update(); });
+  $("#slidesNext")?.addEventListener("click",()=>{ curIdx=Math.min(cards.length-1,curIdx+1); update(); });
+  // 滚动联动当前页
+  let t;
+  sc.addEventListener("scroll",()=>{
+    clearTimeout(t);
+    t=setTimeout(()=>{
+      const w=cards[0]?.offsetWidth+12 || 1;
+      curIdx=Math.round(sc.scrollLeft/w);
+      if(info) info.textContent=`P${Math.min(curIdx+1,cards.length)} / ${cards.length}`;
+      cards.forEach((c,i)=>c.classList.toggle("on",i===curIdx));
+    },60);
+  },{passive:true});
+}
 
 /* ============================================================
    历史记录
