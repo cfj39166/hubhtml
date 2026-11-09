@@ -452,84 +452,106 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
 .slide-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.15);}
 .slide-card.on{transform:translateY(-3px);box-shadow:0 10px 28px rgba(20,184,166,.25);}
 .slide-card-num{
-  position:absolute;top:6px;right:6px;z-index:3;
+  position:absolute;top:6px;right:6px;z-index:9;
   width:22px;height:22px;border-radius:50%;
   display:grid;place-items:center;
   font-size:10px;font-weight:800;color:#fff;
   font-variant-numeric:tabular-nums;letter-spacing:.04em;
   box-shadow:0 2px 5px rgba(0,0,0,.18);
 }
-/* ===== 幼儿课件五步走版式（预览缩略图，320×180 对应 pptx 10×5.625 in） =====
-   映射：标题 17px ↔ 36pt+，正文 12.5px ↔ 24pt+，大图 96px ↔ 3.2in */
-.slide-card .slide-page{
-  width:100%;height:100%;padding:11px 13px;display:flex;flex-direction:column;
-  font-family:"幼圆","YouYuan","PingFang SC","Microsoft YaHei",round,sans-serif;
-  overflow:hidden;position:relative;border-radius:14px;
-}
-.k-stage{
-  position:absolute;left:11px;top:9px;z-index:2;
-  font-size:8.5px;font-weight:800;letter-spacing:.02em;
-  padding:2px 7px;border-radius:20px;color:#fff;white-space:nowrap;
-}
-.k-title{font-size:17px;font-weight:900;line-height:1.16;margin:19px 0 7px;letter-spacing:-.01em;}
-.k-sub{font-size:9px;color:#8A8A8A;margin:-4px 0 6px;font-weight:600;}
-.k-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:5px;justify-content:center;}
-.k-row{display:flex;align-items:center;gap:10px;flex:1;min-height:0;}
-.k-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;justify-content:center;}
-.k-art{
-  flex:0 0 auto;display:block;object-fit:contain;
-  filter:drop-shadow(0 4px 7px rgba(0,0,0,.13));
-}
-.k-art-lg{width:104px;height:104px;}
-.k-art-md{width:86px;height:86px;}
-.k-art-sm{width:44px;height:44px;}
-.k-art-xs{width:26px;height:26px;}
-.k-line{
-  font-size:12px;line-height:1.35;font-weight:700;color:#3B3B3B;
-  background:rgba(255,255,255,.78);border-radius:9px;padding:5px 8px;
-  border-left:3px solid;display:block;
-}
-.k-bubbles{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-content:center;}
-.k-bubble{
-  font-size:12.5px;font-weight:900;text-align:center;color:#333;
-  background:rgba(255,255,255,.9);border:2px solid;border-radius:12px;
-  padding:7px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.k-bubble small{display:block;font-size:8px;font-weight:600;color:#999;margin-top:1px;}
-/* 翻翻卡（猜一猜） */
-.k-cards{display:flex;gap:6px;flex:1;align-items:center;justify-content:center;}
-.k-flip{
-  flex:1;min-width:0;height:86px;border-radius:11px;border:2px dashed;
-  background:rgba(255,255,255,.88);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;padding:5px;text-align:center;
-}
-.k-flip .k-mark{font-size:20px;font-weight:900;line-height:1;}
-.k-flip .k-lab{font-size:8px;font-weight:800;color:#999;letter-spacing:.04em;}
-.k-flip .k-txt{font-size:10.5px;font-weight:700;color:#444;line-height:1.25;}
-/* 结束页 */
-.slide-page.center{align-items:center;justify-content:center;text-align:center;}
-.k-big{font-size:23px;font-weight:900;line-height:1.15;}
-.k-foot{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:8.5px;color:#A0A0A0;font-weight:600;}
-.k-deco{position:absolute;border-radius:50%;opacity:.5;pointer-events:none;z-index:0;}
-.k-decor-a{width:76px;height:76px;left:-32px;bottom:-34px;}
-.k-decor-b{width:56px;height:56px;right:-24px;top:-24px;}
-/* 停留时长徽标（教师提示，不算正文） */
-.k-timing{
-  position:absolute;left:70px;top:9px;z-index:2;   /* 靠左上，避开右上角页码圆圈 */
-  font-size:8px;font-weight:700;color:#8B8B8B;background:rgba(255,255,255,.75);
-  padding:2px 6px;border-radius:20px;
-}
+.slides-scroll::-webkit-scrollbar{height:6px;}
+.slides-scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px;}
 
-.slides-nav{
-  display:flex;align-items:center;justify-content:center;gap:16px;margin-top:14px;
-}
-.slides-nav-btn{
-  width:32px;height:32px;border-radius:50%;background:var(--panel-2);color:var(--text);
-  display:grid;place-items:center;font-size:18px;transition:all .15s;line-height:1;
-}
-.slides-nav-btn:hover{background:var(--teal);color:#0B0F1A;}
-.slides-nav-info{font-size:12px;color:var(--text-dim);font-variant-numeric:tabular-nums;letter-spacing:.04em;}
+/* ===== 幼儿课件版式（对齐参考图：白色内框 + 蓝绿渐变外框 + 橙色三角旗） ===== */
+.kc-frame{position:absolute;inset:0;border-radius:14px;padding:7px;overflow:hidden;
+  background:linear-gradient(170deg,#BEE7F8 0%,#D9F1E2 62%,#AFD97B 100%);}
+.kc-inner{position:relative;width:100%;height:100%;border-radius:10px;overflow:hidden;
+  background:#FFFDF9;border:2px solid #F7DCA6;
+  box-shadow:inset 0 0 0 2px rgba(126,205,232,.55);
+  font-family:"幼圆","YouYuan","PingFang SC","Microsoft YaHei",sans-serif;}
+.kc-inner.plain{background:linear-gradient(180deg,#DFF3FD 0%,#EAF9DC 100%);border-color:#BFE3F5;}
+.kc-grass{position:absolute;left:0;right:0;bottom:0;height:9px;background:linear-gradient(90deg,#9BD46A,#7FC355,#9BD46A);z-index:1;}
+.kc-grass::before,.kc-grass::after{content:"";position:absolute;bottom:5px;width:9px;height:9px;background:#7FC355;border-radius:0 100% 0 100%;transform:rotate(-25deg);}
+.kc-grass::before{left:18px;} .kc-grass::after{right:22px;}
+.kc-flag{position:absolute;top:0;width:13px;height:15px;background:#F5A83C;z-index:2;
+  clip-path:polygon(0 0,100% 0,50% 100%);}
+.kc-flag.l{left:28px;transform:rotate(-8deg);} .kc-flag.r{right:28px;transform:rotate(8deg);}
+.kc-bunting{position:absolute;left:0;right:0;top:5px;height:11px;display:flex;justify-content:space-around;z-index:2;padding:0 4px;}
+.kc-bunting i{width:9px;height:11px;clip-path:polygon(0 0,100% 0,50% 100%);display:block;}
+.kc-cloud{position:absolute;width:34px;height:13px;border-radius:14px;background:rgba(255,255,255,.92);z-index:2;}
+.kc-cloud::before{content:"";position:absolute;left:6px;top:-7px;width:15px;height:15px;border-radius:50%;background:inherit;}
+.kc-sun{position:absolute;width:20px;height:20px;border-radius:50%;background:#FFD75E;box-shadow:0 0 0 4px rgba(255,215,94,.35);z-index:2;}
+
+/* 动物介绍页 */
+.kc-head{position:absolute;left:12px;top:9px;display:flex;align-items:center;gap:6px;z-index:5;}
+.kc-avatar{width:27px;height:27px;border-radius:50%;object-fit:contain;background:rgba(255,255,255,.7);}
+.kc-name{font-size:15.5px;font-weight:900;line-height:1.05;letter-spacing:.02em;}
+.kc-py{font-size:7.5px;color:#6B6B6B;font-weight:600;letter-spacing:.05em;margin-top:1px;}
+.kc-main-art{position:absolute;left:50%;top:51%;transform:translate(-50%,-50%);
+  width:168px;height:118px;object-fit:contain;z-index:3;
+  filter:drop-shadow(0 4px 5px rgba(0,0,0,.12));}
+.kc-bubble{position:absolute;z-index:5;font-size:9px;font-weight:800;color:#3A3A3A;
+  padding:4px 8px;border-radius:14px;white-space:nowrap;
+  box-shadow:0 2px 5px rgba(0,0,0,.08);}
+.kc-bubble::after{content:"";position:absolute;bottom:-5px;left:14px;width:9px;height:7px;
+  background:inherit;clip-path:polygon(0 0,100% 0,20% 100%);}
+.kc-bubble.b1{left:9px;top:62px;background:linear-gradient(100deg,#FFE4EE,#FFD3E5);}
+.kc-bubble.b2{right:9px;top:40px;background:linear-gradient(100deg,#DEF7E9,#D3EEFA);}
+.kc-bubble.b3{right:15px;top:90px;background:linear-gradient(100deg,#FFF2D4,#FFE3E9);}
+.kc-bottom{position:absolute;left:12px;right:12px;bottom:13px;z-index:5;
+  text-align:center;font-size:10px;font-weight:800;color:#333;line-height:1.3;}
+
+/* 章节页 / 结束页 */
+.kc-big-title{position:absolute;left:0;right:0;top:30px;z-index:5;text-align:center;
+  font-size:22px;font-weight:900;color:#38A6DF;letter-spacing:.06em;line-height:1.25;
+  text-shadow:0 1px 0 #fff;}
+.kc-big-title.warm{color:#F28A3C;top:52px;font-size:24px;}
+.kc-chapter-art{position:absolute;right:4px;bottom:8px;height:88px;width:88px;object-fit:contain;z-index:3;}
+.kc-chapter-art.left{left:6px;right:auto;height:78px;width:78px;}
+.kc-animal-row{position:absolute;left:6px;right:6px;bottom:8px;z-index:4;
+  display:flex;justify-content:center;align-items:flex-end;gap:1px;}
+.kc-animal-row img{width:38px;height:42px;object-fit:contain;}
+.kc-animal-row .kc-aname{font-size:7px;font-weight:800;color:#4A4A4A;text-align:center;
+  background:rgba(255,255,255,.72);border-radius:6px;padding:0 2px;margin-top:-3px;}
+
+/* 提问 / 合集页 */
+.kc-ask-title{position:absolute;left:0;right:0;top:14px;z-index:5;text-align:center;
+  font-size:13px;font-weight:900;color:#333;}
+.kc-group{position:absolute;left:8px;right:8px;top:40px;bottom:12px;z-index:4;
+  display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:2px 4px;}
+.kc-group .one{width:56px;display:flex;flex-direction:column;align-items:center;}
+.kc-group img{width:44px;height:44px;object-fit:contain;}
+.kc-group span{font-size:7.5px;font-weight:800;color:#4A4A4A;background:rgba(255,255,255,.78);
+  border-radius:6px;padding:0 3px;}
+
+/* 特征大比拼 2×2 */
+.kc-quiz-title{position:absolute;left:0;right:0;top:12px;z-index:5;text-align:center;
+  font-size:15px;font-weight:900;color:#222;}
+.kc-q-grid{position:absolute;left:13px;right:13px;top:38px;bottom:24px;z-index:4;
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;}
+.kc-q-card{position:relative;background:#FFF3D9;border:1px solid #EEDDB4;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;padding:0 6px;
+  font-size:9px;font-weight:800;color:#333;text-align:center;}
+.kc-q-card.alt{justify-content:flex-start;padding-left:9px;}
+.kc-q-art{position:absolute;right:2px;bottom:1px;width:32px;height:32px;object-fit:contain;}
+.kc-q-tag{position:absolute;top:-7px;left:50%;transform:translateX(-50%);
+  font-size:7px;font-weight:900;color:#fff;padding:1px 7px;border-radius:9px;white-space:nowrap;z-index:6;}
+.kc-quiz-foot{position:absolute;left:0;right:0;bottom:6px;z-index:5;text-align:center;
+  font-size:9.5px;font-weight:900;color:#333;}
+
+/* 未生成插图的占位（明确告知，不用几何小动物糊弄） */
+.kc-placeholder{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
+  width:150px;height:104px;border-radius:16px;display:grid;place-items:center;
+  background:rgba(255,255,255,.85);border:2px dashed #E7CFA4;z-index:3;
+  font-size:11px;font-weight:800;color:#B08A55;text-align:center;line-height:1.5;}
+
+/* 生图进度 */
+.art-progress{margin:10px 0 4px;padding:12px 14px;border-radius:var(--radius-sm);
+  background:rgba(20,184,166,.06);border-left:3px solid var(--teal);font-size:12px;color:var(--text-dim);}
+.art-progress b{color:var(--teal);font-variant-numeric:tabular-nums;}
+.art-progress .bar{height:5px;background:var(--bg-2);border-radius:3px;overflow:hidden;margin-top:8px;}
+.art-progress .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#7BE0C8);transition:width .3s;}
+.art-progress .err{margin-top:8px;color:#F43F5E;font-size:11px;line-height:1.5;}
 
 .course-tip{
   margin-top:14px;padding:11px 14px;border-radius:var(--radius-sm);font-size:11.5px;
@@ -778,7 +800,8 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
 .back-hub:hover{color:var(--teal);border-color:var(--teal);}
 .back-hub svg{width:11px;height:11px;}
 </style>
-</head>
+  <script src="assets/library.js"></script>
+  </head>
 <body>
 
 <!-- SVG 图标库 -->
@@ -1087,6 +1110,45 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
             </div>
           </div>
 
+
+          <!-- AI 插图设置：换课件时按新内容实时生图 -->
+          <div class="card" id="artSettings" style="margin-bottom:14px;">
+            <div class="card-h"><h3>AI 插图设置</h3><span style="font-size:11px;color:var(--text-faint);">换课件自动重新出图</span></div>
+            <div class="field">
+              <label class="field-label">生图通道</label>
+              <select class="select" id="artProvider">
+                <option value="api">自己的 API Key（OpenAI 兼容端点）</option>
+                <option value="puter">Puter 登录（免 Key，访客自己账号）</option>
+                <option value="free">匿名免费（约 45 秒 / 张，较慢）</option>
+                <option value="off">仅内置缓存 / 离线</option>
+              </select>
+            </div>
+            <div id="artApiFields">
+              <div class="field">
+                <label class="field-label">接口地址 <span class="opt">到 /images/generations 之前</span></label>
+                <input class="input" id="artBaseURL" placeholder="https://api.openai.com/v1">
+              </div>
+              <div class="field">
+                <label class="field-label">API Key</label>
+                <input class="input" id="artKey" type="password" placeholder="sk-..." autocomplete="off">
+              </div>
+              <div class="field">
+                <label class="field-label">模型名</label>
+                <input class="input" id="artModel" placeholder="gpt-image-1 / dall-e-3 / 中转站模型名">
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+              <button class="btn ghost sm" id="artSave" type="button">保存设置</button>
+              <button class="btn ghost sm" id="artTest" type="button">测试连接</button>
+              <button class="btn ghost sm" id="artClearCache" type="button">清空生成缓存</button>
+            </div>
+            <div id="artStatus" style="margin-top:9px;font-size:11.5px;color:var(--text-dim);line-height:1.6;"></div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text-faint);line-height:1.6;">
+              Key 只保存在本机浏览器的 localStorage，不会上传到任何服务器；不要在他人可使用的电脑上保存。
+              「测试连接」会真实生成 1 张图，可能产生费用。内置的高质量水彩图命中时直接秒出，不调用接口。
+            </div>
+          </div>
+
           <!-- 生成按钮 -->
           <button class="btn block" id="courseSubmit" type="button" style="font-size:15px;padding:14px;margin-bottom:14px;">
             <svg><use href="#i-sparkles"/></svg>
@@ -1146,10 +1208,10 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
               <div class="field">
                 <label class="field-label">页数</label>
                 <div class="chips" id="coursePages">
-                  <span class="chip">6 页</span>
-                  <span class="chip on">8 页</span>
-                  <span class="chip">10 页</span>
-                  <span class="chip">12 页</span>
+                  <span class="chip">8 页</span>
+                  <span class="chip on">12 页</span>
+                  <span class="chip">16 页</span>
+                  <span class="chip">20 页</span>
                 </div>
               </div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -2573,365 +2635,538 @@ function matchTheme(text){
 }
 
 /* ============================================================
-   幼儿课件生成规范 —— 对齐幼儿园课件设计要求
-   结构：① 导入 → ② 观察 → ③ 讨论 → ④ 总结 → ⑤ 延伸
-   排版：标题 ≥36pt / 正文 ≥24pt / 圆润字体 / 每页一个重点 / 多图少字
-   节奏：每页建议停留 1–2 分钟，写入 pptx 教师备注（addNotes）
+   按课件内容实时生成插图：识别具体主体 → 一个主体一页 → 每个主体单独出图
+   内置 ART_LIBRARY 只是缓存（命中秒出），未命中一定走用户配置的生图通道
    ============================================================ */
-const KINDER_FONT = "幼圆";   // Windows 自带圆润字体；可改「方正少儿体」「华文彩云」
-const PT = {cover:40, title:36, body:26, bubble:28, sub:24, meta:14};
-const STAGE = {intro:"① 导入", observe:"② 观察", discuss:"③ 讨论", summary:"④ 总结", extend:"⑤ 延伸"};
+const KINDER_FONT = "幼圆";
+const ART_STYLE = "Watercolor children's picture-book illustration, soft watercolor washes with visible brush texture, pastel palette, kawaii rounded shapes, tiny dot eyes, rosy pink cheeks, thin soft outlines, FULL BODY from head to feet, one single centered subject, generous empty space around it, clean pure white background, no text, no letters, no watermark, no frame, no border, high detail. Subject: ";
+const ART_CFG_KEY = "love_artgen_cfg";
+const DEFAULT_ART_CFG = {provider:"api", baseURL:"https://api.openai.com/v1", key:"", model:"gpt-image-1", size:"1024x1024"};
 
-// 主题主角：零输入（OCR 没识别出内容）时用来生成小故事、提问、猜谜
-const THEME_ACTOR = {
-  insect:"小蝴蝶", plant:"小种子", ocean:"小鱼", animal:"小兔子", bird:"小鸟",
-  dinosaur:"小恐龙", weather:"太阳公公", season:"春姑娘", space:"小宇航员",
-  magnet:"小磁铁", water:"小水滴", fire:"消防员叔叔", food:"小苹果",
-  body:"小身体", family:"小宝贝", festival:"小灯笼", transport:"小汽车",
-  music:"小音符", art:"小画笔", sport:"小皮球", general:"小星星"
-};
-// 主题观察关键词：零输入时生成「看一看」关键词卡
-const THEME_KEYS = {
-  insect:["触角","翅膀","花纹","六条腿"], plant:["种子","嫩芽","叶子","花朵"],
-  ocean:["鱼鳍","海浪","贝壳","珊瑚"], animal:["耳朵","尾巴","毛色","脚印"],
-  bird:["羽毛","翅膀","鸟窝","蛋宝宝"], dinosaur:["大尾巴","长脖子","化石","脚印"],
-  weather:["太阳","云朵","小雨","彩虹"], season:["花开","绿叶","落叶","雪花"],
-  space:["星星","月亮","火箭","地球"], magnet:["吸一吸","铁钉","两极","磁力"],
-  water:["透明","流动","冰块","水蒸气"], fire:["不玩火","弯弯腰","捂口鼻","119"],
-  food:["蔬菜","水果","牛奶","不挑食"], body:["眼睛","小手","牙齿","心脏"],
-  family:["爸爸","妈妈","抱一抱","说谢谢"], festival:["灯笼","月饼","礼物","团圆"],
-  transport:["红绿灯","斑马线","安全带","车轮"], music:["拍拍手","节奏","唱歌","跳舞"],
-  art:["红色","黄色","蓝色","画笔"], sport:["跑一跑","跳一跳","拍球","排队"],
-  general:["看一看","摸一摸","闻一闻","想一想"]
-};
+/* 主体词典。a=别名, k=缓存键, en=生图英文描述, py=拼音, f=3 个特征气泡, s=底部一句话, q=比拼问题 */
+const SUBJECT_LIB = [
+  // —— 动物园 8 种（有内置高质量水彩图）——
+  {n:"大象",   py:"dà xiàng",      k:"elephant", a:["大象"], en:"cute baby elephant with a long trunk and big floppy ears", f:["长长的鼻子","大大的耳朵","喜欢喷水"], s:"大象的鼻子长长的，会用鼻子喷水洗澡呢！", q:"谁的耳朵最大？"},
+  {n:"长颈鹿", py:"cháng jǐng lù", k:"giraffe",  a:["长颈鹿"], en:"cute baby giraffe with a very long neck and golden brown patches", f:["脖子最长","身上的斑纹","爱吃树叶"], s:"长颈鹿的脖子长长的，能够到高高的树叶！", q:"谁的脖子最长？"},
+  {n:"斑马",   py:"bān mǎ",        k:"zebra",    a:["斑马"], en:"cute baby zebra with black and white stripes", f:["黑白色条纹","像花衣服","跑得快"], s:"斑马身上有一条一条的条纹，像穿了黑白条纹衣服！", q:"谁身上有条纹？"},
+  {n:"小猴子", py:"xiǎo hóu zi",   k:"monkey",   a:["小猴子","猴子"], en:"cute baby monkey with a long curled tail and a round reddish face", f:["红红的脸","长尾巴","爱爬树"], s:"小猴子的尾巴长长的，能在树上荡秋千！", q:"谁最爱爬树？"},
+  {n:"大熊猫", py:"dà xióng māo",  k:"panda",    a:["大熊猫","熊猫"], en:"cute baby giant panda holding a bamboo sprig", f:["圆圆胖胖","黑眼圈","爱吃竹子"], s:"大熊猫有黑黑的眼圈，圆滚滚的身体，可爱极了！", q:"谁最爱吃竹子？"},
+  {n:"狮子",   py:"shī zi",        k:"lion",     a:["狮子"], en:"cute baby lion with a big fluffy golden mane", f:["大鬃毛","叫声响","森林之王"], s:"狮子的鬃毛大大的，吼一声，声音好大呀！", q:"谁是森林之王？"},
+  {n:"河马",   py:"hé mǎ",         k:"hippo",    a:["河马"], en:"cute baby hippopotamus with a big open smiling mouth standing in shallow water", f:["圆圆的身体","大大的嘴巴","爱泡水"], s:"河马的嘴巴大大的，最喜欢泡在水里凉快！", q:"谁最喜欢泡水？"},
+  {n:"鹦鹉",   py:"yīng wǔ",       k:"parrot",   a:["鹦鹉"], en:"colorful cute parrot with red blue green feathers perched on a branch", f:["彩色的羽毛","弯弯的嘴巴","会学说话"], s:"鹦鹉穿着彩色的衣服，还会学人说话呢！", q:"谁会学人说话？"},
+  // —— 常见动物（无内置图，走实时生成）——
+  {n:"小兔子",k:"rabbit",  a:["小兔子","兔子","小白兔"],en:"cute baby white rabbit with long ears",py:"xiǎo bái tù"},
+  {n:"小猫",  k:"cat",     a:["小猫","猫咪","猫"],      en:"cute orange kitten sitting",py:"xiǎo māo"},
+  {n:"小狗",  k:"dog",     a:["小狗","狗狗","狗"],      en:"cute golden puppy sitting",py:"xiǎo gǒu"},
+  {n:"老虎",  k:"tiger",   a:["老虎","小老虎"],           en:"cute baby tiger with orange and black stripes",py:"lǎo hǔ"},
+  {n:"小熊",  k:"bear",    a:["小熊","熊"],               en:"cute brown teddy bear cub"},
+  {n:"小鸟",  k:"bird",    a:["小鸟","麻雀","燕子"],       en:"cute little blue bird"},
+  {n:"小鱼",  k:"fish",    a:["小鱼","金鱼"],              en:"cute little orange goldfish"},
+  {n:"蝴蝶",  k:"butterfly",a:["蝴蝶"],                    en:"cute pink butterfly with big wings"},
+  {n:"蜜蜂",  k:"bee",     a:["蜜蜂","小蜜蜂"],            en:"cute striped bumble bee"},
+  {n:"蚂蚁",  k:"ant",     a:["蚂蚁"],                    en:"cute little black ant"},
+  {n:"青蛙",  k:"frog",    a:["青蛙","小青蛙"],            en:"cute green frog sitting"},
+  {n:"小鸭子",k:"duck",    a:["小鸭子","鸭子"],            en:"cute yellow duckling"},
+  {n:"小鸡",  k:"chick",   a:["小鸡","鸡宝宝"],            en:"cute fluffy yellow chick"},
+  {n:"小猪",  k:"pig",     a:["小猪","猪"],                en:"cute pink piglet"},
+  {n:"小羊",  k:"sheep",   a:["小羊","绵羊"],              en:"cute fluffy white lamb"},
+  {n:"奶牛",  k:"cow",     a:["奶牛","小牛"],              en:"cute black and white dairy cow"},
+  {n:"海豚",  k:"dolphin", a:["海豚"],                    en:"cute blue dolphin jumping"},
+  {n:"海龟",  k:"turtle",  a:["海龟","乌龟"],              en:"cute green sea turtle"},
+  {n:"螃蟹",  k:"crab",    a:["螃蟹"],                    en:"cute red crab with two claws"},
+  {n:"企鹅",  k:"penguin", a:["企鹅"],                    en:"cute baby penguin standing"},
+  {n:"恐龙",  k:"dino",    a:["恐龙"],                    en:"cute green baby dinosaur"},
+  {n:"孔雀",  k:"peacock", a:["孔雀"],                    en:"cute peacock with colorful tail feathers"},
+  {n:"蜗牛",  k:"snail",   a:["蜗牛"],                    en:"cute little snail with a spiral shell"},
+  // —— 植物 / 食物 / 自然 / 生活（换课件也能识别）——
+  {n:"苹果",  k:"apple",   a:["苹果"],       en:"a shiny red apple",py:"píng guǒ"},
+  {n:"香蕉",  k:"banana",  a:["香蕉"],       en:"a bunch of yellow bananas",py:"xiāng jiāo"},
+  {n:"西瓜",  k:"melon",   a:["西瓜"],       en:"a round green watermelon with a slice",py:"xī guā"},
+  {n:"草莓",  k:"berry",   a:["草莓"],       en:"a cute red strawberry",py:"cǎo méi"},
+  {n:"葡萄",  k:"grape",   a:["葡萄"],       en:"a bunch of purple grapes",py:"pú tao"},
+  {n:"胡萝卜",k:"carrot",  a:["胡萝卜"],     en:"an orange carrot with green leaves",py:"hú luó bo"},
+  {n:"西红柿",k:"tomato",  a:["西红柿","番茄"],en:"a round red tomato",py:"xī hóng shì"},
+  {n:"向日葵",k:"sunflower",a:["向日葵"],    en:"a bright yellow sunflower",py:"xiàng rì kuí"},
+  {n:"花朵",  k:"flower",  a:["花朵","桃花","杏花","梨花"],en:"a pretty pink flower in bloom",py:"huā duǒ"},
+  {n:"大树",  k:"tree",    a:["大树","树木"],  en:"a big green leafy tree",py:"dà shù"},
+  {n:"种子",  k:"seed",    a:["种子"],        en:"a tiny sprouting seed with two green leaves"},
+  {n:"太阳",  k:"sun",     a:["太阳"],        en:"a smiling yellow sun",py:"tài yáng"},
+  {n:"月亮",  k:"moon",    a:["月亮"],        en:"a smiling crescent moon",py:"yuè liang"},
+  {n:"彩虹",  k:"rainbow", a:["彩虹"],        en:"a colorful rainbow with two clouds",py:"cǎi hóng"},
+  {n:"雪花",  k:"snow",    a:["雪花"],        en:"a cute white snowflake",py:"xuě huā"},
+  {n:"云朵",  k:"cloud",   a:["云朵","白云"],  en:"a fluffy white cloud",py:"yún duǒ"},
+  {n:"汽车",  k:"car",     a:["汽车","小汽车"],en:"a cute red toy car",py:"qì chē"},
+  {n:"公交车",k:"bus",     a:["公交车"],      en:"a cute yellow school bus",py:"gōng jiāo chē"},
+  {n:"火车",  k:"train",   a:["火车"],        en:"a cute blue toy train",py:"huǒ chē"},
+  {n:"飞机",  k:"plane",   a:["飞机"],        en:"a cute white airplane",py:"fēi jī"},
+  {n:"轮船",  k:"boat",    a:["轮船","小船"],  en:"a cute little boat",py:"lún chuán"},
+  {n:"火箭",  k:"rocket",  a:["火箭"],        en:"a cute red and white rocket",py:"huǒ jiàn"},
+  {n:"气球",  k:"balloon", a:["气球"],        en:"a bunch of colorful balloons",py:"qì qiú"},
+  {n:"雨伞",  k:"umbrella",a:["雨伞"],        en:"a colorful open umbrella",py:"yǔ sǎn"},
+  {n:"磁铁",  k:"magnet",  a:["磁铁"],        en:"a red horseshoe magnet",py:"cí tiě"}
+];
+const SUBJECT_STOP = /^(动物|植物|水果|蔬菜|食物|课件|活动|幼儿|小朋友|本领|特征|知识|常见|种类|时候|方式|方法|过程|内容|图片|东西|主题|目标|准备|游戏|们|种|多)$/;
+function featOf(x){ return x.f || [`看一看${x.n}`, `${x.n}的样子`, "你发现了什么"]; }
+function lineOf(x){ return x.s || `我们一起来认识${x.n}，仔细看看它是什么样子的！`; }
+function questionOf(x){ return x.q || `谁最喜欢${x.n}呀？`; }
 
-function noteFor(stage, tip){
-  return `【${stage}】建议停留 1–2 分钟。${tip} 本页只讲一个重点：先让孩子看图，再用一句话提问，不要读整段文字。`;
-}
-// 教师指令用语：不该原样印到给孩子的页面上，命中即弃用、改走主题模板
-const KID_UNFIT = /出示|提问|引导幼儿?|让幼儿?|教师|幼儿|组织|激发|培养|要求|指导|讲解|示范|小结|过渡|环节|分钟|记录表|物质准备|经验准备|用简单语言|描述|能用|会说|掌握|感知|体验|^PPT$/i;
-// 去掉教案里的教师用语前缀 / 序号 / 时长括号，把长句压成孩子能一眼看完的短句
-function cleanFrag(s){
-  let t = String(s||"").trim();
-  t = t.replace(/^[一二三四五六七八九十]+[、.．]\s*/, "");
-  t = t.replace(/^\d+[.、)）]\s*/, "");
-  t = t.replace(/^[①②③④⑤⑥⑦⑧⑨⑩]\s*/, "");
-  t = t.replace(/[（(][^）)]{0,20}[）)]\s*/g, "");
-  t = t.replace(/[「」『』“”"‘’'《》〈〉]/g, "");          // 去掉成对引号，避免切出半截残句
-  t = t.replace(/^(物质准备|经验准备|基本部分|基本|导入|延伸|观察|讨论|游戏|总结|目标|活动过程|提问)\s*[:：]?\s*/g, "");
-  t = t.replace(/^(初步|进一步|能够|能|学会|培养|引导幼儿?|让幼儿?|尝试|懂得|了解|掌握|知道|感知|激发|发展)+/g, "");
-  t = t.replace(/^[:：,，、\s]+/, "");
-  return t.trim();
-}
-function shortLines(text, max=14, limit=3){
-  if(!text) return [];
-  const parts = String(text).split(/[\n；;。！!？?，,、：:]+/).map(cleanFrag).filter(Boolean);
-  const out = [];
-  for(let p of parts){
-    if(KID_UNFIT.test(p)) continue;          // 教师指令句整句丢弃
-    if(p.length > max) p = p.slice(0, max-1) + "…";
-    if(p.length < 3 || out.includes(p)) continue;
-    out.push(p);
-    if(out.length >= limit) break;
+/* 通用兜底：词典没覆盖时，从「认识 A、B、C」这类句子里抽主体名 */
+function extractGenericSubjects(t){
+  const out=[], seen=new Set();
+  const re=/(?:认识|了解|观察|学习|介绍|知道|看看|有)([\u4e00-\u9fa5A-Za-z0-9、，,和及与\s]{2,90})/g;
+  let m;
+  while((m=re.exec(t)) && out.length<12){
+    m[1].split(/[、，,和及与\s]+/).forEach(w=>{
+      w=w.replace(/^(常见的|各种|不同的|许多|一些)/,"").trim();
+      if(w.length<2||w.length>7||seen.has(w)||SUBJECT_STOP.test(w)) return;
+      seen.add(w);
+      out.push({n:w,k:"gen_"+w,en:`a cute ${w}`,pos:t.indexOf(w)});
+    });
   }
   return out;
 }
-// 用户教案内容优先，不足用主题模板补齐，保证「零输入」也能出完整课件
-function fillLines(src, fallback, max, limit, actor){
-  const a = shortLines(src, max, limit), b = shortLines(fallback, max, limit);
-  for(const x of b){ if(a.length >= limit) break; if(!a.includes(x)) a.push(x); }
-  while(a.length < limit) a.push(`${actor}，真有趣！`);
-  return a.slice(0, limit);
-}
-// 从「活动准备 / 观察」里抽短名词做关键词卡，不足用主题关键词补
-function keyWords(text, fallback){
-  const parts = String(text||"").split(/[\n、，,；;。：:（）()\s「」“”]+/).map(cleanFrag)
-    .filter(s => s.length>=2 && s.length<=6 && !KID_UNFIT.test(s) && !/^(ppt|教具|物质|经验|图片|记录表)$/i.test(s));
-  return [...new Set([...parts, ...fallback])].slice(0, 4);
-}
-function artUri(key){ return svgDataUri(CARTOON_SVG[key] || CARTOON_SVG.star); }
-// 按目标页数分层取页：tier0=6 页核心五步，tier1→8 页，tier2→10 页，tier3→12 页
-function fitPages(all, n){
-  const picked = [];
-  for(let t=0; t<=3 && picked.length<n; t++){
-    for(const s of all.filter(x=>x.tier===t)){
-      if(picked.length >= n) break;
-      picked.push(s);
-    }
+function detectSubjects(text){
+  const t=String(text||"");
+  const spans=[];
+  SUBJECT_LIB.forEach(x=>{
+    (x.a||[x.n]).forEach(a=>{
+      let from=0,p;
+      while((p=t.indexOf(a,from))>=0){ spans.push({x,start:p,end:p+a.length}); from=p+a.length; }
+    });
+  });
+  // 长命中优先：否则「大熊猫」里的「熊」「猫」会被误认成小熊、小猫
+  spans.sort((u,v)=>(v.end-v.start)-(u.end-u.start)||u.start-v.start);
+  const picked=[];
+  for(const sp of spans){
+    if(picked.some(c=>sp.start<c.end&&c.start<sp.end)) continue;
+    picked.push(sp);
   }
-  const order = new Map(all.map((s,i)=>[s,i]));
-  picked.sort((a,b)=>order.get(a)-order.get(b));
-  return picked.slice(0, n);
+  picked.sort((u,v)=>u.start-v.start);
+  const hits=[], seen=new Set();
+  for(const sp of picked){
+    if(seen.has(sp.x.n)) continue;
+    seen.add(sp.x.n);
+    hits.push(Object.assign({},sp.x,{pos:sp.start}));
+  }
+  if(hits.length<2){
+    extractGenericSubjects(t).forEach(g=>{
+      if(!seen.has(g.n)&&hits.length<12){ hits.push(g); seen.add(g.n); }
+    });
+    hits.sort((a,b)=>(a.pos<0?9999:a.pos)-(b.pos<0?9999:b.pos));
+  }
+  return hits.slice(0,12);
 }
 
-// 智能解析教案 → 五步走幻灯片
+/* ---------------- 生图通道 ---------------- */
+function loadArtCfg(){
+  try{ return Object.assign({},DEFAULT_ART_CFG,JSON.parse(localStorage.getItem(ART_CFG_KEY)||"{}")); }
+  catch(e){ return Object.assign({},DEFAULT_ART_CFG); }
+}
+function saveArtCfg(c){ try{ localStorage.setItem(ART_CFG_KEY,JSON.stringify(c)); }catch(e){} }
+function artSubjectEn(x){ return x.en || `a cute ${x.n}`; }
+async function blobToDataUri(blob){
+  return await new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>res(String(fr.result));
+    fr.onerror=()=>rej(new Error("图片转码失败"));
+    fr.readAsDataURL(blob);
+  });
+}
+async function urlToDataUri(u){
+  let r;
+  try{
+    // 部分端点（如 dall-e-3 默认）返回临时图片 URL，浏览器直取常被 CORS 拦住
+    r=await Promise.race([
+      fetch(u,{mode:"cors"}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),25000))
+    ]);
+  }catch(e){
+    throw new Error("图片地址取回失败（跨域或超时），请在「AI 插图设置」改用支持 b64_json 的模型，如 gpt-image-1");
+  }
+  if(!r.ok) throw new Error("图片地址取回失败 HTTP "+r.status);
+  return await blobToDataUri(await r.blob());
+}
+/* 兼容 OpenAI 官方 + 国内中转常见返回结构 */
+async function pickArtFromResponse(j){
+  let arr=j?.data ?? j?.images ?? j?.output ?? j?.result ?? [];
+  if(!Array.isArray(arr)) arr = Array.isArray(arr?.data) ? arr.data : [arr];
+  const it=arr[0]||{};
+  const raw=it.b64_json||it.b64||it.base64||it.data||it.image||j?.b64_json||j?.image;
+  if(typeof raw==="string"&&raw.length>100)
+    return "data:image/png;base64,"+raw.replace(/^data:image\/[a-z0-9+]+;base64,/i,"");
+  const iu=it.image_url;
+  const u=it.url||(typeof iu==="string"?iu:iu?.url)||(typeof it==="string"?it:null)||j?.url;
+  if(typeof u==="string"&&u.length>8) return await urlToDataUri(u);
+  return null;
+}
+/* 透明插图 → 按「所在版式的底色」合成 JPEG data URI
+   pptx 不支持 webp；透明 PNG 每份 300–400KB 且 PptxGenJS 不去重，
+   12 页会嵌 39 张 ≈ 12MB。改成同底色合成后单份 10–45KB，视觉无白框。 */
+async function artToJpeg(src,size,bg){
+  if(!src) return null;
+  const img=new Image();
+  img.src=src;
+  await (img.decode ? img.decode() : new Promise((res,rej)=>{img.onload=res;img.onerror=rej;}));
+  const w=img.naturalWidth||640, h=img.naturalHeight||640;
+  const scale=Math.min(1,size/Math.max(w,h));
+  const c=document.createElement("canvas");
+  c.width=Math.round(w*scale); c.height=Math.round(h*scale);
+  const ctx=c.getContext("2d");
+  ctx.fillStyle=bg; ctx.fillRect(0,0,c.width,c.height);
+  ctx.drawImage(img,0,0,c.width,c.height);
+  return c.toDataURL("image/jpeg",0.86);
+}
+
+const ArtGen={
+  cfg:loadArtCfg(),
+  mem:new Map(),
+  cacheKey(x){ return "love_art_"+encodeURIComponent(x.k||x.n); },
+  cached(x){
+    if(this.mem.has(x.k)) return this.mem.get(x.k);
+    if(window.ART_LIBRARY && ART_LIBRARY[x.k]){ const d=ART_LIBRARY[x.k]; this.mem.set(x.k,d); return d; }
+    try{ const c=localStorage.getItem(this.cacheKey(x)); if(c){ this.mem.set(x.k,c); return c; } }catch(e){}
+    return null;
+  },
+  async viaApi(x,cfg){
+    const base=String(cfg.baseURL||"").replace(/\/+$/,"");
+    if(!base) throw new Error("未填写接口地址");
+    if(!cfg.key) throw new Error("未填写 API Key，请在「AI 插图设置」里填一次");
+    const url=base+"/images/generations";
+    const body={model:cfg.model||"gpt-image-1",prompt:ART_STYLE+artSubjectEn(x),n:1,size:cfg.size||"1024x1024"};
+    const call=(extra)=>fetch(url,{method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+cfg.key},
+      body:JSON.stringify(Object.assign({},body,extra))});
+    let r=await call({response_format:"b64_json"});
+    if(!r.ok){
+      const txt=await r.text().catch(()=>"");
+      // GPT image 模型不接受 response_format，端点可能直接 400 —— 去掉重试一次
+      if(/response_format|unsupported|not supported|unknown parameter/i.test(txt)) r=await call({});
+      else throw new Error("接口返回 HTTP "+r.status+"："+txt.slice(0,160));
+    }
+    if(!r.ok) throw new Error("接口返回 HTTP "+r.status+"："+(await r.text().catch(()=>"")).slice(0,160));
+    const d=await pickArtFromResponse(await r.json());
+    if(!d) throw new Error("接口没返回图片（期望 data[0].b64_json 或 url）");
+    return d;
+  },
+  async viaPuter(x){
+    if(!window.puter){
+      await new Promise((res,rej)=>{
+        const s=document.createElement("script");
+        s.src="https://js.puter.com/v2/";
+        s.onload=res; s.onerror=()=>rej(new Error("Puter.js 加载失败，请检查网络"));
+        document.head.appendChild(s);
+      });
+    }
+    const img=await Promise.race([
+      window.puter.ai.txt2img(ART_STYLE+artSubjectEn(x)),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error("等待 Puter 登录超时：请在弹出窗口里登录 Puter 账号后重试")),90000))
+    ]);
+    const src=(img&&img.src)||String(img);
+    return src.startsWith("data:") ? src : await urlToDataUri(src);
+  },
+  async viaFree(x){
+    const u="https://image.pollinations.ai/prompt/"+encodeURIComponent(ART_STYLE+artSubjectEn(x))+"?width=768&height=768&nologo=true";
+    for(let i=0;i<3;i++){
+      const r=await fetch(u);
+      if(r.ok) return await blobToDataUri(await r.blob());
+      if(r.status===402){ await new Promise(res=>setTimeout(res,47000)); continue; }
+      throw new Error("免费通道返回 HTTP "+r.status);
+    }
+    throw new Error("免费通道排队超时（每 45 秒 1 张），建议改用自己的 API Key");
+  },
+  async get(x){
+    const hit=this.cached(x);
+    if(hit) return hit;
+    const p=this.cfg.provider;
+    let d=null;
+    if(p==="api")         d=await this.viaApi(x,this.cfg);
+    else if(p==="puter")  d=await this.viaPuter(x);
+    else if(p==="free")   d=await this.viaFree(x);
+    else return null;                       // off：只用缓存
+    if(d){ this.mem.set(x.k,d); try{ localStorage.setItem(this.cacheKey(x),d); }catch(e){} }
+    return d;
+  }
+};
+
+/* ---------------- 按参考图组织页面 ---------------- */
+function buildCourseSlides(subjects,meta,maxPages){
+  const animal=subjects.map((x,i)=>({type:"animal",subject:x,idx:i+1,total:subjects.length}));
+  const noun=meta.noun||"新朋友";
+  const chapter={type:"chapter",no:"第一章",title:`${noun}大合集`,subjects};
+  const group={type:"group",title:`你最喜欢哪个${noun}呢？`,subjects};
+  const compare={type:"compare",title:`${noun}特征大比拼`,subjects};
+  const thanks={type:"thanks",title:"谢谢大家",subjects};
+  const n=Math.max(1,maxPages||12);
+  let out;
+  if(n>=animal.length+4)      out=[chapter,group,...animal,compare,thanks];
+  else if(n>=animal.length+3) out=[chapter,...animal,compare,thanks];
+  else if(n>=animal.length+2) out=[chapter,...animal,thanks];
+  else if(n>=animal.length+1) out=[...animal,thanks];
+  else                        out=animal.slice(0,n);
+  return out.slice(0,n);
+}
 function parseCourseSlides(){
-  const title   = $("#cTitle").value.trim() || "幼儿园主题活动";
-  const age     = $("#cAge").value || "中班";
-  const domain  = $$("#cDomain .chip.on")[0]?.textContent || "综合";
-  const goalsRaw   = $("#cGoals").value.trim();
-  const prepRaw    = $("#cPrep").value.trim();
-  const processRaw = $("#cProcess").value.trim();
-  const qRaw       = $("#cQuestions").value.trim();
-
-  const fullText  = [title, goalsRaw, prepRaw, processRaw, qRaw].join("\n");
-  const themeKey  = matchTheme(fullText);
-  const themeName = (THEME_LIB[themeKey] || THEME_LIB.general).name;
-  const actor     = THEME_ACTOR[themeKey] || "小星星";
-  const keys      = THEME_KEYS[themeKey]  || THEME_KEYS.general;
-  const mainArt   = THEME_SVG_MAIN[themeKey] || "star";
-  const deco      = THEME_SVG_DECO[themeKey] || ["star"];
-  const d = (i)=> deco[i % deco.length];
-
-  // 按语义标签从「活动过程」里抓句子，每行只被用一次
-  const lines = processRaw.split(/\n+/).map(s=>s.trim()).filter(Boolean);
-  const used = new Set();
-  function grab(re){
-    const idx = lines.findIndex((l,i)=> !used.has(i) && re.test(l));
-    if(idx < 0) return "";
-    used.add(idx);
-    return lines[idx];
-  }
-  // 整行若是「出示…提问…激发…」这类教师指令，判废改走主题模板，
-  // 不把切碎后的残片（如「兴趣」）印到给孩子的页面上
-  function kidSafe(src){
-    const s = String(src||"");
-    const hits = (s.match(/出示|提问|激发|引导幼儿?|让幼儿?|组织|教师|幼儿|示范|讲解|记录表|分钟/g)||[]).length;
-    return hits >= 2 ? "" : s;
-  }
-  const introLine   = kidSafe(grab(/导入|引入|情境|讲故事|开始/));
-  const observeLine = kidSafe(grab(/观察|看一看|出示|外形|特征/));
-  const gameLine    = kidSafe(grab(/游戏|玩一玩|操作|配对|扮演/));
-  const discussLine = kidSafe(grab(/讨论|说一说|想一想|交流|分享|提问/));
-  const extendLine  = kidSafe(grab(/延伸|回家|任务|课后|区域/));
-  const restLines   = lines.filter((l,i)=> !used.has(i)).map(kidSafe);
-
-  // 五步内容：上传教案优先，教师指令句丢弃后由主题模板兜底
-  const storyFallback = themeKey === "general"
-    ? `${actor}来到我们班啦。它想和小朋友一起做游戏。`
-    : `${actor}来到我们班啦。它想带小朋友认识${themeName}。`;
-  const storyLines    = fillLines(introLine, storyFallback, 14, 2, actor);
-  const observeWords  = keyWords([prepRaw, observeLine].join("\n"), keys);
-  const observeWords2 = keyWords([processRaw, ...restLines].join("\n"), [...keys].reverse());
-  const discussLines  = fillLines(qRaw || discussLine,
-    `看一看，${actor}是什么样子的？\n猜一猜，它在做什么呢？\n你最喜欢它的哪一点？`, 16, 3, actor);
-  const discussLines2 = fillLines(restLines.join("\n"),
-    `如果把${actor}画下来，你会用什么颜色？\n${actor}的好朋友会是谁呢？`, 16, 2, actor);
-  const summaryLines  = fillLines(goalsRaw,
-    `${actor}有自己特别的样子。我们要仔细看、轻轻摸。${actor}是我们的好朋友。`, 16, 3, actor);
-  const summaryLines2 = fillLines("",
-    `今天认识了什么呀？\n把「${keys[0]}」指给旁边的小朋友看。`, 16, 2, actor);
-  const extendLines   = fillLines(extendLine,
-    `回家把今天看到的讲给爸爸妈妈听。和爸爸妈妈一起找一找${actor}。`, 16, 2, actor);
-  const gameLines     = fillLines(gameLine,
-    `听口令做动作：学一学${actor}。找到朋友就轻轻拍拍手。`, 16, 2, actor);
-  const quiz = {
-    q: shortLines(qRaw, 16, 1)[0] || `猜猜我是谁？`,
-    hint: `小提示：想想刚才看到的`,
-    ans: `是${actor}！`
-  };
-
-  const sub = `${age} · ${domain}领域`;
-  const all = [
-    {tier:0, type:"cover", title, subtitle:sub, footer:"幼师工作台 · 生成", art:mainArt,
-      note:noteFor("开场","用招呼语开场，点出今天的活动名称。")},
-    {tier:0, type:"story", stage:STAGE.intro, title:"听个小故事", lines:storyLines, art:mainArt, footer:"导入 · 引起兴趣",
-      note:noteFor(STAGE.intro,"语气放慢，配合大图讲故事，讲完停 3 秒等孩子反应。")},
-    {tier:0, type:"observe", stage:STAGE.observe, title:"看一看，找一找", words:observeWords, art:mainArt, footer:"观察 · 一页一个重点",
-      note:noteFor(STAGE.observe,"引导按顺序观察，鼓励孩子用自己的话说，不纠正用词。")},
-    {tier:0, type:"discuss", stage:STAGE.discuss, title:"说一说", lines:discussLines, art:d(1), footer:"讨论 · 多等 5 秒",
-      note:noteFor(STAGE.discuss,"每个问题留 5 秒等待时间，接纳不同答案。")},
-    {tier:0, type:"summary", stage:STAGE.summary, title:"我们记住啦", lines:summaryLines, art:mainArt, footer:"总结 · 一起复述",
-      note:noteFor(STAGE.summary,"和孩子一起指着图复述，不要求背诵。")},
-    {tier:0, type:"extend", stage:STAGE.extend, title:"回家做一做", lines:extendLines, art:d(0), footer:"延伸 · 小任务",
-      note:noteFor(STAGE.extend,"说清任务，提醒家长只需陪伴，不必代做。")},
-    // tier1 → 8 页：翻翻卡 + 结束页
-    {tier:1, type:"quiz", stage:STAGE.discuss, title:"猜一猜 · 翻翻卡", quiz, art:d(0), footer:"互动 · 先猜两次再翻卡",
-      note:noteFor(STAGE.discuss,"先不给答案，让孩子猜两次，再逐张翻开提示卡与答案卡。")},
-    {tier:1, type:"thanks", title:"今天真棒！", subtitle:"每个小朋友都有一双会发现的眼睛", footer:"谢谢小朋友们", art:mainArt,
-      note:noteFor("收尾","表扬具体行为，收尾保持愉快。")},
-    // tier2 → 10 页：换个角度观察 + 小游戏
-    {tier:2, type:"observe", stage:STAGE.observe, title:"再仔细看看", words:observeWords2, art:d(0), footer:"观察 · 换个角度",
-      note:noteFor(STAGE.observe,"换个角度再观察一次，鼓励孩子比较两页的不同。")},
-    {tier:2, type:"game", stage:STAGE.discuss, title:"玩一玩", lines:gameLines, art:d(2), footer:"互动 · 小游戏",
-      note:noteFor(STAGE.discuss,"先示范一遍规则，再全体一起玩。")},
-    // tier3 → 12 页：开放讨论 + 回顾
-    {tier:3, type:"discuss", stage:STAGE.discuss, title:"还想说一说", lines:discussLines2, art:d(1), footer:"讨论 · 开放问题",
-      note:noteFor(STAGE.discuss,"开放问题没有标准答案，重点让孩子敢开口。")},
-    {tier:3, type:"summary", stage:STAGE.summary, title:"今天学到了什么", lines:summaryLines2, art:d(2), footer:"总结 · 回顾",
-      note:noteFor(STAGE.summary,"让孩子自己说，教师只做补充。")}
-  ];
-
-  const pages = parseInt(($$("#coursePages .chip.on")[0]?.textContent || "8 页").replace(" 页","")) || 8;
-  const slides = fitPages(all, pages);
-  return {slides, meta:{title, age, domain, themeKey, themeName, actor, keys, mainArt, decoKeys:deco,
-    raw:{goalsRaw, prepRaw, processRaw, qRaw}, pages}};
+  const title=$("#cTitle").value.trim()||"幼儿园主题活动";
+  const age=$("#cAge").value||"中班";
+  const domain=$$("#cDomain .chip.on")[0]?.textContent||"综合";
+  const raw=[$("#cGoals").value,$("#cPrep").value,$("#cProcess").value,$("#cQuestions").value].map(v=>(v||"").trim());
+  const full=[title,...raw].join("\n");
+  const subjects=detectSubjects(full);
+  const noun=/动物|动物园/.test(full)?"小动物":/水果|蔬菜|食物/.test(full)?"食物":/植物|花|树|种子/.test(full)?"植物":/交通|汽车|火车|飞机/.test(full)?"交通工具":"新朋友";
+  const pages=parseInt(($$("#coursePages .chip.on")[0]?.textContent||"12 页").replace(" 页",""))||12;
+  const meta={title,age,domain,noun,subjects,pages,themeKey:matchTheme(full),raw};
+  return {slides:buildCourseSlides(subjects,meta,pages),meta};
 }
 
-// 卡片预览渲染（五步走版式，与 .pptx 一一对应）
-function renderSlidesPreview(slides, theme, pages, meta){
-  const total  = Math.min(slides.length, pages);
-  const shown  = slides.slice(0, total);
-  const c1 = theme.c1, c2 = theme.c2, bg = theme.bg;
-  return shown.map((s,i)=>{
-    const art = artUri(s.art || meta?.mainArt || "star");
-    const stage  = s.stage ? `<span class="k-stage" style="background:${c1};">${s.stage}</span>` : "";
-    const timing = `<span class="k-timing">1–2 分钟</span>`;
-    const decos  = `<div class="k-deco k-decor-a" style="background:${c2};"></div><div class="k-deco k-decor-b" style="background:${c2};"></div>`;
-    const foot   = s.footer ? `<div class="k-foot">${escapeHtml(s.footer)}</div>` : "";
-    const lineBoxes = (arr)=> arr.map(l=>`<span class="k-line" style="border-color:${c2};">${escapeHtml(l)}</span>`).join("");
-    let content = "";
-
-    if(s.type === "cover"){
-      content = `<div class="k-row" style="margin-top:12px;">
-        <div class="k-col" style="gap:9px;">
-          <div class="k-big" style="color:${c1};">${escapeHtml(s.title)}</div>
-          <div style="font-size:10.5px;color:#7A7A7A;font-weight:700;">${escapeHtml(s.subtitle||"")}</div>
-          <div style="height:4px;width:62%;border-radius:4px;background:linear-gradient(90deg,${c1},${c2});"></div>
-        </div>
-        <img class="k-art k-art-lg" src="${art}">
-      </div>`;
-    } else if(s.type === "observe"){
-      content = `<div class="k-title" style="color:${c1};">${escapeHtml(s.title)}</div>
-        <div class="k-row">
-          <img class="k-art k-art-md" src="${art}">
-          <div class="k-bubbles" style="flex:1;">${(s.words||[]).map((w,k)=>
-            `<div class="k-bubble" style="border-color:${c2};">${escapeHtml(w)}<small>找一找 ${k+1}</small></div>`).join("")}</div>
-        </div>`;
-    } else if(s.type === "quiz"){
-      const q = s.quiz || {};
-      const cards = [{m:"?",lab:"问题卡",txt:q.q},{m:"!",lab:"提示卡",txt:q.hint},{m:"★",lab:"答案卡",txt:q.ans}];
-      content = `<div class="k-title" style="color:${c1};">${escapeHtml(s.title)}</div>
-        <div class="k-row" style="gap:8px;">
-          <div class="k-cards">${cards.map((c,k)=>`<div class="k-flip" style="border-color:${k===1?c2:c1};">
-            <div class="k-mark" style="color:${c1};">${c.m}</div>
-            <div class="k-txt">${escapeHtml(c.txt||"")}</div>
-            <div class="k-lab">${c.lab}</div></div>`).join("")}</div>
-          <img class="k-art" src="${art}" style="width:66px;height:66px;">
-        </div>`;
-    } else if(s.type === "thanks"){
-      content = `<div class="k-row" style="flex-direction:column;gap:4px;justify-content:center;">
-        <img class="k-art k-art-md" src="${art}">
-        <div class="k-big" style="color:${c1};">${escapeHtml(s.title)}</div>
-        <div style="font-size:10.5px;color:#7A7A7A;font-weight:700;">${escapeHtml(s.subtitle||"")}</div>
-      </div>`;
-    } else {
-      content = `<div class="k-title" style="color:${c1};">${escapeHtml(s.title)}</div>
-        <div class="k-row">
-          <div class="k-col">${lineBoxes(s.lines||[])}</div>
-          <img class="k-art k-art-md" src="${art}">
-        </div>`;
+/* ---------------- 预览渲染（与 .pptx 一一对应） ---------------- */
+const BUBBLE_CLS=["b1","b2","b3"];
+const TAG_COLORS=["#F5A3C0","#7CC9A8","#F5BE5B","#7FB8E8","#B79BE0","#F09A72"];
+const BLANK_IMG="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+function artImg(x,cls,extra){
+  const d=(x&&ArtGen.cached(x))||"";
+  const key=String(x&&(x.k||x.n)||"").replace(/"/g,"");
+  return `<img class="${cls}" data-art-key="${key}" src="${d||BLANK_IMG}" ${extra||""} alt="">`;
+}
+function placeholder(x){
+  const key=String(x&&(x.k||x.n)||"").replace(/"/g,"");
+  return `<div class="kc-placeholder" data-ph-key="${key}">正在生成<br>${escapeHtml(x?x.n:"")}的插图…</div>`;
+}
+function flags(){return `<i class="kc-flag l"></i><i class="kc-flag r"></i><div class="kc-grass"></div>`;}
+function bunting(){
+  const cols=["#F5A83C","#6FC5E8","#F18FA8","#8FD07A","#F5C85B","#A99BE3","#F5A83C","#6FC5E8","#F18FA8","#8FD07A"];
+  return `<div class="kc-bunting">${cols.map(c=>`<i style="background:${c}"></i>`).join("")}</div>`;
+}
+function renderSlidesPreview(slides,theme,pages,meta){
+  const c1=theme.c1,c2=theme.c2;
+  return slides.slice(0,pages).map((s,i)=>{
+    const subs=s.subjects||meta.subjects||[];
+    let inner="";
+    if(s.type==="animal"){
+      const x=s.subject, feats=featOf(x);
+      inner=`<div class="kc-frame"><div class="kc-inner">
+        ${flags()}
+        <div class="kc-head">${artImg(x,"kc-avatar")}<div>
+          <div class="kc-name" style="color:${c1};">${escapeHtml(x.n)}</div>
+          ${x.py?`<div class="kc-py">${escapeHtml(x.py)}</div>`:""}</div></div>
+        ${ArtGen.cached(x)?"":placeholder(x)}
+        ${artImg(x,"kc-main-art")}
+        ${feats.map((f,k)=>`<div class="kc-bubble ${BUBBLE_CLS[k%3]}">${escapeHtml(f)}</div>`).join("")}
+        <div class="kc-bottom">${escapeHtml(lineOf(x))}</div>
+      </div></div>`;
+    } else if(s.type==="chapter"){
+      const first=subs[0], last=subs[subs.length-1];
+      inner=`<div class="kc-frame"><div class="kc-inner plain">
+        ${bunting()}<div class="kc-grass"></div>
+        <div class="kc-cloud" style="left:22px;top:26px;"></div>
+        <div class="kc-cloud" style="right:40px;top:38px;width:26px;height:10px;"></div>
+        <div class="kc-big-title">${escapeHtml(s.no||"第一章")}<br>${escapeHtml(s.title)}</div>
+        ${first?artImg(first,"kc-chapter-art left"):""}
+        ${last&&last!==first?artImg(last,"kc-chapter-art"):""}
+      </div></div>`;
+    } else if(s.type==="group"){
+      inner=`<div class="kc-frame"><div class="kc-inner plain">
+        ${bunting()}<div class="kc-grass"></div>
+        <div class="kc-cloud" style="left:26px;top:18px;"></div>
+        <div class="kc-sun" style="right:24px;top:16px;"></div>
+        <div class="kc-ask-title">${escapeHtml(s.title)}</div>
+        <div class="kc-group">${subs.slice(0,10).map(x=>
+          `<div class="one">${artImg(x,"")}<span>${escapeHtml(x.n)}</span></div>`).join("")}</div>
+      </div></div>`;
+    } else if(s.type==="compare"){
+      const qs=subs.slice(0,4);
+      inner=`<div class="kc-frame"><div class="kc-inner">
+        ${flags()}
+        <div class="kc-quiz-title">${escapeHtml(s.title)}</div>
+        <div class="kc-q-grid">${qs.map((x,k)=>`
+          <div class="kc-q-card ${k%2?"alt":""}">
+            <div class="kc-q-tag" style="background:${TAG_COLORS[k%TAG_COLORS.length]};">${escapeHtml(x.n)}</div>
+            <span>${escapeHtml(questionOf(x))}</span>
+            ${artImg(x,"kc-q-art")}
+          </div>`).join("")}</div>
+        <div class="kc-quiz-foot">你答对了吗？真棒！</div>
+      </div></div>`;
+    } else if(s.type==="thanks"){
+      inner=`<div class="kc-frame"><div class="kc-inner plain">
+        ${bunting()}<div class="kc-grass"></div>
+        <div class="kc-cloud" style="left:30px;top:26px;"></div>
+        <div class="kc-cloud" style="right:34px;top:34px;width:26px;height:10px;"></div>
+        <div class="kc-big-title warm">${escapeHtml(s.title)}</div>
+        <div class="kc-animal-row">${subs.slice(0,8).map(x=>artImg(x,"")).join("")}</div>
+      </div></div>`;
     }
-    return `<div class="slide-card" data-idx="${i}"><div class="slide-card-num" style="background:${c1};">${i+1}</div>
-      <div class="slide-page" style="background:${bg};color:#2A2A2A;border:3px solid ${c2};">${decos}${stage}${timing}${content}${foot}</div></div>`;
+    return `<div class="slide-card" data-idx="${i}"><div class="slide-card-num" style="background:${c1};">${i+1}</div>${inner}</div>`;
   }).join("");
+}
+/* 某张图生成完，就地替换所有用到它的 <img> */
+function paintArt(key,dataUri){
+  if(!dataUri) return;
+  const k=String(key);
+  document.querySelectorAll("img[data-art-key]").forEach(img=>{
+    if(img.getAttribute("data-art-key")===k) img.src=dataUri;
+  });
+  document.querySelectorAll("[data-ph-key]").forEach(el=>{
+    if(el.getAttribute("data-ph-key")===k) el.style.display="none";
+  });
+}
+function markArtFailed(key,msg){
+  const k=String(key);
+  document.querySelectorAll("[data-ph-key]").forEach(el=>{
+    if(el.getAttribute("data-ph-key")===k){
+      el.textContent="插图未生成\n"+(msg||"请检查 AI 插图设置");
+      el.style.whiteSpace="pre-line";
+      el.style.fontSize="9px";
+    }
+  });
+}
+/* 并发受限地生成所有主体的插图，逐张回调 */
+async function generateAllArts(subjects,onOne,onError){
+  const todo=subjects.filter(x=>!ArtGen.cached(x));
+  let done=0;
+  const free=ArtGen.cfg.provider==="free";
+  const limit=free?1:2;   // 免费通道必须串行，否则全撞 402
+  let cursor=0;
+  async function worker(){
+    while(cursor<todo.length){
+      const x=todo[cursor++];
+      try{
+        const d=await ArtGen.get(x);
+        if(d) paintArt(x.k,d); else markArtFailed(x.k,"当前通道为「仅内置缓存」，未命中缓存");
+      }
+      catch(e){
+        console.warn("[ArtGen]",x.n,e);
+        markArtFailed(x.k,(e&&e.message||String(e)).slice(0,60));
+        onError&&onError(x,e);
+      }
+      done++; onOne&&onOne(done,todo.length,x);
+    }
+  }
+  const pool=[]; for(let i=0;i<Math.min(limit,todo.length);i++) pool.push(worker());
+  await Promise.all(pool);
+  // 缓存命中的也要画上（渲染时已带 src，这里兜底）
+  subjects.forEach(x=>paintArt(x.k,ArtGen.cached(x)));
+  return {total:todo.length};
 }
 
 function escapeHtml(s){
   return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
 }
 
-// 生成真实 .pptx 文件并下载（幼儿课件规范版）
-async function downloadPptx(slides, theme, meta){
-  if(typeof PptxGenJS === "undefined"){ toast("PPT 库未加载，请检查网络"); return; }
-  const pptx = new PptxGenJS();
-  // 16:9 且坐标用 10×5.625，与 320×180 预览卡 32px/in 完全对应
-  pptx.defineLayout({name:"KINDER16x9", width:10, height:5.625});
-  pptx.layout = "KINDER16x9";
-  pptx.author = "幼师工作台";
-  pptx.title  = meta.title;
+// 生成真实 .pptx（对齐参考图版式，插图为大图 PNG）
+async function downloadPptx(slides,theme,meta){
+  if(typeof PptxGenJS==="undefined"){ toast("PPT 库未加载，请检查网络"); return; }
+  const pptx=new PptxGenJS();
+  pptx.defineLayout({name:"KINDER16x9",width:10,height:5.625});
+  pptx.layout="KINDER16x9";
+  pptx.author="幼师工作台"; pptx.title=meta.title;
 
-  const C1=hexNo(theme.c1), C2=hexNo(theme.c2), BG=hexNo(theme.bg);
-  const F=KINDER_FONT, DARK="3B3B3B", SUB="7A7A7A";
+  const F=KINDER_FONT, C1=hexNo(theme.c1), DARK="333333", WHITE="FFFDF9";
+  const BG_WHITE="#FFFDF9", BG_BLUE="#DFF3FD", BG_CREAM="#FFF3D9";
+  // 按「显示尺寸 × 页面底色」各出一份 JPEG，避免 39 张 512px 透明 PNG 把 pptx 撑到 12MB
+  const ART_VARIANTS=[
+    ["hero",  512, BG_WHITE],  // 动物页 3.1 英寸主图
+    ["avatar",224, BG_WHITE],  // 动物页 0.62 英寸小头像
+    ["blue",  320, BG_BLUE ],  // 章节 / 合集 / 结束页
+    ["cream", 224, BG_CREAM]   // 特征大比拼卡片
+  ];
+  const artCache=new Map();
+  const subjects=meta.subjects||[];
+  await Promise.all(subjects.map(async x=>{
+    const d=ArtGen.cached(x);
+    if(!d) return;
+    await Promise.all(ART_VARIANTS.map(async ([v,size,bg])=>{
+      try{ artCache.set(x.k+"|"+v, await artToJpeg(d,size,bg)); }
+      catch(e){ console.warn("[pptx] artToJpeg",x.n,v,e); }
+    }));
+  }));
+  const artOf=(x,v)=>x?artCache.get(x.k+"|"+v)||null:null;
 
-  // 预转本套课件用到的所有卡通插图为 PNG（pptx 不支持 SVG）
-  const need = [...new Set(slides.map(s=>s.art || meta.mainArt || "star").filter(Boolean))];
-  const pngs = {};
-  await Promise.all(need.map(async k=>{ pngs[k] = await cartoonPng(k, 400); }));
-  const artOf = (s)=> pngs[s.art || meta.mainArt || "star"];
-
-  function softBg(slide){
-    slide.background = {color:BG};
-    slide.addShape(pptx.ShapeType.ellipse, {x:-0.75,y:4.5,w:2.1,h:2.1,fill:{type:"solid",color:C2}});
-    slide.addShape(pptx.ShapeType.ellipse, {x:9.05,y:-0.75,w:1.9,h:1.9,fill:{type:"solid",color:C2}});
+  function frame(slide,plain){
+    slide.background={color:plain?"CFEFF9":"D9F1E2"};
+    slide.addShape(pptx.ShapeType.roundRect,{
+      x:0.12,y:0.12,w:9.76,h:5.385,
+      fill:{type:"solid",color:plain?"DFF3FD":WHITE},
+      line:{color:plain?"BFE3F5":"F2D49B",width:2},rectRadius:0.16});
+    // 顶部两个橙色三角旗
+    [1.0,8.6].forEach(x=>{
+      slide.addShape(pptx.ShapeType.triangle,{x,y:0.05,w:0.42,h:0.36,
+        fill:{type:"solid",color:"F5A83C"},line:{color:"F5A83C",width:0},rotate:180});
+    });
+    // 底部绿草条
+    slide.addShape(pptx.ShapeType.rect,{x:0.12,y:5.22,w:9.76,h:0.28,
+      fill:{type:"solid",color:"8DCB63"},line:{color:"8DCB63",width:0}});
   }
-  function head(slide,s){
-    if(s.stage){
-      slide.addShape(pptx.ShapeType.roundRect,{x:0.45,y:0.22,w:1.5,h:0.4,fill:{type:"solid",color:C1},rectRadius:0.2});
-      slide.addText(s.stage,{x:0.45,y:0.22,w:1.5,h:0.4,fontSize:PT.meta,bold:true,color:"FFFFFF",align:"center",valign:"middle",fontFace:F});
-    }
-    if(s.type !== "cover"){
-      slide.addText(s.title,{x:0.5,y:0.72,w:9,h:0.72,fontSize:PT.title,bold:true,color:C1,fontFace:F,valign:"middle"});
-    }
-    slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:1.48,w:2.2,h:0.08,fill:{type:"solid",color:C2},rectRadius:0.04});
+  function putArt(slide,data,X,Y,W,H){
+    if(!data) return;
+    slide.addImage({data,x:X,y:Y,w:W,h:H});
   }
-  function foot(slide,s){
-    if(s.footer) slide.addText(s.footer,{x:0.5,y:5.18,w:9,h:0.3,fontSize:11,color:"9A9A9A",align:"center",fontFace:F});
-  }
-  function lineBox(slide,text,x,y,w,h){
-    slide.addShape(pptx.ShapeType.roundRect,{x,y,w,h,fill:{type:"solid",color:"FFFFFF"},line:{color:C2,width:1.5},rectRadius:0.12});
-    slide.addText(text,{x:x+0.18,y,w:w-0.36,h,fontSize:PT.body,color:DARK,valign:"middle",fontFace:F});
-  }
-  function bubble(slide,text,x,y,w,h){
-    slide.addShape(pptx.ShapeType.roundRect,{x,y,w,h,fill:{type:"solid",color:"FFFFFF"},line:{color:C2,width:2},rectRadius:0.18});
-    slide.addText(text,{x,y,w,h,fontSize:PT.bubble,bold:true,color:C1,align:"center",valign:"middle",fontFace:F});
-  }
-  function bigArt(slide,png,x,y,w,h){
-    if(!png) return;
-    slide.addShape(pptx.ShapeType.ellipse,{x:x+w*0.08,y:y+h*0.87,w:w*0.84,h:h*0.12,fill:{type:"solid",color:C2}});
-    slide.addImage({data:png,x,y,w,h});
+  function bubble(slide,txt,X,Y,W,H,color){
+    slide.addShape(pptx.ShapeType.roundRect,{x:X,y:Y,w:W,h:H,
+      fill:{type:"solid",color:color},line:{color:"FFFFFF",width:1},rectRadius:0.22});
+    slide.addText(txt,{x:X,y:Y,w:W,h:H,fontSize:20,bold:true,color:DARK,
+      align:"center",valign:"middle",fontFace:F});
   }
 
   slides.forEach(s=>{
-    const slide = pptx.addSlide();
-    softBg(slide);
-    head(slide, s);
-    const png = artOf(s);
-
-    if(s.type === "cover"){
-      slide.addText(s.title,{x:0.6,y:1.75,w:5.3,h:1.5,fontSize:PT.cover,bold:true,color:C1,fontFace:F,valign:"middle"});
-      slide.addText(s.subtitle||"",{x:0.62,y:3.3,w:5.2,h:0.5,fontSize:PT.sub,color:SUB,fontFace:F});
-      slide.addShape(pptx.ShapeType.roundRect,{x:0.62,y:3.95,w:3.2,h:0.12,fill:{type:"solid",color:C2},rectRadius:0.06});
-      bigArt(slide, png, 6.25, 1.05, 3.1, 3.1);
-    } else if(s.type === "observe"){
-      bigArt(slide, png, 0.65, 1.75, 3.0, 3.0);
-      const pos = [[4.05,1.85],[6.95,1.85],[4.05,3.25],[6.95,3.25]];
-      pos.forEach((p,k)=>{ if(s.words && s.words[k]) bubble(slide, s.words[k], p[0], p[1], 2.55, 1.15); });
-    } else if(s.type === "quiz"){
-      const q = s.quiz || {};
-      const cards = [{m:"?",lab:"问题卡",txt:q.q},{m:"!",lab:"提示卡",txt:q.hint},{m:"★",lab:"答案卡",txt:q.ans}];
-      cards.forEach((c,k)=>{
-        const x = 0.5 + k*2.55;
-        slide.addShape(pptx.ShapeType.roundRect,{x,y:1.85,w:2.3,h:2.85,
-          fill:{type:"solid",color:"FFFFFF"},line:{color:k===1?C2:C1,width:2},rectRadius:0.18});
-        slide.addText(c.m,{x,y:1.98,w:2.3,h:0.75,fontSize:38,bold:true,color:C1,align:"center",fontFace:F});
-        slide.addText(c.txt||"",{x:x+0.12,y:2.8,w:2.06,h:1.2,fontSize:PT.sub,color:DARK,align:"center",valign:"middle",fontFace:F});
-        slide.addText(c.lab,{x,y:4.28,w:2.3,h:0.3,fontSize:PT.meta,color:SUB,align:"center",fontFace:F});
+    const slide=pptx.addSlide();
+    const subs=s.subjects||subjects;
+    if(s.type==="animal"){
+      frame(slide,false);
+      const x=s.subject, feats=featOf(x);
+      putArt(slide,artOf(x,"avatar"),0.42,0.30,0.62,0.62);
+      slide.addText(x.n,{x:1.12,y:0.28,w:3.2,h:0.48,fontSize:30,bold:true,color:C1,fontFace:F});
+      if(x.py) slide.addText(x.py,{x:1.14,y:0.76,w:3.2,h:0.26,fontSize:14,color:"6B6B6B",fontFace:F});
+      putArt(slide,artOf(x,"hero"),3.55,1.15,3.1,3.1);
+      bubble(slide,feats[0]||"",0.45,2.05,2.4,0.62,"FFE0EC");
+      bubble(slide,feats[1]||"",7.2,1.45,2.4,0.62,"DDF5E8");
+      bubble(slide,feats[2]||"",7.2,2.55,2.4,0.62,"FFF0D2");
+      slide.addText(lineOf(x),{x:0.5,y:4.42,w:9,h:0.55,fontSize:24,bold:true,color:DARK,align:"center",fontFace:F});
+      slide.addNotes(`【${x.n}】建议停留 1–2 分钟。先让孩子看大图，指一指「${feats.join("／")}」，再一起读：${lineOf(x)} 不要额外讲解文字。`);
+    } else if(s.type==="chapter"){
+      frame(slide,true);
+      slide.addText(`${s.no||"第一章"}\n${s.title}`,{x:1.5,y:0.85,w:7,h:1.5,
+        fontSize:36,bold:true,color:"38A6DF",align:"center",fontFace:F});
+      const first=subs[0], last=subs[subs.length-1];
+      if(first) putArt(slide,artOf(first,"blue"),0.5,2.7,1.9,1.9);
+      if(last&&last!==first) putArt(slide,artOf(last,"blue"),7.5,2.3,2.1,2.3);
+      slide.addNotes("【章节页】建议停留 1 分钟。用招呼语点出今天的主题，让孩子猜猜会见到谁。");
+    } else if(s.type==="group"){
+      frame(slide,true);
+      slide.addText(s.title,{x:0.5,y:0.42,w:9,h:0.6,fontSize:30,bold:true,color:DARK,align:"center",fontFace:F});
+      const list=subs.slice(0,8), cols=Math.min(4,list.length), cw=2.2, ch=1.85;
+      list.forEach((x,k)=>{
+        const X=0.6+(k%cols)*cw, Y=1.35+Math.floor(k/cols)*ch;
+        putArt(slide,artOf(x,"blue"),X,Y,1.5,1.35);
+        slide.addText(x.n,{x:X,y:Y+1.32,w:1.5,h:0.32,fontSize:18,bold:true,color:DARK,align:"center",fontFace:F});
       });
-      bigArt(slide, png, 8.25, 2.15, 1.55, 1.55);
-    } else if(s.type === "thanks"){
-      bigArt(slide, png, 4.05, 0.75, 1.9, 1.9);
-      slide.addText(s.title,{x:0.5,y:2.8,w:9,h:0.9,fontSize:PT.cover,bold:true,color:C1,align:"center",fontFace:F});
-      slide.addText(s.subtitle||"",{x:0.5,y:3.85,w:9,h:0.6,fontSize:PT.sub,color:SUB,align:"center",fontFace:F});
-    } else {
-      const ls = s.lines || [];
-      const n = Math.max(ls.length, 1);
-      const h = n>=3 ? 0.88 : 1.05, gap = 0.14;
-      const totalH = n*h + (n-1)*gap;
-      let y = 1.75 + (3.05-totalH)/2;
-      ls.forEach(t=>{ lineBox(slide, t, 0.55, y, 5.5, h); y += h+gap; });
-      bigArt(slide, png, 6.5, 1.8, 2.85, 2.85);
+      slide.addNotes("【合集页】建议停留 1–2 分钟。让孩子指着自己最喜欢的一个说出名字和理由，不要求说对。");
+    } else if(s.type==="compare"){
+      frame(slide,false);
+      slide.addText(s.title,{x:0.5,y:0.32,w:9,h:0.62,fontSize:32,bold:true,color:DARK,align:"center",fontFace:F});
+      const qs=subs.slice(0,4), TAG=["F5A3C0","7CC9A8","F5BE5B","7FB8E8"];
+      qs.forEach((x,k)=>{
+        const X=0.55+(k%2)*4.55, Y=1.2+Math.floor(k/2)*1.75;
+        slide.addShape(pptx.ShapeType.roundRect,{x:X,y:Y,w:4.25,h:1.5,
+          fill:{type:"solid",color:"FFF3D9"},line:{color:"EEDDB4",width:1},rectRadius:0.12});
+        slide.addShape(pptx.ShapeType.roundRect,{x:X+1.35,y:Y-0.16,w:1.55,h:0.34,
+          fill:{type:"solid",color:TAG[k]},line:{color:TAG[k],width:0},rectRadius:0.16});
+        slide.addText(x.n,{x:X+1.35,y:Y-0.16,w:1.55,h:0.34,fontSize:14,bold:true,color:"FFFFFF",align:"center",valign:"middle",fontFace:F});
+        slide.addText(questionOf(x),{x:X+0.18,y:Y+0.25,w:2.9,h:0.95,fontSize:22,bold:true,color:DARK,valign:"middle",fontFace:F});
+        putArt(slide,artOf(x,"cream"),X+3.05,Y+0.35,1.05,1.05);
+      });
+      slide.addText("你答对了吗？真棒！",{x:0.5,y:4.78,w:9,h:0.4,fontSize:24,bold:true,color:DARK,align:"center",fontFace:F});
+      slide.addNotes("【特征大比拼】建议停留 2 分钟。先别急着翻答案，让孩子猜两次，再一起说出每个特征属于谁。");
+    } else if(s.type==="thanks"){
+      frame(slide,true);
+      slide.addText(s.title,{x:0.5,y:0.75,w:9,h:1.0,fontSize:44,bold:true,color:"F28A3C",align:"center",fontFace:F});
+      const list=subs.slice(0,8), cw=9.2/Math.max(1,list.length);
+      list.forEach((x,k)=>{ putArt(slide,artOf(x,"blue"),0.4+k*cw,2.35,cw,2.35); });
+      slide.addNotes("【结束页】建议停留 1 分钟。表扬孩子今天的具体表现，收尾保持愉快。");
     }
-    foot(slide, s);
-    if(s.note) slide.addNotes(s.note);   // 教师备注：建议停留 1–2 分钟 + 引导话术
   });
 
-  const fname = `${meta.title||"课件"}_${slides.length}页_幼儿版.pptx`.replace(/[\\/:*?"<>|]/g,"_");
-  pptx.writeFile({fileName:fname}).then(()=>{
-    toast(`已下载：${fname}（标题 36pt+ / 正文 24pt+）`);
-  }).catch(err=>{
-    console.error(err);
-    toast("下载失败："+(err.message||err));
+  const fname=`${meta.title||"课件"}_${slides.length}页.pptx`.replace(/[\\/:*?"<>|]/g,"_");
+  pptx.writeFile({fileName:fname}).then(()=>toast("已下载："+fname)).catch(err=>{
+    console.error(err); toast("下载失败："+(err.message||err));
   });
 }
 
@@ -2974,87 +3209,140 @@ async function cartoonPng(key,size=240){
   return png;
 }
 
-// 主流程
-let lastCourseData=null;
-$("#courseSubmit").addEventListener("click",()=>{
-  // ★ 零输入校验：缺失字段用兜底，不再提示「请填写」
-  const title=$("#cTitle").value.trim() || "幼儿园主题活动";
-  if(!$("#cTitle").value.trim()) $("#cTitle").value=title;  // 回填兜底值方便用户后续编辑
-  const goals=$("#cGoals").value.trim();
-  const process=$("#cProcess").value.trim();
-  // 字段全空也不再拦截 —— OCR 可能识别不全，但仍可生成框架页
+// ---------------- AI 插图设置 ----------------
+function initArtSettings(){
+  const cfg=ArtGen.cfg;
+  $("#artProvider").value=cfg.provider;
+  $("#artBaseURL").value=cfg.baseURL||"";
+  $("#artKey").value=cfg.key||"";
+  $("#artModel").value=cfg.model||"";
+  const sync=()=>{ $("#artApiFields").style.display=$("#artProvider").value==="api"?"":"none"; };
+  $("#artProvider").addEventListener("change",sync); sync();
+  const collect=()=>({
+    provider:$("#artProvider").value,
+    baseURL:$("#artBaseURL").value.trim(),
+    key:$("#artKey").value.trim(),
+    model:$("#artModel").value.trim()||"gpt-image-1",
+    size:"1024x1024"
+  });
+  $("#artSave").addEventListener("click",()=>{
+    ArtGen.cfg=collect(); saveArtCfg(ArtGen.cfg);
+    toast("AI 插图设置已保存，下次生成按新通道出图");
+  });
+  $("#artClearCache").addEventListener("click",()=>{
+    Object.keys(localStorage).filter(k=>k.startsWith("love_art_")).forEach(k=>localStorage.removeItem(k));
+    ArtGen.mem.clear();
+    toast("已清空本地生成的插图缓存（内置高质量图仍在）");
+  });
+  $("#artTest").addEventListener("click",async()=>{
+    const c=collect();
+    if(c.provider!=="api"){ toast("仅「自己的 API Key」通道支持连接测试"); return; }
+    if(!c.baseURL||!c.key){ toast("请先填接口地址和 API Key"); return; }
+    const st=$("#artStatus");
+    st.textContent="正在生成 1 张测试图（会消耗一次生图额度）…";
+    try{
+      const d=await ArtGen.viaApi({n:"测试",k:"_probe",en:"a cute watercolor rabbit"},c);
+      st.innerHTML=`连接成功，已拿到插图 <img src="${d}" style="width:44px;height:44px;vertical-align:middle;border-radius:6px;">`;
+    }catch(e){ st.textContent="连接失败："+(e.message||e); }
+  });
+}
+initArtSettings();
 
+// ---------------- 主流程 ----------------
+let lastCourseData=null;
+$("#courseSubmit").addEventListener("click",async()=>{
+  const title=$("#cTitle").value.trim()||"幼儿园主题活动";
+  if(!$("#cTitle").value.trim()) $("#cTitle").value=title;
   const btn=$("#courseSubmit");
   btn.disabled=true; btn.innerHTML=`<span class="spinner" style="width:13px;height:13px;margin:0;"></span>正在生成…`;
-  $("#courseResult").innerHTML=`<div class="loading"><div class="spinner"></div><div>正在智能解析教案并生成课件…</div></div>`;
 
-  setTimeout(()=>{
-    const {slides,meta}=parseCourseSlides();
-    const themeChip=$$("#courseTheme .chip.on")[0];
-    const theme={
-      key:themeChip?.dataset.theme||"cream",
-      c1:themeChip?.dataset.c1||"#B8792F",
-      c2:themeChip?.dataset.c2||"#FFE3AC",
-      bg:themeChip?.dataset.bg||"#FFFCF4"
-    };
-    // 页数已在 parseCourseSlides 内按「五步走分层」裁好，避免二次截断丢掉结束页
-    const finalSlides=slides;
+  const {slides,meta}=parseCourseSlides();
+  const themeChip=$$("#courseTheme .chip.on")[0];
+  const theme={
+    key:themeChip?.dataset.theme||"cream",
+    c1:themeChip?.dataset.c1||"#B8792F",
+    c2:themeChip?.dataset.c2||"#FFE3AC",
+    bg:themeChip?.dataset.bg||"#FFFCF4"
+  };
+  lastCourseData={slides,theme,meta};
+  records.course.unshift({
+    id:uid(),type:"course",date:today(),time:now(),
+    title:meta.title,age:meta.age,domain:meta.domain,
+    pages:slides.length,theme:theme.key,
+    outline:slides.map(s=>s.type==="animal"?s.subject.n:(s.title||"")),
+    slides,themeColors:theme,subjects:meta.subjects.map(x=>x.n)
+  });
+  saveRecords();
 
-    lastCourseData={slides:finalSlides,theme,meta};
-    records.course.unshift({
-      id:uid(),type:"course",date:today(),time:now(),
-      title:meta.title,age:meta.age,domain:meta.domain,
-      pages:finalSlides.length,theme:theme.key,
-      outline:finalSlides.map(s=>s.title||s.subtitle||""),
-      slides:finalSlides,themeColors:theme
-    });
-    saveRecords();
-
-    const previewHTML=renderSlidesPreview(finalSlides,theme,99999,meta);
-    $("#courseResult").innerHTML=`
-      <div class="course-result">
-        <div class="course-result-h">
-          <div>
-            <h3>${escapeHtml(meta.title)}</h3>
-            <div class="meta">${meta.age} · ${meta.domain} · 共 ${finalSlides.length} 页 · 五步走结构 · <span style="color:var(--teal);">🎨 ${meta.themeName||"通用"}主题大图</span></div>
-          </div>
-          <div class="course-actions">
-            <button class="btn sm" id="courseDownload" type="button">
-              <svg><use href="#i-upload"/></svg>下载 .pptx
-            </button>
-            <button class="btn ghost sm" id="courseCopy" type="button">
-              <svg><use href="#i-copy"/></svg>复制大纲
-            </button>
-          </div>
+  const subs=meta.subjects||[];
+  const cachedN=subs.filter(x=>ArtGen.cached(x)).length;
+  $("#courseResult").innerHTML=`
+    <div class="course-result">
+      <div class="course-result-h">
+        <div>
+          <h3>${escapeHtml(meta.title)}</h3>
+          <div class="meta">${meta.age} · ${meta.domain} · 共 ${slides.length} 页 ·
+            <span style="color:var(--teal);">识别出 ${subs.length} 个${meta.noun||"主体"}，一页一个</span></div>
         </div>
-        <div class="slides-scroll" id="slidesScroll">
-          ${previewHTML}
+        <div class="course-actions">
+          <button class="btn sm" id="courseDownload" type="button"><svg><use href="#i-upload"/></svg>下载 .pptx</button>
+          <button class="btn ghost sm" id="courseCopy" type="button"><svg><use href="#i-copy"/></svg>复制大纲</button>
         </div>
-        <div class="slides-nav">
-          <button class="slides-nav-btn" id="slidesPrev" type="button" aria-label="上一页">‹</button>
-          <span class="slides-nav-info" id="slidesInfo">P1 / ${finalSlides.length}</span>
-          <button class="slides-nav-btn" id="slidesNext" type="button" aria-label="下一页">›</button>
-        </div>
-        <div class="course-tip">幼儿课件规范：<b>① 导入 → ② 观察 → ③ 讨论 → ④ 总结 → ⑤ 延伸</b>，每页只讲一个重点并配一张大卡通图；标题 36pt+ / 正文 24pt+，圆润字体「幼圆」，马卡龙柔和配色。每页 pptx 备注里写了建议停留 1–2 分钟和教师引导话术。若电脑没有「幼圆」，在 PowerPoint 里全选换成「方正少儿体」或「华文彩云」即可。</div>
-      </div>`;
+      </div>
+      <div class="art-progress" id="artProgress">
+        <span id="artMsg">正在按课件内容生成插图…</span> <b id="artCount">0/${Math.max(0,subs.length-cachedN)}</b>
+        <div class="bar"><i id="artBar" style="width:0%"></i></div>
+        <div class="err" id="artErr"></div>
+      </div>
+      <div class="slides-scroll" id="slidesScroll">${renderSlidesPreview(slides,theme,99999,meta)}</div>
+      <div class="slides-nav">
+        <button class="slides-nav-btn" id="slidesPrev" type="button" aria-label="上一页">‹</button>
+        <span class="slides-nav-info" id="slidesInfo">P1 / ${slides.length}</span>
+        <button class="slides-nav-btn" id="slidesNext" type="button" aria-label="下一页">›</button>
+      </div>
+      <div class="course-tip">按课件里点名的具体${meta.noun||"主体"}分页，每个主体单独生成一张完整水彩大图，再直接嵌进 .pptx。命中内置缓存的秒出，没命中的按「AI 插图设置」里的通道实时生成 —— 换任何课件都会重新识别、重新出图。</div>
+    </div>`;
 
-    btn.disabled=false; btn.innerHTML=`<svg><use href="#i-sparkles"/></svg>重新生成`;
-    bindSlidesScroll();
-    $("#courseDownload").addEventListener("click",()=>downloadPptx(finalSlides,theme,meta));
-    $("#courseCopy").addEventListener("click",()=>{
-      const txt=finalSlides.map((s,i)=>{
-        const parts=[`P${i+1} ${s.stage?s.stage+" ":""}${s.title||""}`];
-        if(s.subtitle) parts.push("  "+s.subtitle);
-        if(s.lines) s.lines.forEach(l=>parts.push("  · "+l));
-        if(s.words) parts.push("  · 关键词："+s.words.join(" / "));
-        if(s.quiz) parts.push("  · 猜一猜："+s.quiz.q+" → "+s.quiz.ans);
-        if(s.note) parts.push("  教师备注："+s.note);
-        return parts.join("\n");
-      }).join("\n\n");
-      navigator.clipboard?.writeText(txt).then(()=>toast("大纲已复制")).catch(()=>toast("复制失败"));
-    });
-    toast("课件已生成（五步走 · 大字大图），可下载 .pptx");
-  },1100);
+  btn.disabled=false; btn.innerHTML=`<svg><use href="#i-sparkles"/></svg>重新生成`;
+  bindSlidesScroll();
+  $("#courseDownload").addEventListener("click",()=>downloadPptx(slides,theme,meta));
+  $("#courseCopy").addEventListener("click",()=>{
+    const txt=slides.map((s,i)=>{
+      if(s.type==="animal"){
+        const x=s.subject;
+        return `P${i+1} ${x.n}${x.py?"（"+x.py+"）":""}\n  特征：${featOf(x).join(" / ")}\n  ${lineOf(x)}`;
+      }
+      if(s.type==="compare") return `P${i+1} ${s.title}\n`+(s.subjects||[]).slice(0,4).map(x=>"  · "+questionOf(x)+" → "+x.n).join("\n");
+      return `P${i+1} ${s.title||""}`+(s.subjects?`\n  ${(s.subjects||[]).map(x=>x.n).join("、")}`:"");
+    }).join("\n\n");
+    navigator.clipboard?.writeText(txt).then(()=>toast("大纲已复制")).catch(()=>toast("复制失败"));
+  });
+
+  const errs=[];
+  const res=await generateAllArts(subs,
+    (done,total)=>{
+      const bar=$("#artBar"),cnt=$("#artCount"),msg=$("#artMsg");
+      if(cnt) cnt.textContent=`${done}/${total}`;
+      if(bar) bar.style.width=(total?Math.round(done/total*100):100)+"%";
+      if(msg) msg.textContent="正在按课件内容生成插图…";
+    },
+    (x,e)=>{ errs.push(`${x.n}：${(e&&e.message)||e}`); }
+  );
+  const box=$("#artProgress");
+  if(box){
+    if(errs.length){
+      const g=ArtGen.cfg||{};
+      const needKey=g.provider==="api"&&!String(g.key||"").trim();
+      const hint=needKey
+        ? "当前是「自己的 API Key」通道但还没填 Key：请到上方「AI 插图设置」填接口地址 / Key / 模型名 → 点「保存设置」→ 再点一次「生成课件」，就会按新课件实时出图。"
+        : "到上方「AI 插图设置」检查通道；已生成的页不受影响，可直接下载。";
+      box.innerHTML=`<b style="color:#F43F5E;">${errs.length} 张插图未生成</b><div class="err">${escapeHtml(errs.slice(0,2).join("；"))}${errs.length>2?" …":""}<br>${escapeHtml(hint)}</div>`;
+    }else{
+      const fromCache=subs.length-res.total;
+      box.innerHTML=`插图已就绪：共 ${subs.length} 张${fromCache?`（${fromCache} 张来自本地缓存）`:"（本次实时生成）"}，已嵌入 .pptx。`;
+    }
+  }
+  toast("课件已生成，可下载 .pptx");
 });
 
 // 卡片预览横滑逻辑
