@@ -1115,6 +1115,17 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
           <div class="card" id="artSettings" style="margin-bottom:14px;">
             <div class="card-h"><h3>AI 插图设置</h3><span style="font-size:11px;color:var(--text-faint);">换课件自动重新出图</span></div>
             <div class="field">
+              <label class="field-label">服务商预设 <span class="opt">选好自动填接口地址和模型名</span></label>
+              <select class="select" id="artPreset">
+                <option value="doubao">豆包 · 火山方舟（推荐，直接返回图片数据）</option>
+                <option value="qwen">千问 · 阿里云百炼（返回图片链接）</option>
+                <option value="hunyuan">元宝 / 混元 · 腾讯云 TokenHub（返回图片链接）</option>
+                <option value="openai">OpenAI 官方</option>
+                <option value="custom">自定义 / 中转站</option>
+              </select>
+              <div id="artKeyWhere" style="margin-top:7px;font-size:11px;color:var(--text-dim);line-height:1.6;"></div>
+            </div>
+            <div class="field">
               <label class="field-label">生图通道</label>
               <select class="select" id="artProvider">
                 <option value="api">自己的 API Key（OpenAI 兼容端点）</option>
@@ -1144,8 +1155,10 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
             </div>
             <div id="artStatus" style="margin-top:9px;font-size:11.5px;color:var(--text-dim);line-height:1.6;"></div>
             <div style="margin-top:8px;font-size:11px;color:var(--text-faint);line-height:1.6;">
+              <b>豆包 / 元宝 / 千问 App 的账号和会员不是 API Key</b>，Key 要在上面提示的云控制台里创建，按量计费（App 会员不通用）。<br>
               Key 只保存在本机浏览器的 localStorage，不会上传到任何服务器；不要在他人可使用的电脑上保存。
-              「测试连接」会真实生成 1 张图，可能产生费用。内置的高质量水彩图命中时直接秒出，不调用接口。
+              「测试连接」会真实生成 1 张图，可能产生费用。内置的高质量水彩图命中时直接秒出，不调用接口。<br>
+              千问 / 混元只返回图片链接，浏览器跨域取图可能失败；若报错请换成「豆包 · 火山方舟」。
             </div>
           </div>
 
@@ -2641,7 +2654,66 @@ function matchTheme(text){
 const KINDER_FONT = "幼圆";
 const ART_STYLE = "Watercolor children's picture-book illustration, soft watercolor washes with visible brush texture, pastel palette, kawaii rounded shapes, tiny dot eyes, rosy pink cheeks, thin soft outlines, FULL BODY from head to feet, one single centered subject, generous empty space around it, clean pure white background, no text, no letters, no watermark, no frame, no border, high detail. Subject: ";
 const ART_CFG_KEY = "love_artgen_cfg";
-const DEFAULT_ART_CFG = {provider:"api", baseURL:"https://api.openai.com/v1", key:"", model:"gpt-image-1", size:"1024x1024"};
+
+/* 国内三家开放平台的 OpenAI 兼容生图端点。
+   注意：豆包/元宝/千问是「App」，App 账号不是 API Key；Key 要在各自的云控制台申请。
+   各家参数差异很大（size 写法 / 是否认 n / 是否支持 b64_json / 默认水印），逐个适配。 */
+const ART_PRESETS = {
+  doubao:{
+    label:"豆包 · 火山方舟（推荐，返回 base64，无跨域问题）",
+    baseURL:"https://ark.cn-beijing.volces.com/api/v3",
+    model:"doubao-seedream-4-0-250828", size:"2K",
+    keyWhere:"火山引擎 → 火山方舟控制台 → API Key 管理（console.volcengine.com/ark）",
+    // Seedream 不认 n，size 用 1K/2K/4K 而非 1024x1024，默认带「AI生成」水印要关掉
+    extra:{watermark:false, sequential_image_generation:"disabled", response_format:"b64_json"},
+    omitN:true
+  },
+  qwen:{
+    label:"千问 · 阿里云百炼（返回图片链接，可能受跨域限制）",
+    baseURL:"https://dashscope.aliyuncs.com/compatible-mode/v1",
+    model:"qwen-image-2.1-turbo", size:"1024x1024",
+    keyWhere:"阿里云 → 百炼控制台 → API-KEY 管理（bailian.console.aliyun.com）",
+    // 百炼 OpenAI 兼容模式会忽略 response_format=b64_json，始终返回临时图片 URL
+    extra:{response_format:"b64_json"}, omitN:false
+  },
+  hunyuan:{
+    label:"元宝/混元 · 腾讯云 TokenHub（返回图片链接，可能受跨域限制）",
+    baseURL:"https://tokenhub.tencentmaas.com/v1",
+    model:"hy-image-v3.0", size:"1024x1024",
+    keyWhere:"腾讯云 → TokenHub 控制台 → API Key（不是 CAM 的 SecretId/SecretKey）",
+    extra:{response_format:"b64_json"}, omitN:false
+  },
+  openai:{
+    label:"OpenAI 官方（gpt-image-1 / dall-e-3）",
+    baseURL:"https://api.openai.com/v1",
+    model:"gpt-image-1", size:"1024x1024",
+    keyWhere:"platform.openai.com → API keys（国内网络通常不通）",
+    extra:{response_format:"b64_json"}, omitN:false
+  },
+  custom:{
+    label:"自定义（中转站 / 其它 OpenAI 兼容端点）",
+    baseURL:"", model:"", size:"1024x1024",
+    keyWhere:"填你所用服务提供的 baseURL、模型名和 Key",
+    extra:{response_format:"b64_json"}, omitN:false
+  }
+};
+const DEFAULT_ART_CFG = {provider:"api", preset:"doubao",
+  baseURL:ART_PRESETS.doubao.baseURL, key:"", model:ART_PRESETS.doubao.model, size:"2K"};
+/* 老配置或手动改地址时按域名自动推断，避免参数不匹配导致 400 */
+function artPresetKeyOf(cfg){
+  // 先看实际地址：用户手改过地址时，参数必须跟着地址走，不能跟着下拉框走
+  const b=String((cfg&&cfg.baseURL)||"");
+  if(/volces\.com|volcengine/i.test(b)) return "doubao";
+  if(/dashscope|maas\.aliyuncs/i.test(b)) return "qwen";
+  if(/tokenhub|tencentmaas/i.test(b)) return "hunyuan";
+  const p=cfg&&cfg.preset;
+  if(p&&ART_PRESETS[p]) return p;
+  return "openai";
+}
+function artPresetOf(cfg){
+  const k=artPresetKeyOf(cfg);
+  return k==="custom" ? ART_PRESETS.openai : ART_PRESETS[k];
+}
 
 /* 主体词典。a=别名, k=缓存键, en=生图英文描述, py=拼音, f=3 个特征气泡, s=底部一句话, q=比拼问题 */
 const SUBJECT_LIB = [
@@ -2773,18 +2845,33 @@ async function blobToDataUri(blob){
   });
 }
 async function urlToDataUri(u){
-  let r;
+  // 千问百炼 / 腾讯混元 / dall-e-3 默认只返回临时图片 URL，纯前端必须跨域把图取回来
+  // ① 直接 fetch（对象存储域名通常配了 CORS）
   try{
-    // 部分端点（如 dall-e-3 默认）返回临时图片 URL，浏览器直取常被 CORS 拦住
-    r=await Promise.race([
+    const r=await Promise.race([
       fetch(u,{mode:"cors"}),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),25000))
     ]);
-  }catch(e){
-    throw new Error("图片地址取回失败（跨域或超时），请在「AI 插图设置」改用支持 b64_json 的模型，如 gpt-image-1");
-  }
-  if(!r.ok) throw new Error("图片地址取回失败 HTTP "+r.status);
-  return await blobToDataUri(await r.blob());
+    if(r.ok) return await blobToDataUri(await r.blob());
+  }catch(e){}
+  // ② 用 <img crossOrigin> + canvas 再试一次（部分 CDN 只对图片请求放 CORS）
+  try{
+    return await new Promise((res,rej)=>{
+      const im=new Image(); im.crossOrigin="anonymous";
+      const timer=setTimeout(()=>rej(new Error("timeout")),25000);
+      im.onload=()=>{
+        try{
+          const c=document.createElement("canvas");
+          c.width=im.naturalWidth; c.height=im.naturalHeight;
+          c.getContext("2d").drawImage(im,0,0);
+          clearTimeout(timer); res(c.toDataURL("image/png"));
+        }catch(err){ clearTimeout(timer); rej(err); }
+      };
+      im.onerror=()=>{ clearTimeout(timer); rej(new Error("img")); };
+      im.src=u;
+    });
+  }catch(e){}
+  throw new Error("该通道只返回图片链接，浏览器跨域取图被拦截。建议改用「豆包 · 火山方舟」预设（直接返回 base64）");
 }
 /* 兼容 OpenAI 官方 + 国内中转常见返回结构 */
 async function pickArtFromResponse(j){
@@ -2817,6 +2904,45 @@ async function artToJpeg(src,size,bg){
   return c.toDataURL("image/jpeg",0.86);
 }
 
+/* 实时生成的图几乎都是「不透明白底」，直接贴到浅蓝/浅绿版式上会出现白色方块。
+   内置缓存是透明 WebP，四角 alpha=0 → 自动跳过，不受影响。
+   只把「与四边连通的近白区域」抠掉，主体内部的白色（白兔、白肚皮）会保留。
+   顺带缩到 768px，避免 2K 图把 localStorage 撑爆。 */
+async function normalizeArt(src){
+  const img=new Image(); img.src=src;
+  await (img.decode ? img.decode() : new Promise((res,rej)=>{img.onload=res;img.onerror=rej;}));
+  const w=img.naturalWidth||1024, h=img.naturalHeight||1024;
+  const scale=Math.min(1,768/Math.max(w,h));
+  const W=Math.round(w*scale), H=Math.round(h*scale);
+  const c=document.createElement("canvas"); c.width=W; c.height=H;
+  const ctx=c.getContext("2d",{willReadFrequently:true});
+  ctx.clearRect(0,0,W,H); ctx.drawImage(img,0,0,W,H);
+  let imd;
+  try{ imd=ctx.getImageData(0,0,W,H); }catch(e){ return src; }  // 跨域污染，保持原样
+  const d=imd.data;
+  const nearWhite=(i)=>d[i+3]>0 && Math.min(d[i],d[i+1],d[i+2])>=205;
+  const corners=[0,(W-1)*4,(H-1)*W*4,((H-1)*W+W-1)*4];
+  if(!corners.every(nearWhite)) return c.toDataURL("image/png");  // 不是白底，只缩放
+  const isW=(i)=>{
+    const r=d[i],g=d[i+1],b=d[i+2];
+    return d[i+3]>0 && Math.min(r,g,b)>=205 && (Math.max(r,g,b)-Math.min(r,g,b))<=42;
+  };
+  const seen=new Uint8Array(W*H), q=new Int32Array(W*H);
+  let head=0,tail=0;
+  const push=(p)=>{ if(p>=0&&p<W*H&&!seen[p]&&isW(p*4)){ seen[p]=1; q[tail++]=p; } };
+  for(let x=0;x<W;x++){ push(x); push((H-1)*W+x); }
+  for(let y=0;y<H;y++){ push(y*W); push(y*W+W-1); }
+  while(head<tail){
+    const p=q[head++], x=p%W;
+    if(x>0) push(p-1);
+    if(x<W-1) push(p+1);
+    push(p-W); push(p+W);
+  }
+  for(let p=0;p<W*H;p++) if(seen[p]) d[p*4+3]=0;
+  ctx.putImageData(imd,0,0);
+  return c.toDataURL("image/png");
+}
+
 const ArtGen={
   cfg:loadArtCfg(),
   mem:new Map(),
@@ -2832,15 +2958,22 @@ const ArtGen={
     if(!base) throw new Error("未填写接口地址");
     if(!cfg.key) throw new Error("未填写 API Key，请在「AI 插图设置」里填一次");
     const url=base+"/images/generations";
-    const body={model:cfg.model||"gpt-image-1",prompt:ART_STYLE+artSubjectEn(x),n:1,size:cfg.size||"1024x1024"};
-    const call=(extra)=>fetch(url,{method:"POST",
+    const p=artPresetOf(cfg);
+    const body={model:cfg.model||p.model||"gpt-image-1",prompt:ART_STYLE+artSubjectEn(x),
+      size:p.size||cfg.size||"1024x1024"};
+    if(!p.omitN) body.n=1;                       // 豆包 Seedream 不认 n，传了会 400
+    Object.assign(body,p.extra||{});             // watermark / 组图开关 / response_format
+    const minimal={model:body.model,prompt:body.prompt,size:body.size,n:1};
+    const call=(b)=>fetch(url,{method:"POST",
       headers:{"Content-Type":"application/json","Authorization":"Bearer "+cfg.key},
-      body:JSON.stringify(Object.assign({},body,extra))});
-    let r=await call({response_format:"b64_json"});
+      body:JSON.stringify(b)});
+    let r=await call(body);
     if(!r.ok){
       const txt=await r.text().catch(()=>"");
-      // GPT image 模型不接受 response_format，端点可能直接 400 —— 去掉重试一次
-      if(/response_format|unsupported|not supported|unknown parameter/i.test(txt)) r=await call({});
+      // 某些端点不认 response_format / watermark 等扩展参数 —— 退回 OpenAI 标准字段重试一次
+      if(/response_format|watermark|sequential_image_generation|unsupported|not supported|unknown parameter|invalid/i.test(txt)){
+        r=await call(minimal);
+      }
       else throw new Error("接口返回 HTTP "+r.status+"："+txt.slice(0,160));
     }
     if(!r.ok) throw new Error("接口返回 HTTP "+r.status+"："+(await r.text().catch(()=>"")).slice(0,160));
@@ -2883,7 +3016,11 @@ const ArtGen={
     else if(p==="puter")  d=await this.viaPuter(x);
     else if(p==="free")   d=await this.viaFree(x);
     else return null;                       // off：只用缓存
-    if(d){ this.mem.set(x.k,d); try{ localStorage.setItem(this.cacheKey(x),d); }catch(e){} }
+    if(d){
+      try{ d=await normalizeArt(d); }catch(e){ console.warn("[ArtGen] normalize",x.n,e); }
+      this.mem.set(x.k,d);
+      try{ localStorage.setItem(this.cacheKey(x),d); }catch(e){}
+    }
     return d;
   }
 };
@@ -3212,19 +3349,38 @@ async function cartoonPng(key,size=240){
 // ---------------- AI 插图设置 ----------------
 function initArtSettings(){
   const cfg=ArtGen.cfg;
+  $("#artPreset").value=artPresetKeyOf(cfg);
   $("#artProvider").value=cfg.provider;
   $("#artBaseURL").value=cfg.baseURL||"";
   $("#artKey").value=cfg.key||"";
   $("#artModel").value=cfg.model||"";
+  const showWhere=()=>{
+    const p=ART_PRESETS[$("#artPreset").value]||ART_PRESETS.custom;
+    $("#artKeyWhere").textContent="API Key 在哪拿：" + p.keyWhere;
+  };
   const sync=()=>{ $("#artApiFields").style.display=$("#artProvider").value==="api"?"":"none"; };
   $("#artProvider").addEventListener("change",sync); sync();
-  const collect=()=>({
-    provider:$("#artProvider").value,
-    baseURL:$("#artBaseURL").value.trim(),
-    key:$("#artKey").value.trim(),
-    model:$("#artModel").value.trim()||"gpt-image-1",
-    size:"1024x1024"
+  $("#artPreset").addEventListener("change",()=>{
+    const k=$("#artPreset").value, p=ART_PRESETS[k];
+    if(p && k!=="custom"){
+      $("#artBaseURL").value=p.baseURL;
+      $("#artModel").value=p.model;
+      $("#artProvider").value="api"; sync();
+    }
+    showWhere();
   });
+  showWhere();
+  const collect=()=>{
+    const k=$("#artPreset").value||"custom", p=ART_PRESETS[k]||ART_PRESETS.custom;
+    return {
+      provider:$("#artProvider").value,
+      preset:k,
+      baseURL:$("#artBaseURL").value.trim(),
+      key:$("#artKey").value.trim(),
+      model:$("#artModel").value.trim()||p.model||"gpt-image-1",
+      size:p.size||"1024x1024"
+    };
+  };
   $("#artSave").addEventListener("click",()=>{
     ArtGen.cfg=collect(); saveArtCfg(ArtGen.cfg);
     toast("AI 插图设置已保存，下次生成按新通道出图");
