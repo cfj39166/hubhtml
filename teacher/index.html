@@ -459,78 +459,67 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
   font-variant-numeric:tabular-nums;letter-spacing:.04em;
   box-shadow:0 2px 5px rgba(0,0,0,.18);
 }
-.slide-card .slide-cover,.slide-card .slide-list,.slide-card .slide-process,.slide-card .slide-thanks{
-  width:100%;height:100%;padding:18px 22px;display:flex;flex-direction:column;
-  font-family:"Comic Sans MS","PingFang SC","Microsoft YaHei",round,sans-serif;
-  overflow:hidden;position:relative;
-  border-radius:14px;
+/* ===== 幼儿课件五步走版式（预览缩略图，320×180 对应 pptx 10×5.625 in） =====
+   映射：标题 17px ↔ 36pt+，正文 12.5px ↔ 24pt+，大图 96px ↔ 3.2in */
+.slide-card .slide-page{
+  width:100%;height:100%;padding:11px 13px;display:flex;flex-direction:column;
+  font-family:"幼圆","YouYuan","PingFang SC","Microsoft YaHei",round,sans-serif;
+  overflow:hidden;position:relative;border-radius:14px;
 }
-
-/* 卡通装饰元素 */
-.slide-deco-cloud{
-  position:absolute;font-size:16px;opacity:.85;pointer-events:none;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.1));
+.k-stage{
+  position:absolute;left:11px;top:9px;z-index:2;
+  font-size:8.5px;font-weight:800;letter-spacing:.02em;
+  padding:2px 7px;border-radius:20px;color:#fff;white-space:nowrap;
 }
-/* ★ SVG 卡通插图（大图，替代小 emoji） */
-.slide-cover-art{
-  width:96px;height:96px;margin:0 auto 8px;display:block;
-  filter:drop-shadow(0 3px 6px rgba(0,0,0,.12));
-  animation:artBounce 2.6s ease-in-out infinite;
+.k-title{font-size:17px;font-weight:900;line-height:1.16;margin:19px 0 7px;letter-spacing:-.01em;}
+.k-sub{font-size:9px;color:#8A8A8A;margin:-4px 0 6px;font-weight:600;}
+.k-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:5px;justify-content:center;}
+.k-row{display:flex;align-items:center;gap:10px;flex:1;min-height:0;}
+.k-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;justify-content:center;}
+.k-art{
+  flex:0 0 auto;display:block;object-fit:contain;
+  filter:drop-shadow(0 4px 7px rgba(0,0,0,.13));
 }
-@keyframes artBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
-.slide-deco-art{
-  position:absolute;pointer-events:none;
-  filter:drop-shadow(0 2px 3px rgba(0,0,0,.1));
+.k-art-lg{width:104px;height:104px;}
+.k-art-md{width:86px;height:86px;}
+.k-art-sm{width:44px;height:44px;}
+.k-art-xs{width:26px;height:26px;}
+.k-line{
+  font-size:12px;line-height:1.35;font-weight:700;color:#3B3B3B;
+  background:rgba(255,255,255,.78);border-radius:9px;padding:5px 8px;
+  border-left:3px solid;display:block;
 }
-.slide-thanks-art{
-  width:78px;height:78px;margin:0 auto 8px;display:block;
-  filter:drop-shadow(0 3px 6px rgba(0,0,0,.12));
+.k-bubbles{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-content:center;}
+.k-bubble{
+  font-size:12.5px;font-weight:900;text-align:center;color:#333;
+  background:rgba(255,255,255,.9);border:2px solid;border-radius:12px;
+  padding:7px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.slide-thanks-art-row{display:flex;justify-content:center;gap:6px;margin:8px 0 4px;}
-.slide-thanks-art-row img{width:24px;height:24px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.1));}
-.slide-corner-deco{
-  position:absolute;right:-14px;bottom:-14px;width:60px;height:60px;
-  border-radius:50%;opacity:.55;pointer-events:none;
+.k-bubble small{display:block;font-size:8px;font-weight:600;color:#999;margin-top:1px;}
+/* 翻翻卡（猜一猜） */
+.k-cards{display:flex;gap:6px;flex:1;align-items:center;justify-content:center;}
+.k-flip{
+  flex:1;min-width:0;height:86px;border-radius:11px;border:2px dashed;
+  background:rgba(255,255,255,.88);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:5px;text-align:center;
 }
-
-/* 封面 */
-.slide-cover{justify-content:center;align-items:center;text-align:center;}
-.slide-cover-emoji{font-size:32px;margin-bottom:6px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.1));}
-.slide-cover-title{
-  font-size:22px;font-weight:900;letter-spacing:-.01em;line-height:1.2;margin-bottom:6px;
-  text-shadow:0 1px 0 rgba(255,255,255,.8);
-}
-.slide-cover-sub{font-size:11px;color:#6B6B6B;font-weight:500;}
-.slide-cover-stripe{
-  width:60%;height:3px;border-radius:3px;margin:8px auto 4px;
-}
-.slide-cover-foot{font-size:9px;color:#999;font-weight:500;}
-
-/* 列表页 */
-.slide-list{justify-content:flex-start;}
-.slide-list-h{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:900;margin-bottom:4px;}
-.slide-h-emoji{font-size:16px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.1));}
-.slide-list-sub{font-size:9.5px;color:#888;margin-bottom:8px;font-weight:500;}
-.slide-list-items{list-style:none;display:flex;flex-direction:column;gap:5px;font-size:10.5px;line-height:1.5;color:#444;font-weight:500;}
-.slide-list-items li{display:flex;gap:6px;align-items:flex-start;}
-.slide-bullet{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;box-shadow:0 1px 2px rgba(0,0,0,.1);}
-
-/* 过程页 */
-.slide-process{justify-content:flex-start;}
-.slide-process-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;margin-bottom:8px;}
-.slide-step-num{
-  font-size:9px;padding:3px 8px;border-radius:12px;font-weight:800;letter-spacing:.04em;
-  box-shadow:0 2px 4px rgba(0,0,0,.12);
-}
-.slide-process-body{font-size:10px;line-height:1.65;white-space:pre-wrap;color:#555;font-weight:500;}
-
+.k-flip .k-mark{font-size:20px;font-weight:900;line-height:1;}
+.k-flip .k-lab{font-size:8px;font-weight:800;color:#999;letter-spacing:.04em;}
+.k-flip .k-txt{font-size:10.5px;font-weight:700;color:#444;line-height:1.25;}
 /* 结束页 */
-.slide-thanks{justify-content:center;align-items:center;text-align:center;}
-.slide-thanks-emoji{font-size:28px;margin-bottom:8px;}
-.slide-thanks-title{font-size:20px;font-weight:900;margin-bottom:6px;text-shadow:0 1px 0 rgba(255,255,255,.8);}
-.slide-thanks-sub{font-size:11px;color:#777;font-weight:500;}
-.slide-thanks-emoji-row{font-size:13px;margin:8px 0 4px;letter-spacing:4px;}
-.slide-thanks-foot{font-size:9px;color:#999;font-weight:500;}
+.slide-page.center{align-items:center;justify-content:center;text-align:center;}
+.k-big{font-size:23px;font-weight:900;line-height:1.15;}
+.k-foot{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:8.5px;color:#A0A0A0;font-weight:600;}
+.k-deco{position:absolute;border-radius:50%;opacity:.5;pointer-events:none;z-index:0;}
+.k-decor-a{width:76px;height:76px;left:-32px;bottom:-34px;}
+.k-decor-b{width:56px;height:56px;right:-24px;top:-24px;}
+/* 停留时长徽标（教师提示，不算正文） */
+.k-timing{
+  position:absolute;left:70px;top:9px;z-index:2;   /* 靠左上，避开右上角页码圆圈 */
+  font-size:8px;font-weight:700;color:#8B8B8B;background:rgba(255,255,255,.75);
+  padding:2px 6px;border-radius:20px;
+}
 
 .slides-nav{
   display:flex;align-items:center;justify-content:center;gap:16px;margin-top:14px;
@@ -1086,15 +1075,15 @@ input,textarea,select{font-family:inherit;font-size:13px;color:inherit;}
 
           <!-- 主题色快速切换（与上传区一起，不让用户找） -->
           <div class="card" style="margin-bottom:14px;">
-            <div class="card-h"><h3>主题配色</h3><span style="font-size:11px;color:var(--text-faint);">点选喜欢的风格</span></div>
+            <div class="card-h"><h3>主题配色</h3><span style="font-size:11px;color:var(--text-faint);">马卡龙柔和色 · 点选喜欢的风格</span></div>
             <div class="chips" id="courseTheme">
-              <span class="chip on" data-theme="cream" data-c1="#F5B941" data-c2="#FFDD83" data-bg="#FFFBF0" data-emoji="🐻">🐻 奶油蜂蜜</span>
-              <span class="chip" data-theme="strawberry" data-c1="#E96A8E" data-c2="#FFB3C7" data-bg="#FFF0F4" data-emoji="🍓">🍓 草莓粉粉</span>
-              <span class="chip" data-theme="mint" data-c1="#4FB286" data-c2="#A6E6C5" data-bg="#F0FBF5" data-emoji="🐸">🐸 薄荷草地</span>
-              <span class="chip" data-theme="sky" data-c1="#5AA9E6" data-c2="#A8D8F0" data-bg="#F0F8FF" data-emoji="☁️">☁️ 天空白云</span>
-              <span class="chip" data-theme="lavender" data-c1="#9B7AD1" data-c2="#CFBEE9" data-bg="#F6F0FC" data-emoji="🦄">🦄 薰衣草</span>
-              <span class="chip" data-theme="peach" data-c1="#F08E5A" data-c2="#FFC196" data-bg="#FFF5EC" data-emoji="🦊">🦊 蜜桃小狐</span>
-              <span class="chip" data-theme="rainbow" data-c1="#E96A8E" data-c2="#5AA9E6" data-bg="#FFFBF0" data-emoji="🌈">🌈 彩虹糖果</span>
+              <span class="chip on" data-theme="cream" data-c1="#B8792F" data-c2="#FFE3AC" data-bg="#FFFCF4" data-emoji="🐻">🐻 奶油蜂蜜</span>
+              <span class="chip" data-theme="strawberry" data-c1="#C2547A" data-c2="#FFCBD9" data-bg="#FFF6F9" data-emoji="🍓">🍓 草莓粉粉</span>
+              <span class="chip" data-theme="mint" data-c1="#2F8C68" data-c2="#BCEBD3" data-bg="#F3FCF7" data-emoji="🐸">🐸 薄荷草地</span>
+              <span class="chip" data-theme="sky" data-c1="#3B7FB8" data-c2="#C3E2F7" data-bg="#F4FAFF" data-emoji="☁️">☁️ 天空白云</span>
+              <span class="chip" data-theme="lavender" data-c1="#7A5CB0" data-c2="#DFCEF5" data-bg="#FAF6FE" data-emoji="🦄">🦄 薰衣草</span>
+              <span class="chip" data-theme="peach" data-c1="#C96B3E" data-c2="#FFD8B8" data-bg="#FFF9F3" data-emoji="🦊">🦊 蜜桃小狐</span>
+              <span class="chip" data-theme="rainbow" data-c1="#C2547A" data-c2="#9CCEF0" data-bg="#FFFDF7" data-emoji="🌈">🌈 彩虹糖果</span>
             </div>
           </div>
 
@@ -2583,162 +2572,258 @@ function matchTheme(text){
   return bestScore>0?best:"general";
 }
 
-// 智能解析教案 → 幻灯片结构数组
-function parseCourseSlides(){
-  const title=$("#cTitle").value.trim()||"活动课件";
-  const age=$("#cAge").value||"幼儿园";
-  const domain=$$("#cDomain .chip.on")[0]?.textContent||"综合";
-  const goalsRaw=$("#cGoals").value.trim();
-  const prepRaw=$("#cPrep").value.trim();
-  const processRaw=$("#cProcess").value.trim();
-  const qRaw=$("#cQuestions").value.trim();
+/* ============================================================
+   幼儿课件生成规范 —— 对齐幼儿园课件设计要求
+   结构：① 导入 → ② 观察 → ③ 讨论 → ④ 总结 → ⑤ 延伸
+   排版：标题 ≥36pt / 正文 ≥24pt / 圆润字体 / 每页一个重点 / 多图少字
+   节奏：每页建议停留 1–2 分钟，写入 pptx 教师备注（addNotes）
+   ============================================================ */
+const KINDER_FONT = "幼圆";   // Windows 自带圆润字体；可改「方正少儿体」「华文彩云」
+const PT = {cover:40, title:36, body:26, bubble:28, sub:24, meta:14};
+const STAGE = {intro:"① 导入", observe:"② 观察", discuss:"③ 讨论", summary:"④ 总结", extend:"⑤ 延伸"};
 
-  // 拆分函数：按数字标号 / 序号 / 段落
-  function splitItems(text){
-    if(!text) return [];
-    // 按 1. 2. 或 ① ② 或 「一、二、」分
-    let arr=text.split(/\n+/).map(s=>s.replace(/^[\s]*[\d①②③④⑤⑥⑦⑧⑨⑩][\.\、\)）]?\s*/,"").trim()).filter(Boolean);
-    if(arr.length<=1){
-      // 按「；」「。」长句拆
-      arr=text.split(/[；;]+/).map(s=>s.trim()).filter(Boolean);
+// 主题主角：零输入（OCR 没识别出内容）时用来生成小故事、提问、猜谜
+const THEME_ACTOR = {
+  insect:"小蝴蝶", plant:"小种子", ocean:"小鱼", animal:"小兔子", bird:"小鸟",
+  dinosaur:"小恐龙", weather:"太阳公公", season:"春姑娘", space:"小宇航员",
+  magnet:"小磁铁", water:"小水滴", fire:"消防员叔叔", food:"小苹果",
+  body:"小身体", family:"小宝贝", festival:"小灯笼", transport:"小汽车",
+  music:"小音符", art:"小画笔", sport:"小皮球", general:"小星星"
+};
+// 主题观察关键词：零输入时生成「看一看」关键词卡
+const THEME_KEYS = {
+  insect:["触角","翅膀","花纹","六条腿"], plant:["种子","嫩芽","叶子","花朵"],
+  ocean:["鱼鳍","海浪","贝壳","珊瑚"], animal:["耳朵","尾巴","毛色","脚印"],
+  bird:["羽毛","翅膀","鸟窝","蛋宝宝"], dinosaur:["大尾巴","长脖子","化石","脚印"],
+  weather:["太阳","云朵","小雨","彩虹"], season:["花开","绿叶","落叶","雪花"],
+  space:["星星","月亮","火箭","地球"], magnet:["吸一吸","铁钉","两极","磁力"],
+  water:["透明","流动","冰块","水蒸气"], fire:["不玩火","弯弯腰","捂口鼻","119"],
+  food:["蔬菜","水果","牛奶","不挑食"], body:["眼睛","小手","牙齿","心脏"],
+  family:["爸爸","妈妈","抱一抱","说谢谢"], festival:["灯笼","月饼","礼物","团圆"],
+  transport:["红绿灯","斑马线","安全带","车轮"], music:["拍拍手","节奏","唱歌","跳舞"],
+  art:["红色","黄色","蓝色","画笔"], sport:["跑一跑","跳一跳","拍球","排队"],
+  general:["看一看","摸一摸","闻一闻","想一想"]
+};
+
+function noteFor(stage, tip){
+  return `【${stage}】建议停留 1–2 分钟。${tip} 本页只讲一个重点：先让孩子看图，再用一句话提问，不要读整段文字。`;
+}
+// 教师指令用语：不该原样印到给孩子的页面上，命中即弃用、改走主题模板
+const KID_UNFIT = /出示|提问|引导幼儿?|让幼儿?|教师|幼儿|组织|激发|培养|要求|指导|讲解|示范|小结|过渡|环节|分钟|记录表|物质准备|经验准备|用简单语言|描述|能用|会说|掌握|感知|体验|^PPT$/i;
+// 去掉教案里的教师用语前缀 / 序号 / 时长括号，把长句压成孩子能一眼看完的短句
+function cleanFrag(s){
+  let t = String(s||"").trim();
+  t = t.replace(/^[一二三四五六七八九十]+[、.．]\s*/, "");
+  t = t.replace(/^\d+[.、)）]\s*/, "");
+  t = t.replace(/^[①②③④⑤⑥⑦⑧⑨⑩]\s*/, "");
+  t = t.replace(/[（(][^）)]{0,20}[）)]\s*/g, "");
+  t = t.replace(/[「」『』“”"‘’'《》〈〉]/g, "");          // 去掉成对引号，避免切出半截残句
+  t = t.replace(/^(物质准备|经验准备|基本部分|基本|导入|延伸|观察|讨论|游戏|总结|目标|活动过程|提问)\s*[:：]?\s*/g, "");
+  t = t.replace(/^(初步|进一步|能够|能|学会|培养|引导幼儿?|让幼儿?|尝试|懂得|了解|掌握|知道|感知|激发|发展)+/g, "");
+  t = t.replace(/^[:：,，、\s]+/, "");
+  return t.trim();
+}
+function shortLines(text, max=14, limit=3){
+  if(!text) return [];
+  const parts = String(text).split(/[\n；;。！!？?，,、：:]+/).map(cleanFrag).filter(Boolean);
+  const out = [];
+  for(let p of parts){
+    if(KID_UNFIT.test(p)) continue;          // 教师指令句整句丢弃
+    if(p.length > max) p = p.slice(0, max-1) + "…";
+    if(p.length < 3 || out.includes(p)) continue;
+    out.push(p);
+    if(out.length >= limit) break;
+  }
+  return out;
+}
+// 用户教案内容优先，不足用主题模板补齐，保证「零输入」也能出完整课件
+function fillLines(src, fallback, max, limit, actor){
+  const a = shortLines(src, max, limit), b = shortLines(fallback, max, limit);
+  for(const x of b){ if(a.length >= limit) break; if(!a.includes(x)) a.push(x); }
+  while(a.length < limit) a.push(`${actor}，真有趣！`);
+  return a.slice(0, limit);
+}
+// 从「活动准备 / 观察」里抽短名词做关键词卡，不足用主题关键词补
+function keyWords(text, fallback){
+  const parts = String(text||"").split(/[\n、，,；;。：:（）()\s「」“”]+/).map(cleanFrag)
+    .filter(s => s.length>=2 && s.length<=6 && !KID_UNFIT.test(s) && !/^(ppt|教具|物质|经验|图片|记录表)$/i.test(s));
+  return [...new Set([...parts, ...fallback])].slice(0, 4);
+}
+function artUri(key){ return svgDataUri(CARTOON_SVG[key] || CARTOON_SVG.star); }
+// 按目标页数分层取页：tier0=6 页核心五步，tier1→8 页，tier2→10 页，tier3→12 页
+function fitPages(all, n){
+  const picked = [];
+  for(let t=0; t<=3 && picked.length<n; t++){
+    for(const s of all.filter(x=>x.tier===t)){
+      if(picked.length >= n) break;
+      picked.push(s);
     }
-    return arr;
   }
-  const goals=splitItems(goalsRaw);
-  const preps=splitItems(prepRaw);
-  const qs=splitItems(qRaw);
-  // 过程按「一、二、」或数字标号分段
-  let steps=[];
-  if(processRaw){
-    const m=processRaw.match(/(一|二|三|四|五|六|七|八|九|十)[、.][\s\S]*?(?=(?:一|二|三|四|五|六|七|八|九|十)[、.]|$)/g);
-    if(m && m.length>=2){
-      steps=m.map(s=>s.trim());
-    } else {
-      steps=processRaw.split(/\n\n+/).map(s=>s.trim()).filter(Boolean);
-      if(steps.length<=1) steps=processRaw.split(/\n/).map(s=>s.trim()).filter(Boolean);
-    }
-  }
-
-  // ★ 智能匹配主题图案（扫描全文）
-  const fullText=[title,goalsRaw,prepRaw,processRaw,qRaw].join("\n");
-  const themeKey=matchTheme(fullText);
-  const themeEmojis=THEME_LIB[themeKey].emoji;
-  const pickEm=(i)=>themeEmojis[i%themeEmojis.length];
-
-  const slides=[];
-  // 1. 封面（用主题主图案）
-  slides.push({type:"cover",title,subtitle:`${age} · ${domain}领域`,footer:"幼师工作台 · 生成",emoji:themeEmojis[0]});
-
-  // 2. 活动目标
-  if(goals.length){
-    slides.push({type:"list",title:"活动目标",subtitle:"通过本次活动，幼儿将达到以下目标：",items:goals,emoji:"🎯"});
-  }
-
-  // 3. 活动准备
-  if(prepRaw){
-    slides.push({type:"list",title:"活动准备",subtitle:"物质准备 + 经验准备",items:preps.length?preps:[prepRaw],emoji:"🎒"});
-  }
-
-  // 4-N. 活动过程（每个环节一页，避免文字过密）
-  if(steps.length===0 && processRaw){
-    steps=["活动过程",processRaw];
-  }
-  steps.forEach((s,i)=>{
-    const firstLine=s.split(/\n/)[0].slice(0,40);
-    const body=s.length>40?s:"";
-    slides.push({
-      type:"process",
-      title:`活动过程（${i+1}）`,
-      subtitle:firstLine.replace(/^(一|二|三|四|五|六|七|八|九|十)[、.]\s*/,""),
-      body,
-      stepNum:i+1,
-      totalStep:steps.length,
-      emoji:pickEm(i+2)   // 用主题图案点缀过程页
-    });
-  });
-
-  // 互动提问
-  if(qs.length){
-    slides.push({type:"list",title:"互动提问",subtitle:"引导幼儿深度思考：",items:qs,emoji:"❓"});
-  }
-
-  // 结束页
-  slides.push({type:"thanks",title:"活动延伸",subtitle:"把今天学到的本领带回家，讲给爸爸妈妈听 🌟",footer:"谢谢小朋友们"});
-
-  return {slides, meta:{title,age,domain,goals,preps,steps,qs,raw:{goalsRaw,prepRaw,processRaw,qRaw},themeKey,themeName:THEME_LIB[themeKey].name,themeEmojis}};
+  const order = new Map(all.map((s,i)=>[s,i]));
+  picked.sort((a,b)=>order.get(a)-order.get(b));
+  return picked.slice(0, n);
 }
 
-// 卡片预览渲染（移动端横滑、桌面端网格）
-function renderSlidesPreview(slides,theme,pages,meta){
-  const total=Math.min(slides.length,pages);
-  const shown=slides.slice(0,total);
-  const c1=theme.c1,c2=theme.c2,bg=theme.bg;
-  const emoji=theme.emoji||"⭐";
-  // 卡通风：浅底色、深字色（不再是深底白字）
-  const textColor="#2A2A2A";
-  const subColor="#6B6B6B";
+// 智能解析教案 → 五步走幻灯片
+function parseCourseSlides(){
+  const title   = $("#cTitle").value.trim() || "幼儿园主题活动";
+  const age     = $("#cAge").value || "中班";
+  const domain  = $$("#cDomain .chip.on")[0]?.textContent || "综合";
+  const goalsRaw   = $("#cGoals").value.trim();
+  const prepRaw    = $("#cPrep").value.trim();
+  const processRaw = $("#cProcess").value.trim();
+  const qRaw       = $("#cQuestions").value.trim();
 
-  // ★ 用主题智能匹配的 SVG 卡通插图（替代 emoji 字符）
-  const themeKey = meta && meta.themeKey ? meta.themeKey : "general";
-  const mainArt = themeMainSvg(themeKey);          // 主插图（封面/结束页用）
-  const decoArts = themeDecoSvgs(themeKey);        // 装饰插图数组
-  const decoArt = (i)=> decoArts[i % decoArts.length];
+  const fullText  = [title, goalsRaw, prepRaw, processRaw, qRaw].join("\n");
+  const themeKey  = matchTheme(fullText);
+  const themeName = (THEME_LIB[themeKey] || THEME_LIB.general).name;
+  const actor     = THEME_ACTOR[themeKey] || "小星星";
+  const keys      = THEME_KEYS[themeKey]  || THEME_KEYS.general;
+  const mainArt   = THEME_SVG_MAIN[themeKey] || "star";
+  const deco      = THEME_SVG_DECO[themeKey] || ["star"];
+  const d = (i)=> deco[i % deco.length];
 
+  // 按语义标签从「活动过程」里抓句子，每行只被用一次
+  const lines = processRaw.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  const used = new Set();
+  function grab(re){
+    const idx = lines.findIndex((l,i)=> !used.has(i) && re.test(l));
+    if(idx < 0) return "";
+    used.add(idx);
+    return lines[idx];
+  }
+  // 整行若是「出示…提问…激发…」这类教师指令，判废改走主题模板，
+  // 不把切碎后的残片（如「兴趣」）印到给孩子的页面上
+  function kidSafe(src){
+    const s = String(src||"");
+    const hits = (s.match(/出示|提问|激发|引导幼儿?|让幼儿?|组织|教师|幼儿|示范|讲解|记录表|分钟/g)||[]).length;
+    return hits >= 2 ? "" : s;
+  }
+  const introLine   = kidSafe(grab(/导入|引入|情境|讲故事|开始/));
+  const observeLine = kidSafe(grab(/观察|看一看|出示|外形|特征/));
+  const gameLine    = kidSafe(grab(/游戏|玩一玩|操作|配对|扮演/));
+  const discussLine = kidSafe(grab(/讨论|说一说|想一想|交流|分享|提问/));
+  const extendLine  = kidSafe(grab(/延伸|回家|任务|课后|区域/));
+  const restLines   = lines.filter((l,i)=> !used.has(i)).map(kidSafe);
+
+  // 五步内容：上传教案优先，教师指令句丢弃后由主题模板兜底
+  const storyFallback = themeKey === "general"
+    ? `${actor}来到我们班啦。它想和小朋友一起做游戏。`
+    : `${actor}来到我们班啦。它想带小朋友认识${themeName}。`;
+  const storyLines    = fillLines(introLine, storyFallback, 14, 2, actor);
+  const observeWords  = keyWords([prepRaw, observeLine].join("\n"), keys);
+  const observeWords2 = keyWords([processRaw, ...restLines].join("\n"), [...keys].reverse());
+  const discussLines  = fillLines(qRaw || discussLine,
+    `看一看，${actor}是什么样子的？\n猜一猜，它在做什么呢？\n你最喜欢它的哪一点？`, 16, 3, actor);
+  const discussLines2 = fillLines(restLines.join("\n"),
+    `如果把${actor}画下来，你会用什么颜色？\n${actor}的好朋友会是谁呢？`, 16, 2, actor);
+  const summaryLines  = fillLines(goalsRaw,
+    `${actor}有自己特别的样子。我们要仔细看、轻轻摸。${actor}是我们的好朋友。`, 16, 3, actor);
+  const summaryLines2 = fillLines("",
+    `今天认识了什么呀？\n把「${keys[0]}」指给旁边的小朋友看。`, 16, 2, actor);
+  const extendLines   = fillLines(extendLine,
+    `回家把今天看到的讲给爸爸妈妈听。和爸爸妈妈一起找一找${actor}。`, 16, 2, actor);
+  const gameLines     = fillLines(gameLine,
+    `听口令做动作：学一学${actor}。找到朋友就轻轻拍拍手。`, 16, 2, actor);
+  const quiz = {
+    q: shortLines(qRaw, 16, 1)[0] || `猜猜我是谁？`,
+    hint: `小提示：想想刚才看到的`,
+    ans: `是${actor}！`
+  };
+
+  const sub = `${age} · ${domain}领域`;
+  const all = [
+    {tier:0, type:"cover", title, subtitle:sub, footer:"幼师工作台 · 生成", art:mainArt,
+      note:noteFor("开场","用招呼语开场，点出今天的活动名称。")},
+    {tier:0, type:"story", stage:STAGE.intro, title:"听个小故事", lines:storyLines, art:mainArt, footer:"导入 · 引起兴趣",
+      note:noteFor(STAGE.intro,"语气放慢，配合大图讲故事，讲完停 3 秒等孩子反应。")},
+    {tier:0, type:"observe", stage:STAGE.observe, title:"看一看，找一找", words:observeWords, art:mainArt, footer:"观察 · 一页一个重点",
+      note:noteFor(STAGE.observe,"引导按顺序观察，鼓励孩子用自己的话说，不纠正用词。")},
+    {tier:0, type:"discuss", stage:STAGE.discuss, title:"说一说", lines:discussLines, art:d(1), footer:"讨论 · 多等 5 秒",
+      note:noteFor(STAGE.discuss,"每个问题留 5 秒等待时间，接纳不同答案。")},
+    {tier:0, type:"summary", stage:STAGE.summary, title:"我们记住啦", lines:summaryLines, art:mainArt, footer:"总结 · 一起复述",
+      note:noteFor(STAGE.summary,"和孩子一起指着图复述，不要求背诵。")},
+    {tier:0, type:"extend", stage:STAGE.extend, title:"回家做一做", lines:extendLines, art:d(0), footer:"延伸 · 小任务",
+      note:noteFor(STAGE.extend,"说清任务，提醒家长只需陪伴，不必代做。")},
+    // tier1 → 8 页：翻翻卡 + 结束页
+    {tier:1, type:"quiz", stage:STAGE.discuss, title:"猜一猜 · 翻翻卡", quiz, art:d(0), footer:"互动 · 先猜两次再翻卡",
+      note:noteFor(STAGE.discuss,"先不给答案，让孩子猜两次，再逐张翻开提示卡与答案卡。")},
+    {tier:1, type:"thanks", title:"今天真棒！", subtitle:"每个小朋友都有一双会发现的眼睛", footer:"谢谢小朋友们", art:mainArt,
+      note:noteFor("收尾","表扬具体行为，收尾保持愉快。")},
+    // tier2 → 10 页：换个角度观察 + 小游戏
+    {tier:2, type:"observe", stage:STAGE.observe, title:"再仔细看看", words:observeWords2, art:d(0), footer:"观察 · 换个角度",
+      note:noteFor(STAGE.observe,"换个角度再观察一次，鼓励孩子比较两页的不同。")},
+    {tier:2, type:"game", stage:STAGE.discuss, title:"玩一玩", lines:gameLines, art:d(2), footer:"互动 · 小游戏",
+      note:noteFor(STAGE.discuss,"先示范一遍规则，再全体一起玩。")},
+    // tier3 → 12 页：开放讨论 + 回顾
+    {tier:3, type:"discuss", stage:STAGE.discuss, title:"还想说一说", lines:discussLines2, art:d(1), footer:"讨论 · 开放问题",
+      note:noteFor(STAGE.discuss,"开放问题没有标准答案，重点让孩子敢开口。")},
+    {tier:3, type:"summary", stage:STAGE.summary, title:"今天学到了什么", lines:summaryLines2, art:d(2), footer:"总结 · 回顾",
+      note:noteFor(STAGE.summary,"让孩子自己说，教师只做补充。")}
+  ];
+
+  const pages = parseInt(($$("#coursePages .chip.on")[0]?.textContent || "8 页").replace(" 页","")) || 8;
+  const slides = fitPages(all, pages);
+  return {slides, meta:{title, age, domain, themeKey, themeName, actor, keys, mainArt, decoKeys:deco,
+    raw:{goalsRaw, prepRaw, processRaw, qRaw}, pages}};
+}
+
+// 卡片预览渲染（五步走版式，与 .pptx 一一对应）
+function renderSlidesPreview(slides, theme, pages, meta){
+  const total  = Math.min(slides.length, pages);
+  const shown  = slides.slice(0, total);
+  const c1 = theme.c1, c2 = theme.c2, bg = theme.bg;
   return shown.map((s,i)=>{
-    let inner="";
-    if(s.type==="cover"){
-      inner=`
-        <div class="slide-cover" style="background:${bg};color:${textColor};border:3px solid ${c1};">
-          <img class="slide-deco-art" src="${decoArt(0)}" style="left:8px;top:8px;width:32px;height:32px;opacity:.7;">
-          <img class="slide-deco-art" src="${decoArt(1)}" style="right:8px;top:8px;width:32px;height:32px;opacity:.7;">
-          <img class="slide-deco-art" src="${decoArt(2)}" style="left:12px;bottom:48px;width:28px;height:28px;opacity:.65;">
-          <img class="slide-deco-art" src="${decoArt(0)}" style="right:12px;bottom:52px;width:28px;height:28px;opacity:.65;">
-          <img class="slide-cover-art" src="${mainArt}">
-          <div class="slide-cover-title" style="color:${c1};">${escapeHtml(s.title)}</div>
-          <div class="slide-cover-sub">${escapeHtml(s.subtitle||"")}</div>
-          <div class="slide-cover-stripe" style="background:linear-gradient(90deg,${c1},${c2});"></div>
-          <div class="slide-cover-foot">${escapeHtml(s.footer||"")}</div>
+    const art = artUri(s.art || meta?.mainArt || "star");
+    const stage  = s.stage ? `<span class="k-stage" style="background:${c1};">${s.stage}</span>` : "";
+    const timing = `<span class="k-timing">1–2 分钟</span>`;
+    const decos  = `<div class="k-deco k-decor-a" style="background:${c2};"></div><div class="k-deco k-decor-b" style="background:${c2};"></div>`;
+    const foot   = s.footer ? `<div class="k-foot">${escapeHtml(s.footer)}</div>` : "";
+    const lineBoxes = (arr)=> arr.map(l=>`<span class="k-line" style="border-color:${c2};">${escapeHtml(l)}</span>`).join("");
+    let content = "";
+
+    if(s.type === "cover"){
+      content = `<div class="k-row" style="margin-top:12px;">
+        <div class="k-col" style="gap:9px;">
+          <div class="k-big" style="color:${c1};">${escapeHtml(s.title)}</div>
+          <div style="font-size:10.5px;color:#7A7A7A;font-weight:700;">${escapeHtml(s.subtitle||"")}</div>
+          <div style="height:4px;width:62%;border-radius:4px;background:linear-gradient(90deg,${c1},${c2});"></div>
+        </div>
+        <img class="k-art k-art-lg" src="${art}">
+      </div>`;
+    } else if(s.type === "observe"){
+      content = `<div class="k-title" style="color:${c1};">${escapeHtml(s.title)}</div>
+        <div class="k-row">
+          <img class="k-art k-art-md" src="${art}">
+          <div class="k-bubbles" style="flex:1;">${(s.words||[]).map((w,k)=>
+            `<div class="k-bubble" style="border-color:${c2};">${escapeHtml(w)}<small>找一找 ${k+1}</small></div>`).join("")}</div>
         </div>`;
-    } else if(s.type==="list"){
-      // 列表页图标保留 emoji（🎯/🎒/❓ 有语义识别度）
-      const listEmoji = s.emoji || (s.title.includes("目标") ? "🎯" : s.title.includes("准备") ? "🎒" : s.title.includes("提问") ? "❓" : "✨");
-      inner=`
-        <div class="slide-list" style="background:${bg};color:${textColor};border:3px solid ${c2};">
-          <div class="slide-list-h" style="color:${c1};">
-            <span class="slide-h-emoji">${listEmoji}</span>
-            <span>${escapeHtml(s.title)}</span>
-          </div>
-          <div class="slide-list-sub">${escapeHtml(s.subtitle||"")}</div>
-          <ul class="slide-list-items">
-            ${s.items.map((it,idx)=>`<li><span class="slide-bullet" style="background:${c1};"></span><span>${escapeHtml(it)}</span></li>`).join("")}
-          </ul>
-          <div class="slide-corner-deco" style="background:${c2};"></div>
-          <img class="slide-deco-art" src="${decoArt(3)}" style="right:10px;bottom:12px;width:34px;height:34px;opacity:.85;">
+    } else if(s.type === "quiz"){
+      const q = s.quiz || {};
+      const cards = [{m:"?",lab:"问题卡",txt:q.q},{m:"!",lab:"提示卡",txt:q.hint},{m:"★",lab:"答案卡",txt:q.ans}];
+      content = `<div class="k-title" style="color:${c1};">${escapeHtml(s.title)}</div>
+        <div class="k-row" style="gap:8px;">
+          <div class="k-cards">${cards.map((c,k)=>`<div class="k-flip" style="border-color:${k===1?c2:c1};">
+            <div class="k-mark" style="color:${c1};">${c.m}</div>
+            <div class="k-txt">${escapeHtml(c.txt||"")}</div>
+            <div class="k-lab">${c.lab}</div></div>`).join("")}</div>
+          <img class="k-art" src="${art}" style="width:66px;height:66px;">
         </div>`;
-    } else if(s.type==="process"){
-      // 过程页右上星、右下用主题插图
-      const procIdx = (s.stepNum-1) % decoArts.length;
-      inner=`
-        <div class="slide-process" style="background:${bg};color:${textColor};border:3px solid ${c2};">
-          <div class="slide-process-h">
-            <span class="slide-step-num" style="background:${c1};color:#fff;">${s.stepNum}/${s.totalStep}</span>
-            <span style="color:${c1};font-weight:800;">${escapeHtml(s.subtitle||s.title)}</span>
-          </div>
-          ${s.body?`<div class="slide-process-body">${escapeHtml(s.body)}</div>`:""}
-          <div class="slide-deco-cloud" style="right:10px;top:10px;font-size:14px;">🌟</div>
-          <img class="slide-deco-art" src="${decoArts[procIdx]}" style="right:12px;bottom:14px;width:36px;height:36px;opacity:.9;">
-        </div>`;
-    } else if(s.type==="thanks"){
-      inner=`
-        <div class="slide-thanks" style="background:${bg};color:${textColor};border:3px dashed ${c1};">
-          <img class="slide-thanks-art" src="${mainArt}">
-          <div class="slide-thanks-title" style="color:${c1};">${escapeHtml(s.title)}</div>
-          <div class="slide-thanks-sub">${escapeHtml(s.subtitle||"")}</div>
-          <div class="slide-thanks-art-row">${decoArts.slice(0,3).map(src=>`<img src="${src}">`).join("")}</div>
-          <div class="slide-thanks-foot">${escapeHtml(s.footer||"")}</div>
+    } else if(s.type === "thanks"){
+      content = `<div class="k-row" style="flex-direction:column;gap:4px;justify-content:center;">
+        <img class="k-art k-art-md" src="${art}">
+        <div class="k-big" style="color:${c1};">${escapeHtml(s.title)}</div>
+        <div style="font-size:10.5px;color:#7A7A7A;font-weight:700;">${escapeHtml(s.subtitle||"")}</div>
+      </div>`;
+    } else {
+      content = `<div class="k-title" style="color:${c1};">${escapeHtml(s.title)}</div>
+        <div class="k-row">
+          <div class="k-col">${lineBoxes(s.lines||[])}</div>
+          <img class="k-art k-art-md" src="${art}">
         </div>`;
     }
-    return `<div class="slide-card" data-idx="${i}"><div class="slide-card-num" style="background:${c1};">${i+1}</div>${inner}</div>`;
+    return `<div class="slide-card" data-idx="${i}"><div class="slide-card-num" style="background:${c1};">${i+1}</div>
+      <div class="slide-page" style="background:${bg};color:#2A2A2A;border:3px solid ${c2};">${decos}${stage}${timing}${content}${foot}</div></div>`;
   }).join("");
 }
 
@@ -2746,92 +2831,104 @@ function escapeHtml(s){
   return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
 }
 
-// 生成真实 .pptx 文件并下载
-async function downloadPptx(slides,theme,meta){
-  if(typeof PptxGenJS==="undefined"){
-    toast("PPT 库未加载，请检查网络"); return;
+// 生成真实 .pptx 文件并下载（幼儿课件规范版）
+async function downloadPptx(slides, theme, meta){
+  if(typeof PptxGenJS === "undefined"){ toast("PPT 库未加载，请检查网络"); return; }
+  const pptx = new PptxGenJS();
+  // 16:9 且坐标用 10×5.625，与 320×180 预览卡 32px/in 完全对应
+  pptx.defineLayout({name:"KINDER16x9", width:10, height:5.625});
+  pptx.layout = "KINDER16x9";
+  pptx.author = "幼师工作台";
+  pptx.title  = meta.title;
+
+  const C1=hexNo(theme.c1), C2=hexNo(theme.c2), BG=hexNo(theme.bg);
+  const F=KINDER_FONT, DARK="3B3B3B", SUB="7A7A7A";
+
+  // 预转本套课件用到的所有卡通插图为 PNG（pptx 不支持 SVG）
+  const need = [...new Set(slides.map(s=>s.art || meta.mainArt || "star").filter(Boolean))];
+  const pngs = {};
+  await Promise.all(need.map(async k=>{ pngs[k] = await cartoonPng(k, 400); }));
+  const artOf = (s)=> pngs[s.art || meta.mainArt || "star"];
+
+  function softBg(slide){
+    slide.background = {color:BG};
+    slide.addShape(pptx.ShapeType.ellipse, {x:-0.75,y:4.5,w:2.1,h:2.1,fill:{type:"solid",color:C2}});
+    slide.addShape(pptx.ShapeType.ellipse, {x:9.05,y:-0.75,w:1.9,h:1.9,fill:{type:"solid",color:C2}});
   }
-  const pptx=new PptxGenJS();
-  pptx.defineLayout({name:"KINDER",width:10,height:7.5});
-  pptx.layout="LAYOUT_WIDE";
-  pptx.author="幼师工作台";
-  pptx.title=meta.title;
-
-  const c1=theme.c1, c2=theme.c2, bg=theme.bg;
-  const textColor="2A2A2A";
-  const subColor="6B6B6B";
-  const cartoonFont="Microsoft YaHei";
-
-  // ★ 预先把所需 SVG 卡通插图转成 PNG（pptx 不支持 SVG）
-  const themeKey = meta && meta.themeKey ? meta.themeKey : "general";
-  const mainKey = THEME_SVG_MAIN[themeKey] || "star";
-  const decoKeys = THEME_SVG_DECO[themeKey] || ["star"];
-  const BIG=320, MID=200, SMALL=120;
-  const mainPng = await cartoonPng(mainKey, BIG);
-  const decoPngs = await Promise.all(decoKeys.map(k=>cartoonPng(k, SMALL)));
-  const decoPngAt = (i)=> decoPngs[i % decoPngs.length];
+  function head(slide,s){
+    if(s.stage){
+      slide.addShape(pptx.ShapeType.roundRect,{x:0.45,y:0.22,w:1.5,h:0.4,fill:{type:"solid",color:C1},rectRadius:0.2});
+      slide.addText(s.stage,{x:0.45,y:0.22,w:1.5,h:0.4,fontSize:PT.meta,bold:true,color:"FFFFFF",align:"center",valign:"middle",fontFace:F});
+    }
+    if(s.type !== "cover"){
+      slide.addText(s.title,{x:0.5,y:0.72,w:9,h:0.72,fontSize:PT.title,bold:true,color:C1,fontFace:F,valign:"middle"});
+    }
+    slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:1.48,w:2.2,h:0.08,fill:{type:"solid",color:C2},rectRadius:0.04});
+  }
+  function foot(slide,s){
+    if(s.footer) slide.addText(s.footer,{x:0.5,y:5.18,w:9,h:0.3,fontSize:11,color:"9A9A9A",align:"center",fontFace:F});
+  }
+  function lineBox(slide,text,x,y,w,h){
+    slide.addShape(pptx.ShapeType.roundRect,{x,y,w,h,fill:{type:"solid",color:"FFFFFF"},line:{color:C2,width:1.5},rectRadius:0.12});
+    slide.addText(text,{x:x+0.18,y,w:w-0.36,h,fontSize:PT.body,color:DARK,valign:"middle",fontFace:F});
+  }
+  function bubble(slide,text,x,y,w,h){
+    slide.addShape(pptx.ShapeType.roundRect,{x,y,w,h,fill:{type:"solid",color:"FFFFFF"},line:{color:C2,width:2},rectRadius:0.18});
+    slide.addText(text,{x,y,w,h,fontSize:PT.bubble,bold:true,color:C1,align:"center",valign:"middle",fontFace:F});
+  }
+  function bigArt(slide,png,x,y,w,h){
+    if(!png) return;
+    slide.addShape(pptx.ShapeType.ellipse,{x:x+w*0.08,y:y+h*0.87,w:w*0.84,h:h*0.12,fill:{type:"solid",color:C2}});
+    slide.addImage({data:png,x,y,w,h});
+  }
 
   slides.forEach(s=>{
-    const slide=pptx.addSlide();
-    if(s.type==="cover"){
-      // 卡通封面：浅底色 + 彩色装饰圆 + 大卡通插图 + 标题
-      slide.background={color:hexNo(bg)};
-      slide.addShape(pptx.ShapeType.ellipse,{x:-0.8,y:-0.8,w:2.2,h:2.2,fill:{type:"solid",color:hexNo(c2)}});
-      slide.addShape(pptx.ShapeType.ellipse,{x:8.5,y:-0.6,w:1.8,h:1.8,fill:{type:"solid",color:hexNo(c1)}});
-      slide.addShape(pptx.ShapeType.ellipse,{x:-0.5,y:5.8,w:1.6,h:1.6,fill:{type:"solid",color:hexNo(c1)}});
-      slide.addShape(pptx.ShapeType.ellipse,{x:8.8,y:6,w:2,h:2,fill:{type:"solid",color:hexNo(c2)}});
-      // ★ 大卡通插图（PNG，不再是 emoji 文字）
-      if(mainPng) slide.addImage({data:mainPng,x:3.6,y:0.9,w:2.8,h:2.8});
-      // 标题彩色横条
-      slide.addShape(pptx.ShapeType.roundRect,{x:2.5,y:3.85,w:5,h:0.16,fill:{type:"solid",color:hexNo(c1)},rectRadius:0.08});
-      slide.addText(s.title,{x:1,y:4.1,w:8,h:1,fontSize:38,bold:true,color:hexNo(c1),align:"center",fontFace:cartoonFont});
-      slide.addText(s.subtitle||"",{x:1,y:5.15,w:8,h:0.5,fontSize:18,color:hexNo(subColor),align:"center",fontFace:cartoonFont});
-      slide.addText(s.footer||"",{x:1,y:6.6,w:8,h:0.4,fontSize:11,color:"999999",align:"center",fontFace:cartoonFont});
-    } else if(s.type==="list"){
-      slide.background={color:hexNo(bg)};
-      const listEmoji=s.emoji||(s.title.includes("目标")?"🎯":s.title.includes("准备")?"🎒":s.title.includes("提问")?"❓":"✨");
-      slide.addText(`${listEmoji}  ${s.title}`,{x:0.5,y:0.35,w:9,h:0.7,fontSize:28,bold:true,color:hexNo(c1),fontFace:cartoonFont});
-      slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:1.1,w:4,h:0.08,fill:{type:"solid",color:hexNo(c2)},rectRadius:0.04});
-      if(s.subtitle) slide.addText(s.subtitle,{x:0.5,y:1.3,w:9,h:0.4,fontSize:13,color:hexNo(subColor),italic:true,fontFace:cartoonFont});
-      const items=s.items.map(it=>({text:`▸  ${it}`,options:{breakLine:true,fontSize:15,color:textColor,paraSpaceAfter:8,fontFace:cartoonFont,bullet:false}}));
-      slide.addText(items,{x:0.6,y:1.9,w:7.8,h:5,fontSize:15});
-      // 右下装饰圆 + ★ 主题卡通插图（PNG）
-      slide.addShape(pptx.ShapeType.ellipse,{x:8.4,y:5.6,w:1.8,h:1.8,fill:{type:"solid",color:hexNo(c2)}});
-      const dp=decoPngAt(2);
-      if(dp) slide.addImage({data:dp,x:8.6,y:5.85,w:1.4,h:1.4});
-    } else if(s.type==="process"){
-      slide.background={color:hexNo(bg)};
-      slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:0.35,w:1.5,h:0.6,fill:{type:"solid",color:hexNo(c1)},line:{color:hexNo(c1),width:1},rectRadius:0.12});
-      slide.addText(`${s.stepNum}/${s.totalStep}`,{x:0.5,y:0.35,w:1.5,h:0.6,fontSize:14,bold:true,color:"FFFFFF",align:"center",valign:"middle",fontFace:cartoonFont});
-      slide.addText(s.subtitle||s.title,{x:2.2,y:0.35,w:7.3,h:0.6,fontSize:22,bold:true,color:hexNo(c1),fontFace:cartoonFont,valign:"middle"});
-      slide.addShape(pptx.ShapeType.roundRect,{x:0.5,y:1.15,w:5,h:0.08,fill:{type:"solid",color:hexNo(c2)},rectRadius:0.04});
-      if(s.body){
-        const paras=s.body.split(/\n+/).filter(Boolean).map(p=>({text:p,options:{breakLine:true,fontSize:14,color:textColor,paraSpaceAfter:6,fontFace:cartoonFont}}));
-        slide.addText(paras,{x:0.6,y:1.5,w:8,h:4.6});
-      }
-      // ★ 右下主题卡通插图
-      const pp=decoPngAt(s.stepNum-1);
-      if(pp) slide.addImage({data:pp,x:8.5,y:5.7,w:1.5,h:1.5});
-      slide.addShape(pptx.ShapeType.ellipse,{x:-0.5,y:6.2,w:1.4,h:1.4,fill:{type:"solid",color:hexNo(c2)}});
-    } else if(s.type==="thanks"){
-      slide.background={color:hexNo(bg)};
-      slide.addShape(pptx.ShapeType.ellipse,{x:-0.8,y:-0.8,w:2.4,h:2.4,fill:{type:"solid",color:hexNo(c2)}});
-      slide.addShape(pptx.ShapeType.ellipse,{x:8.4,y:5.6,w:2.4,h:2.4,fill:{type:"solid",color:hexNo(c1)}});
-      // ★ 结束页用主题卡通大图（PNG）
-      if(mainPng) slide.addImage({data:mainPng,x:4,y:1.5,w:2,h:2});
-      slide.addText(s.title,{x:1,y:3.7,w:8,h:1,fontSize:36,bold:true,color:hexNo(c1),align:"center",fontFace:cartoonFont});
-      slide.addText(s.subtitle||"",{x:1,y:4.7,w:8,h:0.8,fontSize:16,color:hexNo(subColor),align:"center",fontFace:cartoonFont});
-      // 装饰行：三张卡通小图
-      const row = decoPngs.slice(0,3);
-      row.forEach((p,k)=>{ if(p) slide.addImage({data:p,x:3.5+k*1.1,y:5.6,w:0.9,h:0.9}); });
-      slide.addText(s.footer||"",{x:1,y:6.6,w:8,h:0.4,fontSize:12,color:"999999",align:"center",fontFace:cartoonFont});
+    const slide = pptx.addSlide();
+    softBg(slide);
+    head(slide, s);
+    const png = artOf(s);
+
+    if(s.type === "cover"){
+      slide.addText(s.title,{x:0.6,y:1.75,w:5.3,h:1.5,fontSize:PT.cover,bold:true,color:C1,fontFace:F,valign:"middle"});
+      slide.addText(s.subtitle||"",{x:0.62,y:3.3,w:5.2,h:0.5,fontSize:PT.sub,color:SUB,fontFace:F});
+      slide.addShape(pptx.ShapeType.roundRect,{x:0.62,y:3.95,w:3.2,h:0.12,fill:{type:"solid",color:C2},rectRadius:0.06});
+      bigArt(slide, png, 6.25, 1.05, 3.1, 3.1);
+    } else if(s.type === "observe"){
+      bigArt(slide, png, 0.65, 1.75, 3.0, 3.0);
+      const pos = [[4.05,1.85],[6.95,1.85],[4.05,3.25],[6.95,3.25]];
+      pos.forEach((p,k)=>{ if(s.words && s.words[k]) bubble(slide, s.words[k], p[0], p[1], 2.55, 1.15); });
+    } else if(s.type === "quiz"){
+      const q = s.quiz || {};
+      const cards = [{m:"?",lab:"问题卡",txt:q.q},{m:"!",lab:"提示卡",txt:q.hint},{m:"★",lab:"答案卡",txt:q.ans}];
+      cards.forEach((c,k)=>{
+        const x = 0.5 + k*2.55;
+        slide.addShape(pptx.ShapeType.roundRect,{x,y:1.85,w:2.3,h:2.85,
+          fill:{type:"solid",color:"FFFFFF"},line:{color:k===1?C2:C1,width:2},rectRadius:0.18});
+        slide.addText(c.m,{x,y:1.98,w:2.3,h:0.75,fontSize:38,bold:true,color:C1,align:"center",fontFace:F});
+        slide.addText(c.txt||"",{x:x+0.12,y:2.8,w:2.06,h:1.2,fontSize:PT.sub,color:DARK,align:"center",valign:"middle",fontFace:F});
+        slide.addText(c.lab,{x,y:4.28,w:2.3,h:0.3,fontSize:PT.meta,color:SUB,align:"center",fontFace:F});
+      });
+      bigArt(slide, png, 8.25, 2.15, 1.55, 1.55);
+    } else if(s.type === "thanks"){
+      bigArt(slide, png, 4.05, 0.75, 1.9, 1.9);
+      slide.addText(s.title,{x:0.5,y:2.8,w:9,h:0.9,fontSize:PT.cover,bold:true,color:C1,align:"center",fontFace:F});
+      slide.addText(s.subtitle||"",{x:0.5,y:3.85,w:9,h:0.6,fontSize:PT.sub,color:SUB,align:"center",fontFace:F});
+    } else {
+      const ls = s.lines || [];
+      const n = Math.max(ls.length, 1);
+      const h = n>=3 ? 0.88 : 1.05, gap = 0.14;
+      const totalH = n*h + (n-1)*gap;
+      let y = 1.75 + (3.05-totalH)/2;
+      ls.forEach(t=>{ lineBox(slide, t, 0.55, y, 5.5, h); y += h+gap; });
+      bigArt(slide, png, 6.5, 1.8, 2.85, 2.85);
     }
+    foot(slide, s);
+    if(s.note) slide.addNotes(s.note);   // 教师备注：建议停留 1–2 分钟 + 引导话术
   });
 
-  // 文件名：活动名称_页数.pptx
-  const fname=`${meta.title||"课件"}_${slides.length}页.pptx`.replace(/[\\/:*?"<>|]/g,"_");
+  const fname = `${meta.title||"课件"}_${slides.length}页_幼儿版.pptx`.replace(/[\\/:*?"<>|]/g,"_");
   pptx.writeFile({fileName:fname}).then(()=>{
-    toast(`已下载：${fname}`);
+    toast(`已下载：${fname}（标题 36pt+ / 正文 24pt+）`);
   }).catch(err=>{
     console.error(err);
     toast("下载失败："+(err.message||err));
@@ -2895,13 +2992,13 @@ $("#courseSubmit").addEventListener("click",()=>{
     const {slides,meta}=parseCourseSlides();
     const themeChip=$$("#courseTheme .chip.on")[0];
     const theme={
-      key:themeChip?.dataset.theme||"forest",
-      c1:themeChip?.dataset.c1||"#2D7A4A",
-      c2:themeChip?.dataset.c2||"#7BD8A0",
-      bg:themeChip?.dataset.bg||"#F0F7F1"
+      key:themeChip?.dataset.theme||"cream",
+      c1:themeChip?.dataset.c1||"#B8792F",
+      c2:themeChip?.dataset.c2||"#FFE3AC",
+      bg:themeChip?.dataset.bg||"#FFFCF4"
     };
-    const pages=parseInt(($$("#coursePages .chip.on")[0]?.textContent||"8 页").replace(" 页",""));
-    const finalSlides=slides.slice(0,pages);
+    // 页数已在 parseCourseSlides 内按「五步走分层」裁好，避免二次截断丢掉结束页
+    const finalSlides=slides;
 
     lastCourseData={slides:finalSlides,theme,meta};
     records.course.unshift({
@@ -2913,13 +3010,13 @@ $("#courseSubmit").addEventListener("click",()=>{
     });
     saveRecords();
 
-    const previewHTML=renderSlidesPreview(slides,theme,99999,meta);
+    const previewHTML=renderSlidesPreview(finalSlides,theme,99999,meta);
     $("#courseResult").innerHTML=`
       <div class="course-result">
         <div class="course-result-h">
           <div>
             <h3>${escapeHtml(meta.title)}</h3>
-            <div class="meta">${meta.age} · ${meta.domain} · 共 ${finalSlides.length} 页 · <span style="color:var(--teal);">🎨 智能图案：${meta.themeName||"通用"}</span></div>
+            <div class="meta">${meta.age} · ${meta.domain} · 共 ${finalSlides.length} 页 · 五步走结构 · <span style="color:var(--teal);">🎨 ${meta.themeName||"通用"}主题大图</span></div>
           </div>
           <div class="course-actions">
             <button class="btn sm" id="courseDownload" type="button">
@@ -2938,17 +3035,25 @@ $("#courseSubmit").addEventListener("click",()=>{
           <span class="slides-nav-info" id="slidesInfo">P1 / ${finalSlides.length}</span>
           <button class="slides-nav-btn" id="slidesNext" type="button" aria-label="下一页">›</button>
         </div>
-        <div class="course-tip">已生成可直接用 PowerPoint / WPS / Keynote 打开的 .pptx 文件。点击上方「下载 .pptx」即可保存到手机或电脑。</div>
+        <div class="course-tip">幼儿课件规范：<b>① 导入 → ② 观察 → ③ 讨论 → ④ 总结 → ⑤ 延伸</b>，每页只讲一个重点并配一张大卡通图；标题 36pt+ / 正文 24pt+，圆润字体「幼圆」，马卡龙柔和配色。每页 pptx 备注里写了建议停留 1–2 分钟和教师引导话术。若电脑没有「幼圆」，在 PowerPoint 里全选换成「方正少儿体」或「华文彩云」即可。</div>
       </div>`;
 
     btn.disabled=false; btn.innerHTML=`<svg><use href="#i-sparkles"/></svg>重新生成`;
     bindSlidesScroll();
     $("#courseDownload").addEventListener("click",()=>downloadPptx(finalSlides,theme,meta));
     $("#courseCopy").addEventListener("click",()=>{
-      const txt=finalSlides.map((s,i)=>`P${i+1} ${s.title||""}${s.subtitle?"："+s.subtitle:""}${s.items?("\n"+s.items.map(it=>"  · "+it).join("\n")):""}${s.body?("\n"+s.body):""}`).join("\n\n");
+      const txt=finalSlides.map((s,i)=>{
+        const parts=[`P${i+1} ${s.stage?s.stage+" ":""}${s.title||""}`];
+        if(s.subtitle) parts.push("  "+s.subtitle);
+        if(s.lines) s.lines.forEach(l=>parts.push("  · "+l));
+        if(s.words) parts.push("  · 关键词："+s.words.join(" / "));
+        if(s.quiz) parts.push("  · 猜一猜："+s.quiz.q+" → "+s.quiz.ans);
+        if(s.note) parts.push("  教师备注："+s.note);
+        return parts.join("\n");
+      }).join("\n\n");
       navigator.clipboard?.writeText(txt).then(()=>toast("大纲已复制")).catch(()=>toast("复制失败"));
     });
-    toast("课件已生成，可下载 .pptx");
+    toast("课件已生成（五步走 · 大字大图），可下载 .pptx");
   },1100);
 });
 
