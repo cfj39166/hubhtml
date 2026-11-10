@@ -151,7 +151,7 @@ function approveUser(id) {
   const u = userById(id);
   u.verified = true; u.verifiedAt = dbNow().slice(0, 10); u.applyState = 'approved';
   S.privacyConsents.push({ id: uid('pc'), userId: id, item: '住户核验（手机号+房号+房产材料）', at: dbNow() });
-  notify(id, 'order', '住户核验通过', '欢迎加入翡翠城邻里互助，您已成为"真实邻居"');
+  notify(id, 'order', '住户核验通过', '欢迎加入社区邻里互助，您已成为"真实邻居"');
   audit('管理员', '住户核验通过', u.name, u.building + u.room);
   saveDB(); render(); toast('已通过核验');
 }

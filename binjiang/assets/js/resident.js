@@ -89,7 +89,7 @@ function vHome() {
   return `
   <div class="topbar">
     <div class="tb-row">
-      <div><div class="tb-title">🌿 翡翠城·邻里互助</div><div class="tb-sub">${esc(u.building)}居民 ${esc(u.name)} · ${esc(u.room)}</div></div>
+      <div><div class="tb-title">🌿 社区 · 邻里互助</div><div class="tb-sub">${esc(u.building)}居民 ${esc(u.name)} · ${esc(u.room)}</div></div>
       <button class="tb-btn" onclick="go('msg')">🔔 通知${unread ? `<span class="dot">${unread}</span>` : ''}</button>
     </div>
   </div>

@@ -243,7 +243,7 @@
           id: 'o3', catId: 'B3', title: '接娃：实验小学→3栋南门', publisherId: 'u8', providerId: 'p2',
           building: '3栋', zone: 'A区', room: '2201', status: 'in_service', payStatus: 'escrowed',
           price: 40, scheduledAt: '2026-11-06 16:20', createdAt: '2026-11-06 10:02',
-          detail: { route: '实验小学东门→翡翠城南门→3栋', pickupTime: '今天 16:20 放学', duration: 1 },
+          detail: { route: '实验小学东门→社区南门→3栋', pickupTime: '今天 16:20 放学', duration: 1 },
           special: { type: 'child', childName: '周小悦（2年级）', school: '实验小学', guardianConsent: true },
           riskFlags: ['未成年接送'], reviewStatus: 'cleared', reviewedBy: 'c1',
           agreement: { templateId: 'T3', version: 'v1.0', residentSigned: { name: '周悦', at: '2026-11-06 10:05' }, providerSigned: { name: '张强', at: '2026-11-06 10:20' } },

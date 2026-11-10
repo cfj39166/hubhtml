@@ -13,3 +13,6 @@ Thumbs.db
 .tmp_out/
 teacher/assets/*_raw.png
 teacher/assets/Watercolor_children_s_picture__*.png
+
+# EdgeOne Pages 直接上传用的部署包（生成物，不入库）
+EdgeOne-deploy.zip

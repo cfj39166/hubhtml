@@ -134,7 +134,7 @@ function capturePhoto(label) {
   x.beginPath(); x.arc(50, 200, 40, 0, 7); x.fill();
   x.fillStyle = '#fff';
   x.font = 'bold 17px sans-serif'; x.fillText(String(label).slice(0, 14), 20, 56);
-  x.font = '12px sans-serif'; x.fillText('滨江翡翠城 · 凭证照片', 20, 82);
+  x.font = '12px sans-serif'; x.fillText('社区邻里服务 · 凭证照片', 20, 82);
   x.fillText(new Date().toLocaleString('zh-CN', { hour12: false }), 20, 102);
   x.font = '40px sans-serif'; x.fillText('📷', 138, 178);
   return c.toDataURL('image/jpeg', 0.55);
