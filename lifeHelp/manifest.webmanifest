@@ -1,0 +1,18 @@
+{
+  "name": "生活小助手",
+  "short_name": "生活小助手",
+  "description": "干净、离线优先的生活工具箱：计算换算、记录提醒、健康生活，数据保存在本地。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F6F7F9",
+  "theme_color": "#2BB3A3",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
